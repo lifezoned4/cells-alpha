@@ -5,6 +5,9 @@ void main() {
   webSocket.onOpen.listen((e) {   
     webSocket.send("test");
   });
+  webSocket.onMessage.listen((MessageEvent e) {
+    print(e.data);
+  });
 }
 
 void reverseText(MouseEvent event) {

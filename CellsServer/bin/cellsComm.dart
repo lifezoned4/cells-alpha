@@ -19,32 +19,70 @@ main(){
    _logger.info("Starting up Cells Communication Layer");
    _logger.info("WebServer will be listening on ${_ip}:${_port}");
    
+   runZonedExperimental((){
+   try {
    HttpServer.bind(_ip, _port)
    .then((HttpServer server) {
+     try {
      server.listen((HttpRequest request) {
        if(request.uri.path == "/ws"){         
-       var sc = new StreamController();
-       sc.stream.transform(new WebSocketTransformer())
-        .listen(onWebSocketConn)
-         .onError((error)  => print("Error working on HTTP server: $error"));
-       sc.add(request);
+        try {
+         var sc = new StreamController();
+         sc.stream.transform(new WebSocketTransformer())
+          .listen(onWebSocketConn)
+           .onError((err)  => print("Error working on HTTP server: $err"));
+         sc.add(request);
+        } catch(ex) {
+          _logger.warning("Error on WebSocket creation", ex);
+        }        
        } else if (request.uri.path == "/version"){
          request.response.write("ver.0.0.1");
          request.response.close();
        }
        else {
-        _logger.warning("Uri not found: ${request.uri.path}");
-       request.response.close();
+         try {
+          _logger.warning("Uri not found: ${request.uri.path}");
+           request.response.close();
+         } catch (ex) {
+           _logger.warning("Error on response close", ex);
+         }
        }
+     }, onError: (err){
+       _logger.warning("Listen HttpServer Stream Error!");
      });
+     }
+     catch(ex) {
+       _logger.warning("Something went wrong inside of HttpServer binding!", ex);
+     }
+   }, onError: (err){
+     _logger.warning("Binding HttpServer Stream Error: $err");
    });
+   }
+   catch(ex) {
+     _logger.warning("Binding HttpServer failed!", ex);
+   }
+  }
+  , onError: (err) {
+    _logger.warning("Zoned Error: $err"); 
+  });
 }
 
-onWebSocketConn(WebSocket conn) {        
+onWebSocketConn(WebSocket conn) {
   _logger.info("Something Connected");
-  conn.listen(onWebSocketMsg);
+  conn.listen(new CellsWebSocketConnection(conn).onWebSocketMsg);
 }
 
-onWebSocketMsg(message) { 
-  _serverCommEngine.dealWith(message);
+class CellsWebSocketConnection {
+  
+  WebSocket conn;
+  CellsWebSocketConnection(this.conn);
+  
+  onWebSocketMsg(message) {
+    try {
+    _serverCommEngine.dealWithWebSocket(message, conn);
+    }
+    on SocketException catch(ex){
+      _logger.warning("Someting on the WebSocket went wrong", ex);
+    }
+  }
 }

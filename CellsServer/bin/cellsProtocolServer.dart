@@ -1,11 +1,15 @@
 library cellsProtocolServer;
+
+import 'dart:io';
+
 import 'package:logging/logging.dart';
-import 'package:logging_handlers/logging_handlers_shared.dart';
 
 final _logger = new Logger("cellsProtocolServer");
 
 class ServerCommEngine {
-  dealWith(String message){
+  dealWithWebSocket(String message, WebSocket conn){
     _logger.info(message);
+    if(conn.readyState == WebSocket.OPEN)
+      conn.add("testback");
   }
 }
