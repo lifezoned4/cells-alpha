@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>CellsWeb</name>
+	<name>cellsweb</name>
 	<comment></comment>
 	<projects>
+		<project>CellsServer</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
@@ -16,7 +17,7 @@
 	</natures>
 	<filteredResources>
 		<filter>
-			<id>1377914592041</id>
+			<id>0</id>
 			<name></name>
 			<type>30</type>
 			<matcher>

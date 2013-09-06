@@ -1,0 +1,50 @@
+Authentification by a asymetric private/public key signition
+------------------------------------------------------------
+
+Status: Description
+
+Description
+-----------
+The client has a private key and signes a utc time stamp and command to authetificate himself agains the server.
+The command should be the json command our setting to be called on the server with arguments.
+The command or message is send to a RESTFUL node "commands".
+http://<server>:<port>/cells/commands/send should be the node to write too.
+
+Design:
+-------
+A library to asymetric encrypten should be given.
+
+New library with possible commands on client side.
+exmp.:
+commandFooBar(string argA, int argB);
+{
+	string command = "FooBar";
+	Map jsonMap = new Map();
+	jsonMap.Add("command", command);
+	jsonMap.Add("argA", argA);
+	jsonMap.Add("argB", argB);
+	string msg = json.stringfy(jsonMap)	
+	_sign(privKey, msg);
+	_send(msg);
+}
+
+should have a _sign(BigInteger pubKey, string json); private sigining method.
+should have a _send(msg) for sending to the server;
+the librarry is embedded into a class ClientCommEngine in cellsProtocolClient.dart.
+
+ClientCommEngine is initialized with a server url and a pubKey.
+Has a instance of the asymetric encryption library as needed.
+
+Tests
+-----
+Test: BasicAuth
+Given key pair signs time and "foobar" command to server.
+Server should send a okay msg back. 
+
+Test: WrongAuth
+Given random key pair time and "foobar" signed and send to server
+Server should send a not okay msg back.
+
+Test: RandomMsg
+A random  msg should be send to the RESTFUL node.
+Server sould send a not okay msg back.

@@ -1,8 +1,7 @@
-name: CellsServer
+name: cellsserver
 description: A sample command-line application
 dependencies:
-  logging_handlers: any
+  bignum: any
+  crypto: any
   logging: any
-
-#dependencies:
-#  unittest: any
+  logging_handlers: any

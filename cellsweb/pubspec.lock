@@ -4,19 +4,33 @@ packages:
   analyzer_experimental:
     description: analyzer_experimental
     source: hosted
-    version: "0.6.21+3"
+    version: "0.7.1"
   args:
     description: args
     source: hosted
-    version: "0.6.21+3"
+    version: "0.7.1"
   barback:
     description: barback
     source: hosted
-    version: "0.6.21+3"
+    version: "0.7.1"
+  bignum:
+    description: bignum
+    source: hosted
+    version: "0.0.3"
   browser:
     description: browser
     source: hosted
-    version: "0.6.21+3"
+    version: "0.7.1"
+  cellsserver:
+    description:
+      path: "/home/ms/workspaceCellsPrototype/CellsWeb/../cellsserver"
+      relative: true
+    source: path
+    version: "0.0.0"
+  crypto:
+    description: crypto
+    source: hosted
+    version: "0.7.1"
   csslib:
     description: csslib
     source: hosted
@@ -24,7 +38,7 @@ packages:
   custom_element:
     description: custom_element
     source: hosted
-    version: "0.6.21+3"
+    version: "0.7.1"
   html5lib:
     description: html5lib
     source: hosted
@@ -32,11 +46,11 @@ packages:
   intl:
     description: intl
     source: hosted
-    version: "0.6.21+3"
+    version: "0.7.1"
   logging:
     description: logging
     source: hosted
-    version: "0.6.21+3"
+    version: "0.7.1"
   logging_handlers:
     description: logging_handlers
     source: hosted
@@ -44,23 +58,23 @@ packages:
   mdv:
     description: mdv
     source: hosted
-    version: "0.6.21+3"
+    version: "0.7.1"
   meta:
     description: meta
     source: hosted
-    version: "0.6.21+3"
+    version: "0.7.1"
   mutation_observer:
     description: mutation_observer
     source: hosted
-    version: "0.6.21+3"
+    version: "0.7.1"
   observe:
     description: observe
     source: hosted
-    version: "0.6.21+3"
+    version: "0.7.1"
   path:
     description: path
     source: hosted
-    version: "0.6.21+3"
+    version: "0.7.1"
   pathos:
     description: pathos
     source: hosted
@@ -68,24 +82,24 @@ packages:
   serialization:
     description: serialization
     source: hosted
-    version: "0.6.21+3"
+    version: "0.7.1"
   source_maps:
     description: source_maps
     source: hosted
-    version: "0.6.21+3"
+    version: "0.7.1"
   stack_trace:
     description: stack_trace
     source: hosted
-    version: "0.6.21+3"
+    version: "0.7.1"
   unittest:
     description: unittest
     source: hosted
-    version: "0.6.21+3"
+    version: "0.7.1"
   unmodifiable_collection:
     description: unmodifiable_collection
     source: hosted
-    version: "0.6.21+3"
+    version: "0.7.1"
   web_ui:
     description: web_ui
     source: hosted
-    version: "0.4.18+2"
+    version: "0.4.20"

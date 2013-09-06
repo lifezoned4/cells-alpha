@@ -1,6 +1,6 @@
 .metadata
-CellsServer/packages
+cellsserver/packages
 RemoteSystemsTempFiles
-CellsWeb/web/packages
-CellsWeb/packages
-
+cellsweb/web/packages
+cellsweb/packages
+cellsweb/.settings/

@@ -2,6 +2,7 @@ library cellsComm;
 import 'package:logging/logging.dart';
 import 'package:logging_handlers/logging_handlers_shared.dart';
 
+import 'dart:convert';
 import 'dart:io';
 import 'dart:async';
 
@@ -34,7 +35,12 @@ main(){
          sc.add(request);
         } catch(ex) {
           _logger.warning("Error on WebSocket creation", ex);
-        }        
+        } 
+       } else if (request.uri.path == "/commands" && request.method == 'POST'){
+          Encoding.getByName("ASCII").decodeStream(request).then((t) => _logger.info("Request POST: " + t));
+          request.response.headers.set("Access-Control-Allow-Origin","*");
+          request.response.add(Encoding.getByName("ASCII").encoder.convert("First RESTFUL call"));
+          request.response.close();
        } else if (request.uri.path == "/version"){
          request.response.write("ver.0.0.1");
          request.response.close();
