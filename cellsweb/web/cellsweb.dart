@@ -7,7 +7,7 @@ void main() {
   
   commEngine = new ClientCommEngine.fromUser("http://127.0.0.1:8080/commands", "test", "test");
   
-  commEngine.commandFooBar("BLA", 17, (String response) => print(response));
+  commEngine.commmandWebSocketAuth((String response) => print(response));
   
   var webSocket = new WebSocket("ws://127.0.0.1:8080/ws");
   webSocket.onOpen.listen((e) {   

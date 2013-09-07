@@ -37,10 +37,13 @@ main(){
           _logger.warning("Error on WebSocket creation", ex);
         } 
        } else if (request.uri.path == "/commands" && request.method == 'POST'){
-          Encoding.getByName("ASCII").decodeStream(request).then((t) => _logger.info("Request POST: " + t));
-          request.response.headers.set("Access-Control-Allow-Origin","*");
-          request.response.add(Encoding.getByName("ASCII").encoder.convert("First RESTFUL call"));
-          request.response.close();
+          Encoding.getByName("ASCII").decodeStream(request).then(
+                                                              (t){_logger.info("Request POST: " + t);
+                                                                  String reponse =_serverCommEngine.dealWithRestful(t);
+                                                                  request.response.headers.set("Access-Control-Allow-Origin","*");
+                                                                  request.response.add(Encoding.getByName("ASCII").encoder.convert(reponse));
+                                                                  request.response.close();
+                                                              });
        } else if (request.uri.path == "/version"){
          request.response.write("ver.0.0.1");
          request.response.close();

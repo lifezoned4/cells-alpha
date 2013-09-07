@@ -23,7 +23,7 @@ packages:
     version: "0.7.1"
   cellsserver:
     description:
-      path: "/home/ms/workspaceCellsPrototype/CellsWeb/../cellsserver"
+      path: "/home/ms/workspaceCellsPrototype/cellsweb/../cellsserver"
       relative: true
     source: path
     version: "0.0.0"

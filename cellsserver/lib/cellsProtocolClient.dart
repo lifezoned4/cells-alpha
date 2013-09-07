@@ -10,35 +10,36 @@ import 'cryptolib/bytes.dart';
 import 'package:bignum/bignum.dart';
 
 class ClientCommEngine {
-   BigInteger privKey;
+   DsaKeyPair keyPair;
    String serverURL;
+   String username;
    Dsa dsa = new Dsa(); 
    
-  ClientCommEngine.fromUser(this.serverURL, String user, String password){
-    privKey = dsa.fromSecretUserPassword(user, password).privateKey;
+  ClientCommEngine.fromUser(this.serverURL, this.username, String password){
+    keyPair = dsa.fromSecretUserPassword(username, password);  
   }
   
-  ClientCommEngine.fromKey(this.serverURL, this.privKey){
-    
+  ClientCommEngine.fromKeyPair(this.serverURL, DsaKeyPair this.keyPair){
+    throw new Exception("Not implemented!");
   }
   
-  commandFooBar(String argA, int argB, Function callback){
-    String command = "FooBar";
+  commmandWebSocketAuth(Function callback){
+    String command = "WebSocketAuth";
     Map jsonMap = new Map<String, dynamic>();
     
     jsonMap.putIfAbsent("command", () => command);
     jsonMap.putIfAbsent("utc", () => new DateTime.now().toUtc().millisecondsSinceEpoch);
-    jsonMap.putIfAbsent("argA", () => argA);
-    jsonMap.putIfAbsent("argB", () => argB);
-    
     String msg = stringify(jsonMap);
+    
     msg = _sign(msg);
     _send(msg, callback);  
   }
   
   String _sign(String json) {
-    DsaSignature signature = dsa.sign(base64Decode(CryptoUtils.bytesToBase64(encodeUtf8(json))), privKey);
+    DsaSignature signature = dsa.sign(base64Decode(CryptoUtils.bytesToBase64(encodeUtf8(json))), keyPair.privateKey);
     Map jsonMapWithSign = new Map<String, dynamic>();
+    jsonMapWithSign.putIfAbsent("username", () => username);
+    jsonMapWithSign.putIfAbsent("pubKey", () => keyPair.publicKey.toString(16));    
     jsonMapWithSign.putIfAbsent("msg", () => json);
     jsonMapWithSign.putIfAbsent("signR", () => signature.r.toString(16));
     jsonMapWithSign.putIfAbsent("signS", () => signature.s.toString(16));
