@@ -82,17 +82,12 @@ class Dsa {
     do {
       int tempInt = random.nextInt(pow(2, 32)- 1);
       value = new BigInteger(tempInt.toString(), 10);
-      print("TempValue: ${tempInt}");
-      print(value);
       for (int i =1; i < numBits/32; ++i) {
         value <<= 32;
         value |= new BigInteger(random.nextInt(pow(2, 32) - 1).toString(), 10);
       }
       count++;
     } while (value >= lessThan && count <= 100);
-    print("this:$lessThan");
-    print("is bigger then");
-    print("then:$value");
     return value;
   }
   /**
@@ -126,7 +121,6 @@ class Dsa {
     String privateKeySecret = "RAINBOWMAGIC" + user + password;
     String privateKeySecretBytes = CryptoUtils.bytesToBase64(encodeUtf8(privateKeySecret));
     String privateKeySecretHex = CryptoUtils.bytesToHex(encodeUtf8(privateKeySecretBytes));
-    print("Secret: ${privateKeySecretHex}");
     BigInteger privateKeyInput = new BigInteger(privateKeySecretHex, 16);    
     return fromSecret(privateKeyInput);
   }

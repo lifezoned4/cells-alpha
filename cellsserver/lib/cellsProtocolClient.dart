@@ -1,4 +1,4 @@
-library CellsProtocolClient;
+library protocolClient;
 
 import 'dart:html';
 import 'dart:json';

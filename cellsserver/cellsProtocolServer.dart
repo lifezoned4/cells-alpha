@@ -1,8 +1,9 @@
-library cellsProtocolServer;
+library protocolServer;
 
 import 'dart:io';
 import 'dart:json';
 import 'dart:utf';
+import 'dart:math';
 
 import 'package:bignum/bignum.dart';
 import 'package:logging/logging.dart';
@@ -10,49 +11,31 @@ import 'package:crypto/crypto.dart';
 import 'lib/cryptolib/dsa.dart';
 import 'lib/cryptolib/bytes.dart';
 
+import 'cellsCore.dart';
+import 'cellsAuth.dart';
+
 final _logger = new Logger("cellsProtocolServer");
 
 Dsa dsa = new Dsa();
-
-class AuthEngine {
-  Map<RestfulCommand, List<AuthBasic>> commandAuths = new Map<RestfulCommand, List<AuthBasic>>();
-  
-  addAuth(RestfulCommand command, AuthBasic auth){
-    if(commandAuths.containsKey(command))
-      commandAuths[command].add(auth);
-    else
-      commandAuths.putIfAbsent(command, () => new List<AuthBasic>.from([auth]));
-  }
-}
-
-class AuthBasic {
-  String name;
-}
-
-class AllAccess extends AuthBasic  {
-  AllAcces(){
-    name = "*";
-  }
-}
-
-class AuthUser extends AuthBasic{
-  String name;
-  BigInteger pubKey;
-}
 
 class ServerCommEngine {
   Map<String, RestfulCommand> restfulCommands = new Map<String, RestfulCommand>();
   
   AuthEngine authEngine = new AuthEngine();
   
+  World world;
+  
   ServerCommEngine(){
     RegRestuflCommand(new RestfulWebSocketAuth(this));
     authEngine.addAuth(restfulCommands[RestfulWebSocketAuth.commandNameInfo], new AllAccess());
+    world.start();
   }
   
   RegRestuflCommand(RestfulCommand command){
     restfulCommands.putIfAbsent(command.commandName, () => command);
   }
+
+  Map<int, User>
   
   dealWithWebSocket(String message, WebSocket conn){
     _logger.info(message);
@@ -64,8 +47,9 @@ class ServerCommEngine {
     try {
       Map<String, dynamic> msg = parse(json);
       Map<String, dynamic> command = parse(msg["msg"]);
+      AuthContext context = new AuthContext(msg["username"], new BigInteger(msg["pubKey"], 16););
       if(valideSigning(msg) && restfulCommands.containsKey(command["command"]))
-        return restfulCommands[command["command"]].dealWithCommand(command);
+        return restfulCommands[command["command"]].dealWithCommand(command, context);
       else
         return "Command not Found or Signing Wrong: " + command["command"];
     } on FormatException catch(ex)
@@ -102,22 +86,26 @@ abstract class RestfulCommand {
   
   RestfulCommand(this.engine);
   
-  String dealWithCommand(Map<String, dynamic> jsonMap){
+  String dealWithCommand(Map<String, dynamic> jsonMap, AuthContext context){
     if(jsonMap["command"] != commandName)
       throw new InternalCommException("CommandName Fatal missmatch");
   }
 }
 
-class RestfulWebSocketAuth extends  RestfulCommand {    
-  
+class RestfulWebSocketAuth extends  RestfulCommand {      
   static String commandNameInfo = "WebSocketAuth";
   
   RestfulWebSocketAuth(ServerCommEngine engine) : super(engine){
     commandName = commandNameInfo;
   }
   
- String dealWithCommand(Map<String, dynamic> jsonMap){
-   super.dealWithCommand(jsonMap);
-   return "Auth Okay";
+ String dealWithCommand(Map<String, dynamic> jsonMap, AuthContext context){
+   super.dealWithCommand(jsonMap, context);
+   int tokken = new Random().nextInt(1<<32 -1);
+   if(engine.world.users.where((user) => user.username == context.username).isNotEmpty)
+    engine.world.users.where((user) => (user.pubKey == user.pubKey) && (user.username == context.username)).first.lastSendTokken = tokken;
+   else
+    engine.world.users.add(new User(context.username, context.pubKey, tokken));
+   return tokken.toString();
  }
 }
