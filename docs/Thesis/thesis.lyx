@@ -1,0 +1,1155 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Author
+Michael Solinksi
+\end_layout
+
+\begin_layout Title
+Cells:
+\end_layout
+
+\begin_layout Title
+Eine interaktive Artificial Life Model Implementierung für das Web
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Abstract
+\end_layout
+
+\begin_layout Standard
+Cells, ein Artifical Life Modell das im Web Fuss fassen soll.
+ Der erste Prototyp in Dart liefert eine Beispiel Implementierung einer
+ an Avida angelehnten Artifical Life Model Idee die kooleberativ genutzt
+ werden kann.
+ Über Grundbegriff hin zur Erleuterung der Benutzung des Prototypen führt
+ der Excurs zu einer Idee die Mehrbenutzerbetrieb in den Bereich der Artifical
+ Life Forschung bringt.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Einleitung
+\end_layout
+
+\begin_layout Paragraph
+In dieser Arbeit geht es über die Vision, den Entwurf und die prototypische
+ Implementierung eines Artifical Life Models welches als Webplatform verfügbar
+ gemacht wird.
+\end_layout
+
+\begin_layout Subsection
+Artificial Life
+\end_layout
+
+\begin_layout Paragraph
+Der Begriff des Lebens ist intuitiv greifbar, doch in der Litaratur unterschiedl
+ich definiert.
+ In der Biologie spricht man grundsetzlich von Carbon basiertem Leben.
+ Will man jedoch den Begriff abstrakt ergründen und auf Gemeinsamkeiten
+ von Leben schließen sollte man ein wissenschaftliches Modell zur hilfe
+ nehmen das die Simulation von Leben erlaubt.
+ Da man hier von Leben welches uns über die Jahrzente begegnet ist unterscheiden
+ will spricht man auch von künstlichem Leben.
+ Ein Kriterium welches zur Definition von abstrakt gehaltenen Leben dienen
+ kann ist ein in C.
+ Adami erwähntem Werk.
+\end_layout
+
+\begin_layout Quote
+
+\lang ngerman
+„Life is a property of an ensemble of units that share information coded
+ in a physical substrate and which, in the presence of noise, manages to
+ keeps its entropy significantly lower than the maximal entropy of the ensemble,
+ on timescales exceeding the „natural“ timescale of decay of the (information-be
+aring) substrate by many orders of magnitude.“ 
+\end_layout
+
+\begin_layout Paragraph
+
+\lang ngerman
+Im lauf der Zeit in der noch jungen Disziplin des Artifical Lifes wurden
+ unterschiedeliche Modell entwickelt die in vielen Punkten der Komplexität
+ und die Vielfallt von Leben nach simulieren.
+ Im Verlauf dieser Arbeit wird ein solches entworfen und implementiert.
+ Um zu überprüfen ob das Modell den gegebenheiten genügt muss vorerst der
+ Begriff des Artifical Life Model definiert werden.
+\end_layout
+
+\begin_layout Subsection
+Artificial Life Model
+\end_layout
+
+\begin_layout Paragraph
+Von gegebenen Leben in unserer Welt auf eine Modellform zu schließen und
+ diese in mathemathische Formen zu gießen ist ein ambintoniertes Ziel, da
+ Leben zwar begrifflich greifbar ist aber schwer formalisiert werden kann.
+ 
+\end_layout
+
+\begin_layout Standard
+Was versteht man unter einem Modell?
+\end_layout
+
+\begin_layout Standard
+Ein Modell kann zwei Zwecken dienen, der Simulation oder der Abstraktion.
+\end_layout
+
+\begin_layout Paragraph
+Unter einem abstrakten Model versteht man die Abstrahierung von Begriffen
+ die apriorie in unserer Umwelt bzw in userem Universum vorkommenden sind.
+ Abstraktion wird anhand des semiotischen Dreieck klar.
+ Eine Person abstrahiert hierbei von einem Realweltobjekt auf einen Begriff.
+ So wird in dieser Modellbildung von Realweltobjekten auf Funktionsweissen,
+ Relationen und Abläufe dieser geschlossen.
+ Speziel im Fall des Artifical Life Models zielt die Abstraktion auf den
+ Begriff des Lebens.
+ Der Vorgang der extraktion von Verhalten oder Beispiele für Artifical Life
+ Modelle sind zB.
+ Tierra, Avida oder die klassischen Zellularen Automaten.
+ Wissenschaftler wie Von Neumann und Langton haben sich hierbei mit dem
+ Thema des Artifical Lifes beschäftigt und versucht Modell zu entwerfen
+ die bestimmten Regeln die man im Leben auf unserem Planeten antrift genügen.
+ Hauptaspkete sind hier das Prinzip der Evolution und das modellieren von
+ Emergenten Funktionen.
+ Da es sich bei dem Gedanken des Lebens um eine komplexes System handelt
+ wird oft mit einem Bottom Up ansatz, anstelle eines Top Down ansatzes herangega
+ngen.
+ Beim entwurf eines Artifical Life Models wird in dieser Arbeit überwiegend
+ auf die Ideen eines Projektes namens Avida zurückgegriffen.
+ Dieses wird durch neue Ideen Ergänzt.
+\end_layout
+
+\begin_layout Subsection
+Vision von Cells
+\end_layout
+
+\begin_layout Paragraph
+Cells ist eine Webapplikation die erlaubt kooleberativ Verhalten in ein
+ Modell zu inizieren als auch Verhalten über Modellgrenzen hinweg in benachbarte
+ Modell des selben Typs zu transportieren.
+\end_layout
+
+\begin_layout Subsubsection
+Vision einer Artificial Life Model Webapplikation
+\end_layout
+
+\begin_layout Paragraph
+Ausgehende von dem Begriff des Artifical Lifes Models ist eine Idee entstanden
+ einsolches in einer Webapplikation verfügbar zu machen.
+ Hierbei soll Verhalten auf eine Webpage definierbar gemacht werden und
+ dieses soll anschließend Anhand evolutionärer Regelmässigkeiten in einem
+ Model welches aus anderen schon inizierten Verhalten besteht um sein überleben
+ kämpfen.
+ Dabei soll von mehren Benutzern zur gleichen Zeit Verhalten iniziert werden
+ können.
+ Es soll kollaberative, entsprechen einer Web 2.0 Idee, an dem Inhalt des
+ Modells gearbeitet werden können.
+ Durch die Vielfallt von Personen die auf das Modell zugreifen werden ist
+ kreativistisch mehr Vielfalt in dem Model möglich als bei einer Einzelbenutzer-
+Applikation.
+ Auswertungfunktionen des Model werden hier vorerst zurückgestellt.
+ Ziel ist es nur eine Eingabe und Verwaltungsmölglichkeit für Verhalten
+ zuentwicklen als auch die Beobacht des Verhaltens zu erlauben.
+\end_layout
+
+\begin_layout Subsubsection
+Vision vom verteiltes Artificial Life
+\end_layout
+
+\begin_layout Paragraph
+Zusetzlich zum Gedanken des kolaborativen Arbeiten an einem Artifical Life
+ Model wird auch die weitergabe von Verhalten über die Modelgrenzen erlaubt.
+ So sollen mehrer Instanzen der Applikation von anderen Applikationen Verhlaten
+ übermittelt bekommen können, so dass eine noch größere Diversität von Verhalten
+ erlaubt wird die mit der Anzahl der Peers im Netzwerk steigt.
+ Hierbei ist jeder dieser Peers eine Webapplikation die unter einer eine
+ Addresse auf einer Rechnerinstanz verfügbar gemacht wird.
+ Hierbei muss Verhalten über Rechnergrenzen, möglicherweise auch über Arichitekt
+ur Grenzen hinweg transportiert werden können.
+ Erreicht wird dieses Ziele durch eine virtuelle Maschine die jedem Verhalten
+ verfügbar gemacht wird.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Motivation
+\end_layout
+
+\begin_layout Paragraph
+Faktoren wie das Verständniss von Natur und die Analyse der Synthese ihrer
+ Eigenschaften führen über einer Bekundung der Notwendigkeit von Artifical
+ Life zu einer Motivation die zur realsierung von Cells führt.
+\end_layout
+
+\begin_layout Subsection
+Holismus vs Reduktionismus
+\end_layout
+
+\begin_layout Paragraph
+Die Lange Zeit vorherschende Meinung das Systeme allein durch die anaylsie
+ und das Verständniss seine Einzelteile verstanden werden könnne wird die
+ philospohie des Holismus gestellt.
+ So liegen zwischen den einzelnen Teilen unterschiedliche Eigenschaften
+ die nur als Komposition dieser ihre Beständniss haben.
+ Es wird hierbei vom Begriff der Emergenz und Emergenten eigenschaften gesproche
+n
+\end_layout
+
+\begin_layout Subsection
+Emergenz
+\end_layout
+
+\begin_layout Paragraph
+Nimmt man Atom als Beispiel so ist eine Zelle mehr als die Summe ihrer Atome.
+ Die Information und die Konstelation dieser führen zu etwas was über die
+ Eigenschaften des Atoms hinweg besteht und in Einzelteilen nicht vorhanden
+ ist.
+ Solche eine Eigenschaftenbildung nennt man Emergenz.
+ Eine solche Eigenschaft nennt man Emergente Eigenschaft.
+ Ein weiteres Beispiel wäre die Elektrizität.
+ Ohne sie wäre die Informationstechnologie nicht möglich.
+ Es reicht nicht aus ein Verständniss über Elektrizität zu haben um Informations
+technische Konzepte zu realiseren.
+ Emergenz ist eine Grundeigenschaft von komplexen System und zieht sich
+ durch die natur unserer Existenz.
+ 
+\end_layout
+
+\begin_layout Subsection
+A New Kind of Science
+\end_layout
+
+\begin_layout Paragraph
+Wolfram hat in seinem Buch deutlich gemacht, das unserem System und selbst
+ einfachen System mehr komplexität entlockt werden kann als die Einzelteile
+ vermuten lassen.
+ In seinem Werk liefert er Beispiele von Zellularen ein Dimensionalen Automaten
+ die leicht zu komplexen Musterbildungen führen.
+\end_layout
+
+\begin_layout Subsection
+Notwendigkeit von Artificial Life
+\end_layout
+
+\begin_layout Paragraph
+Synthese ist der Schlüsselbegriff zum erforschen von Leben.
+ Nur das neukombinieren der Einzelnen Eigenschaften die im Ganzen oder im
+ Einzelnen in Lebensformen sichtbar sind erlaubt das finden von Kombinationen
+ die zu Emergenten Eigenschaften führen.
+ Wäre es nicht intressant zu verstehen und zu Simulieren ob Evolution zufällig
+ zu Eigenschaften hörerer Formen führt.
+ Am Beispiel unseres Planeten wird dies nur Rückwirkend nachvollziehbar.
+ Mittel des Artifical Life könnten erlauben antworten auf diese Frage zu
+ liefern.
+\end_layout
+
+\begin_layout Subsection
+Anwendungsbereiche von Artificial Life
+\end_layout
+
+\begin_layout Paragraph
+Nachvollziehen von Eigenschaften die im Leben vorhanden sind hat schon oft
+ in der Vergangenheit der Wissenschaft zu Erfindungen und erkenntiss Geführt.
+ Vom Flug, zur Medizin, hin zu optimierungverfahren für schwer berechenbare
+ Probleme führten erkenntnisse aus der Natur.
+ Im Artificial Life wird eine eigene Art von Natur geschaffen die wohlmöglich
+ in Zukunft zu vollkommen neuen Erkenntnissen führt.
+\end_layout
+
+\begin_layout Paragraph
+Abgesehen von der Erkenntniss Bildung hätte Artifical Life sicherlich in
+ der Unterhaltungsindustrie einen Wirtschaftlichen nährwert der natürlich
+ moral ergründet werden müsste, dies ist jedoch nicht Thema dieser Arbeit.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Grundlagen
+\end_layout
+
+\begin_layout Standard
+Bevor wir zum eigentlichen Arbeitsanteil kommen werden einige Begriffe erläutert
+ die in der Arbeit verwendet werden.
+\end_layout
+
+\begin_layout Subsection
+Begriffe
+\end_layout
+
+\begin_layout Subsubsection
+Topologie
+\end_layout
+
+\begin_layout Paragraph
+Eine Topologie ist ein mathematisches Konstrukt welches...
+\end_layout
+
+\begin_layout Subsubsection
+Simulation
+\end_layout
+
+\begin_layout Paragraph
+Unter Simulation versteht man das abilden einer in der Umwelt erkannten
+ Eigenschaft zur Prognestierung von Zuständnen in der Umwelt oder zur falsififzi
+erung von Vermutungen über Verhalten der Umwelt unter bestimmter Grundannahmen.
+\end_layout
+
+\begin_layout Subsubsection
+Virtuelle Maschinen
+\end_layout
+
+\begin_layout Paragraph
+Eine Virtuelle Maschine ist eine Ausführungsplaform die eine eine Assemblarsprac
+he besitzt und durch interpretation von Assemblersprachenbefehlen einen
+ Zustand oder virtuelle Peripherie geräte verändert.
+ Das besondere und zugleich die Abgrenzung von einer Realen Maschine wird
+ diese in einer anderen Maschine ausgeführt und hier simuliert.
+\end_layout
+
+\begin_layout Subsubsection
+Assemblersprachen
+\end_layout
+
+\begin_layout Paragraph
+Unter eine Assemblarsprache versteht man eine von einer Maschine interpretierte
+ Sprache die zu Speicherzustandsänderungen führt.
+ So kann ein Zustand ergänzt durch einen Assemblerbefehl zu einem Nachfolge
+ Zustand führen.
+\end_layout
+
+\begin_layout Subsubsection
+Künstliche Chemie
+\end_layout
+
+\begin_layout Paragraph
+Die Künstliche Chemie ist das Regelwerk eines Artifical Life Modells welches
+ dieses einschränkt aber zugleiche eine Umgebung und Topologie liefert die
+ es überhaupt erlaubt Eigenschaften auszuprägen die nicht in der Künstlichen
+ Chemie vorhanden sind.
+ Eine Künstliche Chemie kann als Tuppel von Molekülen, Reaktionen und einer
+ Dynamic definiert werden.
+ Die Moleküle S können hierbei auf verschiede weise Definiert sein.
+ Z.b.
+ als Zeichenketten oder Zahlen.
+ Reaktionsregeln R sind immer die Transformation von mehrern Molekülen in
+ eine andere Menge von Molekülen.
+ Die Dynmaic A ist die Einschränkung wann Regeln aus R angwendet werden
+ können.
+ 
+\end_layout
+
+\begin_layout Paragraph
+Ein Beispiel einfaches Beispiel für eine künstliche Chemie wäre die 
+\begin_inset Quotes eld
+\end_inset
+
+number division-chemistry
+\begin_inset Quotes erd
+\end_inset
+
+.
+ S ist hierbei die Menge der Graden Zahlen.
+ R ist die Reaktion das zwei Zahlen s1 und s2 falls teilbar ohne Rest zur
+ zahl s1/s2 überführt werden.
+ Geht diese nicht muss ein s3 gefunden werden dass die formel s1 + s3/s1.
+ Die Dynamic wird definiert als das Herausnehmen von zwei Zahlen und die
+ Substituierung dieser in der Startmenge durch eine aus der Reaktion entstehende
+ Zahl.
+ Nach mehreren Iteration besteht die Menge überrwiegend aus Primzahlen.
+\end_layout
+
+\begin_layout Subsubsection
+Verhalten
+\end_layout
+
+\begin_layout Standard
+Unter Verhalten versteht man das schliesen aus Eigenzustand und Umwelt auf
+ einen neuen Eigenzustand und die Äußerung auf die Umwelt.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Avida
+\end_layout
+
+\begin_layout Subsection
+Artificial Life in VMs
+\end_layout
+
+\begin_layout Paragraph
+Es wurde schon oft in der Wissenschaft des Artifical Lifes versucht mit
+ zuhilfe Name von Ausführungsumgebungen für Programme zu operieren die einene
+ Befehlsatz interpretierten der die künstliche Chemie für Organismen dieses
+ Artifical Life Modells war.
+ Hier bei spircht man auch von Assemblar Automaten.Coreworld und das darauf
+ folgende Tierra war einer der ersten versuche dieses Ansatzes.
+ Hier wurde eine VM benutzt und der Speicherzustand jenner war die Topologie
+ für jenne Organismen.
+ Der Befehlsatz war hierbei zusammen mit der definition der Maschine eine
+ künstiche Chemie.
+ Erste versuche mit einem Programm das in dieser Maschine ausgeführt wurde
+ führten dazu das verschiedene Abarten dieses Programme unterschiedlich
+ schnell Mengen des Speichers für sich in anspruch nahmen.
+ Evolutionär entwickelten sich Nachkommen dieses Urprogramms die teil des
+ Befehlsumfangs enthielt und ein andere Verhalten aufzeigten.
+\end_layout
+
+\begin_layout Subsection
+Unterschiede zu Tierra 
+\end_layout
+
+\begin_layout Paragraph
+Avida ging einen Schritt weiter und ordnete jedem Orgranismus eine eigene
+ VM zu.
+ so konnten Einzelne Organismen sich reproduzieren sobald sie Operationen
+ vom System mit zufälligen Eingaben Berechneten.
+ Zb.
+ musste der Organismus beim einlseen von zwei zufall Zahlen deren Korrekt
+ Summe berchne.
+ Gelang dies wurde dieser Behlohnt und konnte schneller operieren im vergleich
+ zu anderen Organismen mit jeweils Baugleichen VMs oder konnte einen benachbarte
+ VM in anspruch nehmen welche dann eine unternmenge seines Programmcodes
+ als Inhalt erhiert.
+ Das Teilen und kopieren seines eigenen Codes musste hier als Grundfunktion
+ des Auszuführenden Programms, dem Organismus, eingeflöst werden.
+ So kann man sagen dass Tierra eine einzelne VM und Avida viele VMs simuliert.
+ Doch die Befehlssetze beider Ähneln sich in vielen Formen.
+\end_layout
+
+\begin_layout Subsection
+Avidas Assemblersprache
+\end_layout
+
+\begin_layout Paragraph
+Die sprache von Avida und zugleich die Maschine hat folgende Besonderheiten.
+ Sie ist kommt ohne Operanden aus.
+ So definiert der auf einen Befehl folgende Befehle welchem Register der
+ Operand zu finden ist oder wohin geschriebn werden soll.
+ Der Befehlsatz umfast neben Befehlen zur Artmetrik, Logic, Flussverhalten
+ auch Befehle zum kopieren von Speicher Berreichen bzw.
+ dem Abtrennen eines Speicherbereiches der als eine neue VM weiter läuft.
+ Auch zu erwähnen ist das Avida wie auch Tierra viele ihrer Ideen in diesem
+ Bereich von Corewars geborgt hat.
+ Dies ist ein Spiel in dem zwei Programmierer in eine Assemblersprache,
+ Redcode, Programme in einer VM laufen lassen bis zur Terminerung des anderen.
+\end_layout
+
+\begin_layout Subsection
+Avidas Künstliche Chemie
+\end_layout
+
+\begin_layout Paragraph*
+Avida ist laut definiation eine künstliche Chemie und erfüllt hiermit jennes
+ Kriterium eines Artificial Life Models.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+Molekühle
+\end_layout
+
+\begin_layout Paragraph
+In Avida ist eine Rasterung aus VMs gegeben die jeweils einen Speicherinhalt
+ gefühlt mit Bytes aus der Permutation von Assemblerbefehle aus Assemblarsprach
+ die in Avida definiert ist.
+ Die unendliche Menge aller Befehlssetze gekreuzt mit den der möglichen
+ Zustände der Register der VM bilden die Menge der Molekühle S in der künstliche
+n Chemie von Avida.
+\end_layout
+
+\begin_layout Subsubsection
+Reaktion: Berechnung
+\end_layout
+
+\begin_layout Paragraph
+Wird eine Transformation aus einem Molekühl zu dem Folge Zustand der VM
+ geührt so ist diese ein Reaktion.
+ Diese wird durch die Semantik von Avidas VM definiert.
+ Unformal laut die Semantik wie folgt:
+\end_layout
+
+\begin_layout Paragraph
+In der VM gibt es einen Instruction Pointer.
+ dieser wird inkrementiert sobald ein Befehl ausgeführt wird.
+ Abhängig vom Befehl der an der Stellle wo der Instruction Pointer drauf
+ verweist wird der Zustand von Registern der VM verändert.
+ Es gibt hierbei verschieden Befehl die in Unterschieldiche Kategorien wie
+ Logic, Artimetrik, Steuerung und Avida spezifische Befehle unterteilte
+ werden kann.
+ die Transformation von Zustand zu Zustand ist hierbei eine Reaktion in
+ ein andere Molekühl der Menge S.
+ Die Menge der Regeln R ist hier nicht impleziert definiert sondern durch
+ Semantik der Befehle klar.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+Reaction: Teilung, Kopierung und Mutation
+\end_layout
+
+\begin_layout Paragraph
+Wird eine Abschnitt innerhalb der VM kopiert kann Mutation auftretten.
+ Hierbei ändert sich der Befehl in einen anderen.
+ Teilung findet hierbei in der Form stadt das ein Molekühle aus der Menge
+ S zu einem zwei Molekühlen s1 und s2 transformiert wird wobei s1 der Zustand
+ der VM ohne den in s2 enthalten Speicherzustand ist.
+\end_layout
+
+\begin_layout Subsubsection
+Dynamic: Vermehrungsverhalten und Tasks
+\end_layout
+
+\begin_layout Paragraph
+Kopiervorgäng, Berechnungen und geschwindigkeit der VM ist abhängig vom
+ erfüllen sogenannter Tasks die vom System selber gestellt werden.
+ Dies können das einfach aufsummieren von zwei zahlen, das shiften von Bits
+ oder Ähnliches sein.
+ Erfolgreiches erfüllen dieser Aufgaben erlaubt der VM schnellers Rechnen
+ und Teilung.
+\end_layout
+
+\begin_layout Subsection
+Anwendungsbereich
+\end_layout
+
+\begin_layout Paragraph
+Angewendet wurde Avida zur Analyse von Evolutionsverhalten und falsifizierung
+ von Evolutionstheorien.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Cells
+\end_layout
+
+\begin_layout Subsection
+Verwandte Arbeiten
+\end_layout
+
+\begin_layout Paragraph
+Cells ist stark durch die Arbeit von Avida inspiriert worden und borgt sich
+ viele Ideen von deren VM Gedanken.
+ Trotzdem erweitert es die künstliche Chemie durch neue Ansätze die nicht
+ in Avida zu finden sind.
+ Weiterhin wurden erste Versuche zur realsierung einer künstlichen Chemie
+ die die Vision von Cells erfüllen kann im eine Voerherigen Abeit entwickelt
+ und sind somit in diese Arbeit eingeflossen.
+ 
+\end_layout
+
+\begin_layout Subsection
+GreenCode VM
+\end_layout
+
+\begin_layout Paragraph
+Jede Cell in Cells besteht aus einer VM.
+ Genau so wie ein Molekühl in der künstlichen Chemie von Avida.
+ Zusetzlich zu dem VM Assemblerbefehlen der Sprache die in Avida benutzt
+ wird, werden Befehle ergänzt die das Bewegen der Cell inerhalb des Modells
+ erlauben.
+ Auch die Teilung ist hier etwas anders gelöst.
+ So wird der Befehl zu Kopierung entweder auf sich selbst oder auf Randfelder
+ angewendet.
+ Hierbei wird das Kopieren in Nachbar Cells oder das erschaffen neuer VM
+ Instanzen die neue Cells bilden bei der Teilung angewendet.
+\end_layout
+
+\begin_layout Subsection
+Künstliche Chemie in Cells
+\end_layout
+
+\begin_layout Paragraph
+Die aus Avida bekannten Task funktionieren hier in dem Dynamik Anteil der
+ künstlichen Chemie entwas anders.
+ So erhalten Cells für das ausführen eines EAT; Befehles auf ein angrenzendes
+ oder auf das eigene Feld eine Menge von Energie zugeschrieben.
+ Dies Energie wird innerhalb der Cell vorgehalten.
+ Abgebildet wird dies durch eine Integer Zahl.
+ So fliest dies auch in die Definition des Molekühl Begriffes von Cells
+ ein.
+ So werden Felder mit Farbe als Molekühle modeliert und eine Abart dieser
+ Molekühle sind dann Cells die die Eigenschaft der Molekühl Defintion der
+ VM von Avida haben.
+ Eine weiter mit Farbe verbundener Aspekt ist der dass eine Cell eine Farbe
+ hat.
+ Diese kann beim Teilen zwar mutieren aber sie ist somit auch teil der Molekühl
+ Definition.
+ Mutation finden in Cells genau so wie in Avida stadt.
+ Sie beruhen hierbei auf Zufallswerten.
+\end_layout
+
+\begin_layout Subsection
+Web zentrierte Schlüsselprobleme
+\end_layout
+
+\begin_layout Subsubsection
+Übertragbares Verhalten
+\end_layout
+
+\begin_layout Paragraph
+Gehen wir davon aus, dass das Verhalten jeder Cell einen Zustand enthält
+ und zugleich eine Abarbeitungsreihenfolge von Befehlen die wohlmögliche
+ unterschiedlich vom eignen Zustand verhalten.
+ Oft wird ein Zustand im Rechner durch Referenziele-Integritiät festgehalten.
+ Da wir diesen Zustand transportieren müssen müssen wir diese Integrität
+ auf dem andern Modell wieder herstellen.
+ So musste zB.
+ von dem Gedankenen eine höhrer Programmiersprache zu nutzen abgegangen
+ werden.
+ Teils aus Zeitgründ Teils weil keine Technologische Lösung für das Problem
+ gefunden werden konnnte.
+\end_layout
+
+\begin_layout Subsubsection
+Interaktion mit einem Modell zur Laufzeit
+\end_layout
+
+\begin_layout Paragraph
+Oft sind Modell statisch definert und laufen nach dem definieren und deklarieren
+ von Paramtern ihren weg ohne weiter interaktion mit dem Benutzer.
+ Eine Anforderung von Cells ist es mit dem Modell zur laufzeit zu interagieren.
+ So muss zwischen den Modellschritten eine Zusatz eingabe erlaubt seindie
+ nachfolgende konsequenzen für das Modell hat.
+\end_layout
+
+\begin_layout Subsection
+Web 2.0
+\end_layout
+
+\begin_layout Paragraph
+Cells verfolgt das Ziele eine Webanwendung zu sein die den Anforderung von
+ Web 2.0 folgt.
+ So steht das Teilen von Inhalten und das erstellen von Inhalten von anderen
+ Benutzern im Fordergrund.
+ Ziele wie Kooleberation sind hier Schlagwort.
+ Gemeinsam wird Versucht neue Formen von Instanzierungen des Modells zu
+ finden die intressant oder von wissenschaftlicher Relvanz sind.
+\end_layout
+
+\begin_layout Paragraph
+Auch das erzeugen einer ästethischen Idee ist hier Thema.
+ Oft wird Artifical Life genutz um Kunstobjekte zu erzeugen.
+ Dies Trift hierbei auch zu.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Prototype Cells in Dart
+\end_layout
+
+\begin_layout Subsection
+Technologie Entscheidungen
+\end_layout
+
+\begin_layout Paragraph
+Allgemein sollte der Serveranteil von Cells überall laufen wo die dartvm
+ kompiliert wird.
+ Getest wurde diese unter einem Ubuntu Linux System mit der x86 Architektur.
+ Weiter System wie Windows und MacOS sollte auch möglich sein, sind jedoch
+ nicht getestet.
+\end_layout
+
+\begin_layout Subsubsection
+Dart als Lösung vieler Probleme
+\end_layout
+
+\begin_layout Paragraph
+Da es sich bei Cells um eine Webappliaktion handelt gibt es einen Server
+ und einen Webanteil.
+ Oft wird dieses Problem mit JavaScript und einer Serversprach wie zB.
+ Java erschlagen.
+ Dart hingegen hat die möglichkeiten sowohl Server als auch Webanteil in
+ einer Sprache zu definieren.
+ Dart kann und wird zu JavaScript compiliert und kann anschliesend in einem
+ Browser ausgeführt werden.
+ Auch wenn Dart noch eine sehr junge Sprache ist gibt es eine vital Community
+ die zusatz Komponenten anbietet die die Sprache erst benutztbar machen.
+ Dart ist eine Mischung aus einer rein akademischen Sprache (geringer Verbreitun
+gsgrad) und eine wirtschaftlichen Sprache (durch Monopolistische Stellungen
+ getriebe Sprache).
+ Kritikpunkt sind das eine akadamischer neu Entwurf einerer Sprache zwar
+ niemals zu Dart geführt hätte, da Syntax und Semantik sehr C/C+, Java-artigen
+ sprachen ähneln.
+ Trotzallem hat diese Sprache moderne Sprachfunktionn wie zB.
+ Lambdas, Syntaxtischen Zucker für Konstruktoren etc..
+ Allgemein spricht man bei Dart vom Strukturieren Web, da Dart im vergleich
+ zu Java Script typisiert ist.
+ Viele funktionalität die große Projekte erst erlauben die in Java Script
+ nachgerüstet werden müssen sind hier im Framework als auch in der Sprache
+ vorhanden.
+ (Typsisten, Packetmangment).
+ Da Dart eine eigene VM nutzt und diese noch nicht in allen Browsern impementier
+t ist sollte man die geschwindigkeit von Dart mit bedacht geniesen.
+ Dartium eine Chormium Variante die eine VM nutzt die auch für den Prototypen
+ von Cells als Ausführumgebung genutzt wird, hat diese VM in sich enthalten.
+ Auf der Serverseit wird bis jetzt nur eine auf x86 System Funktionierende
+ VM angeboten.
+ Trotz dieser Einschränkungen wurde entschieden diese Sprache als Platform
+ für den Prototypen von Cells zu wählen.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+DSA Public-Private-Key als Befehls-Signierungs-Vefahren
+\end_layout
+
+\begin_layout Paragraph
+Ein weiter Problem was auftritt ist Bezüglich eine dezentrallen Userverwaltung
+ zu erwähnen.
+ So sollen Zellen immer einen Benutzter zugeordnet werden.
+ Nur dieser soll innerhalb des Modells die erlaubnniss haben diese zu Ändern.
+ (Abgesehen von dem Admin User des Modells) Um dieses Problem zu lösen wurde
+ auf asymetrische Verschlüsselung zurückgegriffen.
+ So werden Befehle an das System signiert.
+ Sie enthalten zufallszahl und zeitstempel um wiederspielbarkeit dieser
+ zu verhindern.
+ Anhand eines in jeder dem Benutzer gehörenden Cell enthalten öffentlichen
+ Schlüssels wird dann verfifiziert ob dieser mit der Cell interagieren kann.
+ Da es in dieser Arbeit nicht um Kryptographie geht wird nun Angenommen
+ das diese Verfahren Sicher ist.
+\end_layout
+
+\begin_layout Subsection
+Bibliothek
+\end_layout
+
+\begin_layout Subsubsection
+GreenCode Interpreter
+\end_layout
+
+\begin_layout Paragraph
+Der GreenCode Interpreter ist eine Liste von GreenCodeElemets die wiederum
+ die einzelnen GreenCode Assemblerbefehle bzw Kopien dieser enthalten.
+ Zusetzich werden drei Register A , B, C vorgehaltn (analog zu Avida).
+ Auch Instraction Pointer wo in der Liste sich gerade die VM befindet und
+ Register ob und wo Kopiert, Bewegt, Gegessen werden soll.
+ Wesentliche Methoden dieses Biblotheksanteils sind die transformier funktion
+ die Verhalten der Cell realisert.
+ Umwelt und Zustand werden auf Aktion und folge Zustand transfomiert.
+\end_layout
+
+\begin_layout Subsubsection
+Die Cells Welt
+\end_layout
+
+\begin_layout Paragraph
+Die Welt in dennen sich die Cells befinden sind Listen mit einer länger
+ width die Listen von WorldObjects enthalten mit einer fänge height.
+ So wird das im Modell beschriebene Raster aufgeschlagen.
+ WorldObjecte enthalten Farb-Wert und die möglichkeite eine Cell zu enthalten.
+ Farb-Werte sind eine Trippe aus Rot Grün Blau anteil.
+ Die Farbe im WorldObject wird von den Cells konsumiert um Bewegungs-, Rechen-
+ und Zerteilungsenergie zu gewinnen.
+ Die Welt ist in sich eine Torso, so dass die Ränder der Welt miteinander
+ erbunden sind.
+\end_layout
+
+\begin_layout Subsubsection
+Persistenz ins File System
+\end_layout
+
+\begin_layout Paragraph
+Cells läde eine von Namen her konfigurierbare Welt aus einem Verzeichniss.
+ Die struktur des Verzeichnisses beinhaltet einen Konfigurationsdatei für
+ die Welt, WorldObjekt Ordner, Cell Ordner und einen öffentlichen admin
+ Schlüssel.
+ Im WorldObjekt ist für jedes Rasterfeld eine Datei mit dem Namensaufbau
+ 
+\begin_inset Quotes eld
+\end_inset
+
+{X}x{Y}
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Mit selben Namens muster werden Cells im Ordner Cell gespeichert.
+ Das system speichert alle 5 Sekunden das Modell zur Laufzeit.
+\end_layout
+
+\begin_layout Subsubsection
+Serialisierung von Cells mit JSON
+\end_layout
+
+\begin_layout Paragraph
+Da der Inhalt eines GreenCodeContextes nur aus einfachen Objekten ohne cyclen
+ bestehen kann man diese serialiseren und anschliesend über seriele Kommunikatio
+n transportieren als auch Persitenzieren.
+\end_layout
+
+\begin_layout Subsection
+Cells Web
+\end_layout
+
+\begin_layout Subsubsection
+Web Sockets
+\end_layout
+
+\begin_layout Paragraph
+Der Inhalt des Modells wird über eine Websocket Kommunikation an Clients
+ verteilt und dort angezeigt.
+ Hierbei werden Entweder im Fall vom Admin Änderungen übertragen.
+ Oder im Fall von Usern nur die Umgebung von Cells die vorher als Beobachtet
+ markiert wurden.
+ Die Anzahl von Beobachtet Cells ist aus Bandbreitgründen eingeschränkt
+ und sollte für die Benutzer auf gegen eine Maximum geprüft werden.
+ Das innerhalb des WebSocket genutzte Protocol ist ein auf JSON bassierndes
+ Prtokol das wie schon oben erwähnt signierung von Protokolbefehlen erlaubt.
+ Es wurde eine WebSocket Schnittstelle genutzt da hier schneller und vorallem
+ asymetrische Datenübetragen werden.
+ Aufvorzüg gegenüber AJAX wird hier nicht eingegangen.
+\end_layout
+
+\begin_layout Subsubsection
+Interaktion mit dem Modell über Protokol Befehle
+\end_layout
+
+\begin_layout Paragraph
+Einzelnen Protokolbefehle die per WebSocket an das System gesendet werden
+ verändern den Zustand und die folge Zustände des Systems.
+ In der folgenden Tableraischen zusammenfassung sind die Protokolbefehle
+ aufgelistet.
+ Sie sind Deckungsgliech mit den in der Server to Web / Web to Server Kommunikat
+ion benutzten befehle.
+\end_layout
+
+\begin_layout Subsubsection
+Benutzerverwaltung: DSA Public-Private-Key Verfahren
+\end_layout
+
+\begin_layout Paragraph
+Auf der Client Seite wird Benutzername und Passwort eingeben.
+ Die Seite generiert anschliesend aus diesem Seed ein private/öffentliches
+ Schlüsselpaar.
+ Mit diesem werden anschliesen die Befehle eindeutig signiert und die Zellen
+ einem Benutzer zugeordnet.
+ So ist der Benutzer indetiziert durch Benutzer und Passwort.
+ Kryptographische schwächen werden ausen vor gelassen.
+ Das Verwendetet Verfahren ist hierbei ein vorab Entwicklete Biblothek für
+ DSA Signierung die an die anfordeungen von Cells angepasst wurde.
+\end_layout
+
+\begin_layout Subsection
+Cells Portals Modell zu Modell Übertragung
+\end_layout
+
+\begin_layout Subsubsection
+TCP/IP Socket Zwischen CellsServer Kommunikation
+\end_layout
+
+\begin_layout Paragraph
+Zwischen Cells Modellen wird eine TCP/IP Kommunikation aufgebaut.
+ Hier ist ein Bestimmtes Feld im Modell mit einem Feld innerhalb eines anderen
+ Modells verbunden.
+ Bewegt sich eine Cell auf dieses Feld wird sie serialisiert und im anderen
+ Modell wieder deserialisert und am angrenzend Feld, falls möglich ausgesetzt.
+ Für diese Kommunikation innerhalb und zwischen den Modellen wird auch ein
+ JSON basierendes Protocol benutzt.
+ Ist die Gegenstelle nicht verfügbar wird einfach auf der gegenüberliegend
+ Seite des Feldes weitergereicht.
+ (Das Feld wird ignoriert).
+ Das Protokol handelt verfügbarkeitsabfragen ab.
+ Im Detail sehen die Befehle innerhalb des Portocols wie folgt aus.
+\end_layout
+
+\begin_layout Subsection
+Implementierungsdiagramme
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Szenarien
+\end_layout
+
+\begin_layout Subsection
+Modell Szenarien
+\end_layout
+
+\begin_layout Subsection
+Anwendungs Szenarien
+\end_layout
+
+\begin_layout Subsubsection
+Klassenraum
+\end_layout
+
+\begin_layout Paragraph
+Der Benutzerraum besteht aus Schülern und Lehrern.
+ Der Lehrer wird als Admin in einer auf einem Rechner im Raum laufenden
+ Server Instanz von Cells eingetragen.
+ Anschliesend verbinden sich die Schüler mit ihren Entgeräten über Dartium
+ auf diesesn Server.
+ Sie bekommen vom Lehrer zugeteilte Namen und dürfen sich selber passwörter
+ ausdenken.
+ 
+\end_layout
+
+\begin_layout Paragraph
+Sobald ein Schüler sich verbunden hat sieht er den momentan zustand des
+ Systems.
+ Er kann über den Knopf Pipette Cells hinzufügen solang sein EnergyBudget
+ nicht aufgeschöpft ist.
+ Dieses wurde im voraus vom Lehrer für alle Schüler festgelegt.
+\end_layout
+
+\begin_layout Paragraph
+Der Lehrer beobachtet das System von seinem Rechner aus mit einem durch
+ seinen vorher eindeutig gewählten Usernamen und sein geheimes Passwort
+ authentifizierten Admin Terminal.
+ Hier kann er Zellen die sich intressant verhalten herausextrahieren und
+ Speichern.
+\end_layout
+
+\begin_layout Subsubsection
+Multiserver Betrieb
+\end_layout
+
+\begin_layout Paragraph
+Drei Benutzer treffen sich um mit Cells zu experimentieren.
+ Jeder setzt einen Server auf und setzt dort die Datei mit dem öffentlichen
+ Schlüssel seines Schlüsselpaares.
+ Anschließend fügt er auf seinem System Portale zu den anderen Maschinen
+ die genauso eingerichtet worden an.
+ Sobald alle Maschine verbunden sind können experimente gestartet werden.
+ Der Raum und die Rechenkampazität für einzelne Cells ist so auf mehrer
+ NutzterSystem verteilt.
+ Die Anzahl von drei kann belieb gesträkt werden und mit einer durch Portale
+ definierten Topologie beliebig definert werden.
+\end_layout
+
+\begin_layout Subsubsection
+Einzelbenutzerbetrieb
+\end_layout
+
+\begin_layout Paragraph
+Es wird ein Server gestartet.
+ Der Admin Key wird mit öffentlichen Schlüssel befüllt den man im model
+ als Besitzer seiner Cells benutzten will.
+ Das Modell wird editert und berarbeitet, weiterausgefürt, über verlangsamen
+ und beschleunigen analysiert und in einen Zustand gebracht der intressant
+ ist.
+ Anschließend wird das Model angehalten und heruntergefahren.
+ Unter vorher definierten Namen im World verzeichniss liegt dann ein Ordner
+ de komprimiert und archiviert werden kann und anschliesend wieder gestartet
+ werden kann sobald man intressse hat das intressante System erneut zu betrachte
+n und zu analysieren.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Weiterführende Arbeit
+\end_layout
+
+\begin_layout Paragraph
+Die Nächsten Schritte wären den Prototypen in eine stabile und einsatzfähige
+ Anwendung weiter zu entwickeln.
+ Dafür Müsste das Userinterface überdacht werden, als auch der Komfort für
+ den Endbenutzer angehoben werden.
+ 
+\end_layout
+
+\begin_layout Paragraph
+Der Sprung ins Web währe dann möglich wenn Portal mit eine Zentralen Server
+ einheit kommunizieren könnnten die gegenrechnet wieviel Energie im welchem
+ System ist.
+ So könnte das ausnutzen von und endlich einflösen von Verhalten eingedämt
+ werden.
+ Diese Serverinstanz müsste hierbei auch eine Webschnittstelle bieten um
+ zu sehen wo wieviel energie ist.
+ So könnte man ganz Cluster von Cells Servern aufbauen oder einfach nur
+ Peer to Peer netze erwarten an dem das Frei Netz mitarbeiten könnnte.
+ 
+\end_layout
+
+\begin_layout Paragraph
+Ein andere Bearbeitungspunkt wäre wie man die Assemblarsprache erweitern
+ kann um sie auch für Programmier neulinge ersichtich zu machen.
+ Auch möglich wäre es einen compiler zu schreiben der eine höhere Sprache
+ auf diese VM runtercompiliert.
+\end_layout
+
+\begin_layout Paragraph
+Schlussendlich wäre es intressant Cells zu einem Open Source Community Projekt
+ zu machen um so den Fortbestand des Systems und vorallem die Akzeptanz
+ dieser Idee zu steigern.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Fazit
+\end_layout
+
+\begin_layout Paragraph
+Vorallem im Experimentelen als auch im Edukativen bereich kann Cells angewendet
+ werden.
+ Szenarien für Verschiede Modell versuche sind möglich.
+ Vorallem der austausch und die koleberation stehen im Fordergrund.
+ Mit Cells ist es möglich erste Experimente mit Artifical Life zu machen
+ und dies nicht allein.
+ Spielerische als auch ernst angelehnte Modell entwürfe können angeggangen
+ werden.
+ Der Prototyp zeigt das es technologisch möglich ist diese Idee zu realisieren.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Appendix:
+\end_layout
+
+\begin_layout Subsection
+Benutzerhandbuch Cells
+\end_layout
+
+\begin_layout Subsection
+GreenCode CPU Befehlssatz
+\end_layout
+
+\begin_layout Subsubsection
+Avida OP Codes
+\end_layout
+
+\begin_layout Subsubsection
+Zusätzliche OP Codes in GreenCode
+\end_layout
+
+\end_body
+\end_document
