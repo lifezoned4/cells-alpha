@@ -4,3 +4,5 @@ RemoteSystemsTempFiles
 cellsweb/web/packages
 cellsweb/packages
 cellsweb/.settings/
+docs/Thesis/papers
+docs/Thesis/*.pdf
