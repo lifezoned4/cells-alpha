@@ -114,12 +114,22 @@ Einleitung
 
 \begin_layout Paragraph
 In dieser Arbeit geht es über die Vision, den Entwurf und die prototypische
- Implementierung eines Artifical Life Models welches als Webplatform verfügbar
- gemacht wird.
+ Implementierung eines Artifical Life Models welches als Webplatform fpr
+ einen Mehrbenutzerbetrieb verfügbar gemacht wird.
 \end_layout
 
 \begin_layout Subsection
 Artificial Life
+\end_layout
+
+\begin_layout Standard
+Leben ist ein Begriff der leicht verstanden, aber nur schwer in Formlen
+ gegossen wird.
+ Auf dem Weg durch unsere Umwelt fallen uns viele Prozesse auf die eine
+ gewisse regelmässigkeit aufweisen.
+ Leicht spricht man von Wiederkehrenden Mustern die unserere Welt unterliegen.
+ Besonders im Bereich des Lebens spricht man oft von komplexität die nicht
+ allein mit Mathematik erklärt werden kann.
 \end_layout
 
 \begin_layout Paragraph
@@ -127,7 +137,7 @@ Der Begriff des Lebens ist intuitiv greifbar, doch in der Litaratur unterschiedl
 ich definiert.
  In der Biologie spricht man grundsetzlich von Carbon basiertem Leben.
  Will man jedoch den Begriff abstrakt ergründen und auf Gemeinsamkeiten
- von Leben schließen sollte man ein wissenschaftliches Modell zur hilfe
+ von Leben schließen sollte man ein wissenschaftliches Modell zur Hilfe
  nehmen das die Simulation von Leben erlaubt.
  Da man hier von Leben welches uns über die Jahrzente begegnet ist unterscheiden
  will spricht man auch von künstlichem Leben.

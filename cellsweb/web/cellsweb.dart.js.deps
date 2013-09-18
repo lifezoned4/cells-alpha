@@ -58,6 +58,7 @@ file:///home/ms/eclipse/dart-sdk/lib/convert/codec.dart
 file:///home/ms/eclipse/dart-sdk/lib/convert/convert.dart
 file:///home/ms/eclipse/dart-sdk/lib/convert/converter.dart
 file:///home/ms/eclipse/dart-sdk/lib/convert/encoding.dart
+file:///home/ms/eclipse/dart-sdk/lib/convert/html_escape.dart
 file:///home/ms/eclipse/dart-sdk/lib/convert/json.dart
 file:///home/ms/eclipse/dart-sdk/lib/convert/latin1.dart
 file:///home/ms/eclipse/dart-sdk/lib/convert/line_splitter.dart

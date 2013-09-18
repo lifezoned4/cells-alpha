@@ -13,14 +13,16 @@ final _logger = new Logger("cellsComm");
 final String _ip = "127.0.0.1";
 final int _port = 8080;
 
-final _serverCommEngine = new ServerCommEngine();
 
-main(){
+ServerCommEngine _serverCommEngine;
+
+main(){ 
     Logger.root.onRecord.listen(new PrintHandler()); 
    _logger.info("Starting up Cells Communication Layer");
    _logger.info("WebServer will be listening on ${_ip}:${_port}");
-   
+      
    runZonedExperimental((){
+   _serverCommEngine = new ServerCommEngine();
    try {
    HttpServer.bind(_ip, _port)
    .then((HttpServer server) {
@@ -81,8 +83,7 @@ onWebSocketConn(WebSocket conn) {
   conn.listen(new CellsWebSocketConnection(conn).onWebSocketMsg);
 }
 
-class CellsWebSocketConnection {
-  
+class CellsWebSocketConnection {  
   WebSocket conn;
   CellsWebSocketConnection(this.conn);
   
