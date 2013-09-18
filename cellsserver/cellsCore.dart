@@ -76,20 +76,37 @@ class WorldAreaViewCubicSubscription extends WorldSubscription {
   
   Map getStateAsMap(){
     Map jsonMap = new Map();
-    Map jsonSubMap = new Map();
-    int count = 0;
-    world.getObjectsForCube(x, y, z, radius).forEach((Position pos){
-      Map jsonPosition = new Map();
-      jsonPosition.putIfAbsent("x", () =>  pos.x);
-      jsonPosition.putIfAbsent("y", () =>  pos.y);
-      jsonPosition.putIfAbsent("z", () =>  pos.z);{}
-      jsonPosition.putIfAbsent("object", () => "");
-      _logger.info("Some Radius Calc with result:" + stringify(jsonPosition));
-      jsonSubMap.putIfAbsent(count.toString(), () => stringify(jsonPosition));
-      count++;
-    });
-    jsonMap.putIfAbsent("viewArea", () => stringify(jsonSubMap));
+    Map jsonViewArea = new Map();
+    world.getObjectsForCube(x, y, z, radius).forEach((Position pos) => addInfoAboutPositionInto(pos, jsonViewArea));
+    jsonMap.putIfAbsent("viewArea", () => jsonViewArea);
     return jsonMap;
+  } 
+  
+  static addInfoAboutPositionInto(Position pos, Map jsonMap){
+    Map jsonPosition = new Map();
+    jsonPosition.putIfAbsent("x", () =>  pos.x);
+    jsonPosition.putIfAbsent("y", () =>  pos.y);
+    jsonPosition.putIfAbsent("z", () =>  pos.z);{}
+    jsonPosition.putIfAbsent("object", () => 
+        {"id": pos.object.id, "color": {"r": pos.object.color.r, "g": pos.object.color.g, "b": pos.object.color.b}});
+    _logger.info("Some Radius Calc with result:" + stringify(jsonPosition));
+    jsonMap.putIfAbsent(jsonMap.length.toString(), () => jsonPosition);
+
+  }
 }
 
+class MovingAreaViewSubscription extends WorldSubscription {
+  
+  WorldObject toFollow;
+  
+  MovingAreaViewSubscription(world, user, this.toFollow) : super(world, user);
+  
+  Map getStateAsMap(){
+    Map jsonMap = new Map();
+    Map jsonViewArea = new Map();
+    world.getObjectsForCube(toFollow.pos.x, toFollow.pos.y, toFollow.pos.z, 5).forEach((Position pos)
+        => WorldAreaViewCubicSubscription.addInfoAboutPositionInto(pos, jsonViewArea));
+    jsonMap.putIfAbsent("viewArea",() => jsonViewArea);
+    return jsonMap;
+  }
 }

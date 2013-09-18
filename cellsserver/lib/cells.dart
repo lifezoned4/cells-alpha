@@ -40,13 +40,14 @@ class Energy {
 
 class Position {
   World isIn;
+    
   int x;
   int y;
   int z;
   
-  int dx;
-  int dy;
-  int dz;
+  int dx = 0;
+  int dy = 0;
+  int dz = 0;
   
   WorldObject object;
   Position(this.isIn, this.x, this.y, this.z) {
@@ -72,9 +73,9 @@ class Position {
   }
   
   move(){
-    x = min(max(x - dx, 0), isIn.width);
-    y = min(max(y - dy, 0), isIn.height);
-    z = min(max(z - dz, 0), isIn.depth);
+    x = min(max(x - dx, 0), isIn.width - 1);
+    y = min(max(y - dy, 0), isIn.height - 1);
+    z = min(max(z - dz, 0), isIn.depth - 1);
   }
   
   // TODO: Think about this hashCode!
@@ -91,6 +92,11 @@ class Position {
 
 class WorldObject {
   static const int startEnergy = 100;
+  
+  // TODO should be filled by persister with same values for same world!
+  static int idseed = 0;
+  int id = idseed++;
+    
   Position pos;
   Color color;
   Energy energy = new Energy(startEnergy);  
@@ -109,10 +115,13 @@ class World extends ITickable {
   int height;
   int depth;
   
-  Position firstObject;
+  Position firstObjectPos;
+  Position spectatorPos;
   World(this.width, this.height, this.depth){
-   firstObject = new Position(this, 2, 2, 2);
-   firstObject.putOn(new WorldObject(new Color(0,255,0)));
+   firstObjectPos = new Position(this, 2, 2, 2);
+   spectatorPos = new Position(this, 10, 10, 10);
+   firstObjectPos.putOn(new WorldObject(new Color(0,255,0)));
+   spectatorPos.putOn(new WorldObject(new Color(255,0,0)));
   }
   
   start(){
@@ -131,42 +140,45 @@ class World extends ITickable {
   }
   
   HashSet<Position> getObjectsForCube(int x, int y, int z, int radius){
-    _logger.info("Some Radius Calc: ${firstObject.x} ${firstObject.y} ${firstObject.z} on $x $y $z $radius");
-    _logger.info("Positions: ${positions.length}");
     HashSet debugger = positions.where((position) => x - radius < position.x && position.x < x + radius &&
                                                      y - radius < position.y && position.y < y + radius &&
                                                      z - radius < position.z && position.z < z + radius).toSet();
-    _logger.info("${debugger.length}");
     return debugger;
   }
   
   makeMoves(){  
+    makeSpecialMoves();
+    Set<Position> dealWith = positions.toSet();
+   dealWith.forEach((pos) => tryMakeMove(pos));
+  }
+  
+  makeSpecialMoves(){
     var rnd = new Random();
+    
     int move = rnd.nextInt(6)-3;
-    firstObject.clearMove();
+    firstObjectPos.clearMove();
     switch(move.abs()){
       case 1: 
-        firstObject.dx = move.isNegative ? -1 : 1;
+        firstObjectPos.dx = move.isNegative ? -1 : 1;
         break;
       case 2:
-        firstObject.dz = move.isNegative ? -1 : 1;
+        firstObjectPos.dy = move.isNegative ? -1 : 1;
         break;
       case 3:
-        firstObject.dy = move.isNegative ? -1 : 1;
+        firstObjectPos.dz = move.isNegative ? -1 : 1;
         break;
     }
-   
-    firstObject.dy = rnd.nextInt(3)-1;
-    firstObject.dz = rnd.nextInt(3)-1;
-    positions.remove(firstObject);
+   }
+  
+  tryMakeMove(Position pos){
+    positions.remove(pos);
     
-    firstObject.move();   
+    pos.move();   
    
-    if(positions.contains(firstObject)){
-      firstObject.moveBack();
-      positions.add(firstObject);
+    if(positions.contains(pos)){
+      pos.moveBack();
     }
-    positions.add(firstObject);
-    firstObject.clearMove();
+    positions.add(pos);
+    pos.clearMove();  
   }
 }

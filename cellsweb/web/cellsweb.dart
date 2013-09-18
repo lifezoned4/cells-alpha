@@ -26,32 +26,46 @@ void main() {
   };
   
   commEngine.onErrorChange = (data) {
-    displayarea.text = data.toString();
+    displayareaXY.text = data.toString();
   };
   
   commEngine.onUpdatedChache = () {
     String text = "";
     displayareaXY.children.clear();
-    for(int y = 0; y < commEngine.subscribedHeight; y++){
+    for(int y = 0; y < commEngine.worldHeight; y++){
       displayareaXY.children.add(new BRElement()); 
-      for(int x = 0; x < commEngine.subscribedWidth; x++){
+      for(int x = 0; x < commEngine.worldWidth - 1; x++){
         ButtonElement div = new ButtonElement();
+        div.text = "--";
         div.id = "XYField";
-        div.text = commEngine.getXYView(x, y).type;
-        div.style.color = "#000000";
-        div.style.background = commEngine.getXYView(x, y).color;
+        Map returner = commEngine.getXYView(x, y);
+        WorldObjectFacade object = returner["found"];        
+        if(object != null && !object.isTooOld()){
+          div.text = (returner["depth"] < 10 ? "0" : "") + returner["depth"].toString();          
+          div.style.color = "#000000";
+          ColorFacade bgcolor = object.color;
+          double oldnessScalar = (1/((object.oldness() + 1)/1000));
+          div.style.background = "rgb(${(bgcolor.r * oldnessScalar).round()},${(bgcolor.g * oldnessScalar).round()}, ${(bgcolor.b * oldnessScalar).round()})"; 
+        }
         displayareaXY.children.add(div); 
       }     
     }
     displayareaZY.children.clear();
-    for(int y = 0; y < commEngine.subscribedHeight; y++){
+    for(int y = 0; y < commEngine.worldHeight; y++){
       displayareaZY.children.add(new BRElement()); 
-      for(int z = commEngine.subscribedDepth - 1; z >= 0; z--){
+      for(int z = commEngine.worldDepth - 1; z >= 0; z--){
         ButtonElement div = new ButtonElement();
+        div.text = "--";
         div.id = "YZField";
-        div.text = commEngine.getZYView(z, y).type;
-        div.style.color = "#000000";
-        div.style.background = commEngine.getZYView(z, y).color;
+        Map returner = commEngine.getZYView(z, y);
+        WorldObjectFacade object = returner["found"];  
+        if(object != null && !object.isTooOld()){
+          div.text = (returner["depth"] < 10 ? "0" : "") + returner["depth"].toString();
+          div.style.color = "#000000";
+          ColorFacade bgcolor = object.color;
+          double oldnessScalar = (1/((object.oldness() + 1)*1/100));
+          div.style.background = "rgb(${(bgcolor.r * oldnessScalar).round()},${(bgcolor.g * oldnessScalar).round()}, ${(bgcolor.b * oldnessScalar).round()})"; 
+        }
         displayareaZY.children.add(div); 
       }     
     }

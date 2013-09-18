@@ -35,6 +35,7 @@ main(){
           .listen(onWebSocketConn)
            .onError((err)  => print("Error working on HTTP server: $err"));
          sc.add(request);
+         sc.done.catchError((error) => _logger.warning("Known WebSocket Error"));
         } catch(ex) {
           _logger.warning("Error on WebSocket creation", ex);
         } 
@@ -46,7 +47,9 @@ main(){
                                                                   request.response.add(Encoding.getByName("ASCII").encoder.convert(reponse));
                                                                   request.response.close();
                                                               });
-       } else if (request.uri.path == "/version"){
+          request.response.done.catchError((error) => _logger.warning("Known RESTFul Error"));
+          }
+       else if (request.uri.path == "/version"){
          request.response.write("ver.0.0.1");
          request.response.close();
        }
