@@ -50,7 +50,6 @@ class WorldObjectFacade {
   }
 }
 
-
 class ClientCommEngine {  
   static const String commandNode = "/commands";
   static const String webSocketNode = "/ws";
@@ -109,33 +108,31 @@ class ClientCommEngine {
         }
   }
   
-  Map getZYView(int z, int y) {
-    int depthX = 0;
-    WorldObjectFacade found = null;
-    for(int x = worldWidth - 1; x >= 0; x--)
-    { 
-      if(clientcache[x][y][z].type == somethingChar && !clientcache[x][y][z].isTooOld()){
-        found = clientcache[x][y][z]; 
-        break;
-      }
-      depthX++;   
-    }
-    return {"found": found, "depth": depthX};
-  }
   
-  Map getXYView(int x, int y) {
+  static Map runVarXY_1(int runnerI, int constA, int constB, int runnerIMax) => {"x": constB, "y": constA, "z": runnerI};
+  static Map runVarXY_6(int runnerI, int constA, int constB, int runnerIMax) => {"x": constB, "y": constA, "z": runnerIMax - 1 - runnerI};
+  static Map runVarZY_2(int runnerI, int constA, int constB, int runnerIMax) => {"x": runnerIMax - 1 -runnerI, "y": constA, "z": constB};
+  static Map runVarZY_5(int runnerI, int constA, int constB, int runnerIMax) => {"x": runnerI, "y": constA, "z": constB};
+  static Map runVarXZ_3(int runnerI, int constA, int constB, int runnerIMax) => {"x": constB, "y": runnerI, "z": constA};
+  static Map runVarZX_4(int runnerI, int constA, int constB, int runnerIMax) => {"x": constA, "y": runnerIMax - 1 - runnerI, "z": constB};
+  
+  Map getView(int constA, int constB, Function runVar, int runnerIMax) {
     int depth = 0;
     WorldObjectFacade found = null;
-    for(int z = worldDepth - 1; z >= 0; z--)
+    for(int runnerI = 0; runnerI < runnerIMax; runnerI++)
     { 
-      if(clientcache[x][y][z].type == somethingChar && !clientcache[x][y][z].isTooOld()){
-        found = clientcache[x][y][z]; 
+      // TODO typeSafe runVarContext 
+      Map runVarContext = runVar(runnerI, constA, constB, runnerIMax);
+      WorldObjectFacade facade = clientcache[runVarContext["x"]][runVarContext["y"]][runVarContext["z"]];
+      if(facade != null && facade.type == somethingChar && !facade.isTooOld())
+      { 
+        found = facade; 
         break;
       }
       depth++;   
     }
     return {"found": found, "depth": depth};
-}
+  }
   
   Map<int, Map<int, Map<int, WorldObjectFacade>>> clientcache = new Map<int, Map<int, Map<int, WorldObjectFacade>>>();
   int worldWidth = 20;

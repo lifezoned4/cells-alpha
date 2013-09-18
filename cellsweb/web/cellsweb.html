@@ -7,15 +7,45 @@
     <link rel="stylesheet" href="cellsweb.css">
   </head>
   <body>
+     <p id="count"></p>     
     <div>
-      <p id="count"></p>
-      <table>
-      <tr> <td>
-      <div id="displayareaXY"></div> 
-      <td/>
-      <td>
-      <div id="displayareaYZ"></div>
-      </td> </tr> 
+      <select id="viewChoose"></select>
+      <table id="displayareaTable">
+      <tr> 
+          <td> 
+          </td>
+        <td>
+          <div id="centric">
+                    <button id="up"> up </button>
+          </div>
+        </td>
+        <td>
+        </td>      
+      </tr>
+      <tr>
+        <div id="gray">
+        <td><button id="left">left</button></td>
+        </div>
+        <td>
+        <div id="displayarea"></div> 
+        <td/>
+        <div id="gray">
+        <td><button id="right">right</button></td>
+        </div>
+      </tr>
+      <tr> 
+        <td>
+        </td>
+        <td>
+          <br>
+          <div id="centric">
+            <button id="down"> down </button>
+          </div>
+        <td>
+        </td>
+        <td>
+        </td>      
+      </tr>
       </table>
     </div>
 
