@@ -73,9 +73,9 @@ class Position {
   }
   
   move(){
-    x = min(max(x - dx, 0), isIn.width - 1);
-    y = min(max(y - dy, 0), isIn.height - 1);
-    z = min(max(z - dz, 0), isIn.depth - 1);
+    x = min(max(x + dx, 0), isIn.width - 1);
+    y = min(max(y + dy, 0), isIn.height - 1);
+    z = min(max(z + dz, 0), isIn.depth - 1);
   }
   
   // TODO: Think about this hashCode!
@@ -102,12 +102,36 @@ class WorldObject {
   Color color;
   Energy energy = new Energy(startEnergy);  
   
+  String type = "W";
+  
   WorldObject(this.color);
+}
+
+class Cell extends WorldObject {
+  static Color green = new Color(0,254,0);
+  static Color blue = new Color(0,0,254);
+  static Color red = new Color(254,0,0);
+  Cell(int colorIndex) : super(new Color(0,0,0)){
+    type = "C";
+    if(colorIndex == 0)
+      color = green;
+    else if(colorIndex == 1)
+      color = blue;
+    else if(colorIndex == 2)
+      color = red;
+  }
+}
+
+class Boot extends WorldObject {
+  String user;
+  Boot(this.user) : super(new Color(128,128,128)){
+    type = "B";
+  }
 }
 
 class World extends ITickable {
   List<ITickable> users = new List<ITickable>();
-  int delay = 100;
+  int delay = 250;
   Timer timer;
   int ticksTillStart = 0; 
   HashSet<Position> positions = new HashSet<Position>();
@@ -116,13 +140,39 @@ class World extends ITickable {
   int height;
   int depth;
   
-  Position firstObjectPos;
-  Position spectatorPos;
   World(this.width, this.height, this.depth){
-   firstObjectPos = new Position(this, 2, 2, 2);
-   spectatorPos = new Position(this, 5, 5, 2);
-   firstObjectPos.putOn(new WorldObject(new Color(0,255,0)));
-   spectatorPos.putOn(new WorldObject(new Color(255,0,0)));
+    for(int i = 0; i < 2000; i++){
+      Random rnd = new Random();
+      WorldObject object = new WorldObject(new Color(rnd.nextInt(255), rnd.nextInt(255), rnd.nextInt(255)));
+      Position newObjectPosition = new Position(this, rnd.nextInt(width), rnd.nextInt(height), rnd.nextInt(depth));
+      newObjectPosition.putOn(object);
+      positions.add(newObjectPosition);
+    }
+    
+    for(int i = 0; i < 200; i++){
+      Random rnd = new Random();
+      Cell object = new Cell(rnd.nextInt(3));
+      Position newObjectPosition = new Position(this, rnd.nextInt(width), rnd.nextInt(height), rnd.nextInt(depth));
+      newObjectPosition.putOn(object);
+      positions.add(newObjectPosition);
+    }
+  }
+    
+  Boot findBoot(String user){
+    var iterable = positions.where((pos) => pos.object is Boot).where((pos) => (pos.object as Boot).user == user);
+    
+    if(iterable.length != 1)
+      return null;
+    else
+      return iterable.first.object;
+  }
+  
+  Boot newBoot(String user){
+    Random rnd = new Random();
+    Boot boot = new Boot(user);
+    Position newBootPosition = new Position(this, rnd.nextInt(width), rnd.nextInt(height), rnd.nextInt(depth));
+    newBootPosition.putOn(boot);
+    return boot;
   }
   
   start(){
@@ -154,29 +204,26 @@ class World extends ITickable {
         z < position.z && position.z < z + depth).toSet();
   }    
   
-  makeMoves(){  
-    makeSpecialMoves();
-    Set<Position> dealWith = positions.toSet();
+  makeMoves(){ 
+   Random rnd = new Random();
+   Set<Position> dealWith = positions.toSet();
+   dealWith.forEach((e){
+     if(e.object is Cell)
+     switch(rnd.nextInt(3)){
+       case 0:
+         e.dx = rnd.nextInt(3)-1;         
+         break;
+       case 1:
+         e.dy = rnd.nextInt(3)-1;         
+         break;
+       case 2:
+         e.dz = rnd.nextInt(3)-1;         
+         break;       
+     }
+    });
    dealWith.forEach((pos) => tryMakeMove(pos));
   }
   
-  makeSpecialMoves(){
-    var rnd = new Random();
-    
-    int move = rnd.nextInt(6)-3;
-    firstObjectPos.clearMove();
-    switch(move.abs()){
-      case 1: 
-        firstObjectPos.dx = move.isNegative ? -1 : 1;
-        break;
-      case 2:
-        firstObjectPos.dy = move.isNegative ? -1 : 1;
-        break;
-      case 3:
-        firstObjectPos.dz = move.isNegative ? -1 : 1;
-        break;
-    }
-   }
   
   tryMakeMove(Position pos){
     positions.remove(pos);

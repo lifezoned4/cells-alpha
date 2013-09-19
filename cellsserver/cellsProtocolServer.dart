@@ -49,8 +49,7 @@ class ServerCommEngine {
         if(foundUser == null)
           conn.add("{""command: ""error"", ""data"":""Tokken unknown""}");
         else {
-          foundUser.socketAct = conn;
-          
+          foundUser.socketAct = conn; 
         }
         break;
       default:
@@ -126,9 +125,9 @@ class RestfulMoveSpectator extends RestfulCommand  {
       return "Invalid";
     if(engine.world.users.where((user) => user.username == context.username).isNotEmpty) {
       User foundUser = engine.world.users.where((user) => (user.pubKey == user.pubKey) && (user.username == context.username)).first;
-      foundUser.spectator.toFollow.pos.dx = jsonMap["data"]["dx"];
-      foundUser.spectator.toFollow.pos.dy = jsonMap["data"]["dy"];
-      foundUser.spectator.toFollow.pos.dz = jsonMap["data"]["dz"];
+      foundUser.bootSubcription.toFollow.pos.dx = jsonMap["data"]["dx"];
+      foundUser.bootSubcription.toFollow.pos.dy = jsonMap["data"]["dy"];
+      foundUser.bootSubcription.toFollow.pos.dz = jsonMap["data"]["dz"];
       return "Okay";
     }
     else { return "Invalid";}
@@ -158,8 +157,13 @@ class RestfulWebSocketAuth extends  RestfulCommand {
     newUser.ticksLeft = ticksInTokken;
     engine.world.users.add(newUser);
     newUser.subscriptions.add(new WorldTicksSubscription(engine.world, newUser));
-    newUser.spectator = new MovingAreaViewSubscription(engine.world, newUser, engine.world.spectatorPos.object);    
-    newUser.subscriptions.add(newUser.spectator);
+    Boot boot = engine.world.findBoot(context.username);
+    if(boot == null)
+    {
+      boot = engine.world.newBoot(context.username);
+    }
+    newUser.bootSubcription = new MovingAreaViewSubscription(engine.world, newUser, boot);    
+    newUser.subscriptions.add(newUser.bootSubcription);
     }
    return tokken.toString();
  }

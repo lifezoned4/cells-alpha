@@ -5,9 +5,54 @@ body {
 }
 
 #Field {
-  font-size: 6px;
-  font-weight: bold;
-  font-family: courier;
-  margin: 0px;
-  padding: 5px;
+    font-size: 13px;
+    font-weight: bold;
+    font-family: courier;
+    width: 30px;
+    height: 30px;
+    background: rgb(0,33,0);  
 }
+
+
+#FieldLine {
+  height: 30px;
+  width: 100%;
+  }
+
+#FieldSurrounder {
+    width: 30px;
+    height: 30px
+  }
+  
+#FieldW {
+    font-size: 13px;
+    font-weight: bold;
+    font-family: courier;
+    width: 30px;
+    height: 30px; 
+    }
+
+#FieldC {
+    font-size: 13px;
+    font-weight: bold;
+    font-family: courier;
+    width: 30px;
+    height: 30px; 
+    border-radius: 15px;
+  }
+
+#FieldB {
+    font-size: 13px;
+    font-weight: bold;
+    font-family: courier;
+    width: 30px;
+    height: 30px; 
+    border-radius: 10px;
+  }
+
+#errorbar {
+  background: rgb(20,20,20);
+  position: fixed;
+  top: auto;
+  bottom: 0px;
+  }

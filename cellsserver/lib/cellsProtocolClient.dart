@@ -9,8 +9,6 @@ import 'cryptolib/dsa.dart';
 import 'cryptolib/bytes.dart';
 import 'package:bignum/bignum.dart';
 
-
-
 class ColorFacade {
   int r;
   int g;
@@ -26,7 +24,9 @@ class WorldObjectFacade {
 
   int id = -1;
   
-  WorldObjectFacade.Empty();
+  WorldObjectFacade.Empty(){
+   utctimestamp = new DateTime.now().toUtc().millisecondsSinceEpoch; 
+  }
   
   setData(String type, color, id){
     this.type = type;
@@ -118,24 +118,38 @@ class ClientCommEngine {
   }
   
   
-  static Map runVarXY_1(int runnerI, int constA, int constB, int runnerIMax) => {"x": constB, "y": constA, "z": runnerI};
-  static Map runVarXY_6(int runnerI, int constA, int constB, int runnerIMax) => {"x": constB, "y": constA, "z": runnerIMax - 1 - runnerI};
-  static Map runVarZY_2(int runnerI, int constA, int constB, int runnerIMax) => {"x": runnerIMax - 1 -runnerI, "y": constA, "z": constB};
-  static Map runVarZY_5(int runnerI, int constA, int constB, int runnerIMax) => {"x": runnerI, "y": constA, "z": constB};
-  static Map runVarXZ_3(int runnerI, int constA, int constB, int runnerIMax) => {"x": constB, "y": runnerI, "z": constA};
-  static Map runVarZX_4(int runnerI, int constA, int constB, int runnerIMax) => {"x": constA, "y": runnerIMax - 1 - runnerI, "z": constB};
+  static Map runVarXY_1(int runnerI, int constA, int constB, int runnerIOffset, int runnerIMax) =>
+      {"x": constB, "y": constA, "z": runnerI};
+  static Map runVarZY_2(int runnerI, int constA, int constB, int runnerIOffset, int runnerIMax) => 
+          {"x": runnerI, "y": constA, "z": constB};
+  static Map runVarXZ_3(int runnerI, int constA, int constB, int runnerIOffset, int runnerIMax) =>
+          {"x": constB, "y": runnerI, "z": constA};
+  static Map runVarXY_6(int runnerI, int constA, int constB, int runnerIOffset, int runnerIMax) =>
+      {"x": constB, "y": constA, "z": 2*runnerIOffset + runnerIMax - 1 - runnerI};
+  static Map runVarZY_5(int runnerI, int constA, int constB, int runnerIOffset, int runnerIMax) =>
+      {"x": runnerI, "y": constA, "z": constB};
+  static Map runVarZX_4(int runnerI, int constA, int constB, int runnerIOffset, int runnerIMax) => 
+      {"x": constA, "y": 2*runnerIOffset + runnerIMax - 1 - runnerI, "z": constB};
   
-  Map getView(int constA, int constB, Function runVar, int runnerIMax) {
+  static int getWidth(ClientCommEngine comm) =>  comm.worldWidth;
+  static int getHeight(ClientCommEngine comm) =>  comm.worldHeight;
+  static int getDepth(ClientCommEngine comm) =>  comm.worldDepth;
+  
+  Map getView(int constA, Function constAConstrain, int constB, Function constBConstrain, Function runVar, int runnerIOffset, int runnerIMax, Function runnerVarConstrain) {
     int depth = 0;
     WorldObjectFacade found = null;
-    for(int runnerI = 0; runnerI < runnerIMax; runnerI++)
+    for(int runnerI = 0; runnerI < runnerVarConstrain(this); runnerI++)
     { 
       // TODO typeSafe runVarContext 
-      if(constA < 0 || constB < 0)
-        return {"found": null, "depth": -1};
-      Map runVarContext = runVar(runnerI, constA, constB, runnerIMax);
+      if(constA < 0 || constB < 0 ||
+          constA >= constAConstrain(this) || 
+          constB >= constBConstrain(this))
+        return {"found": new WorldObjectFacade.Empty()..type="S", "depth": 0};
+      if(runnerI < 0 || runnerI >= runnerVarConstrain(this))
+        continue;
+      Map runVarContext = runVar(runnerI, constA, constB, runnerIOffset, runnerIMax);
       WorldObjectFacade facade = clientcache[runVarContext["x"]][runVarContext["y"]][runVarContext["z"]];
-      if(facade != null && facade.type == somethingChar && !facade.isTooOld())
+      if(facade != null && !facade.isTooOld())
       { 
         found = facade; 
         break;
@@ -162,7 +176,10 @@ class ClientCommEngine {
           case "ticksLeft":
             onDelayStatusChange(value);
             if(value == 0){
-              commandWebSocketAuth((tokken) =>  initWwebSocket(int.parse(tokken)));
+              commandWebSocketAuth((tokken){
+                onErrorChange("New tokken: $tokken");
+                initWwebSocket(int.parse(tokken)); 
+              });
             }
           break;            
           case "viewArea":
@@ -175,7 +192,7 @@ class ClientCommEngine {
               color.r = vmap["object"]["color"]["r"];
               color.g = vmap["object"]["color"]["g"];
               color.b = vmap["object"]["color"]["b"];
-              toWorkOn.setData(somethingChar, color, vmap["object"]["id"]);             
+              toWorkOn.setData(vmap["object"]["type"], color, vmap["object"]["id"]);             
               toWorkOn.utctimestamp = new DateTime.now().toUtc().millisecondsSinceEpoch;
             });
             onUpdatedChache();
@@ -208,15 +225,19 @@ class ClientCommEngine {
   }
   
   commandWebSocketAuth(Function callback){
-    String command = "WebSocketAuth";
-    Map jsonMap = new Map<String, dynamic>();
-    
-    jsonMap.putIfAbsent("command", () => command);
-    jsonMap.putIfAbsent("utc", () => new DateTime.now().toUtc().millisecondsSinceEpoch);
-    String msg = stringify(jsonMap);
-    
-    msg = _sign(msg);
-    _send(msg, callback);  
+    try {
+      String command = "WebSocketAuth";
+      Map jsonMap = new Map<String, dynamic>();
+      
+      jsonMap.putIfAbsent("command", () => command);
+      jsonMap.putIfAbsent("utc", () => new DateTime.now().toUtc().millisecondsSinceEpoch);
+      String msg = stringify(jsonMap);
+      
+      msg = _sign(msg);
+      _send(msg, callback);
+    } catch(ex) {
+      onErrorChange("Connection Failed");
+    }
   }
   
   String _sign(String json) {

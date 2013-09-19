@@ -16,7 +16,7 @@ class User extends ITickable {
   String username;  
   int lastSendTokken;
   int ticksLeft = 0;
-  MovingAreaViewSubscription spectator;
+  MovingAreaViewSubscription bootSubcription;
   
   User(this.username, this.pubKey, this.lastSendTokken);
   
@@ -27,9 +27,9 @@ class User extends ITickable {
         case "moveSpectator":
           if (jsonMap["data"]["dx"].abs() + jsonMap["data"]["dy"].abs() + jsonMap["data"]["dz"].abs() > 1)
             return;
-          this.spectator.toFollow.pos.dx = jsonMap["data"]["dx"];
-          this.spectator.toFollow.pos.dy = jsonMap["data"]["dy"];
-          this.spectator.toFollow.pos.dz = jsonMap["data"]["dz"];
+          this.bootSubcription.toFollow.pos.dx = jsonMap["data"]["dx"];
+          this.bootSubcription.toFollow.pos.dy = jsonMap["data"]["dy"];
+          this.bootSubcription.toFollow.pos.dz = jsonMap["data"]["dz"];
           break;
       }
   }
@@ -102,7 +102,7 @@ class WorldAreaViewCubicSubscription extends WorldSubscription {
     jsonPosition.putIfAbsent("y", () =>  pos.y);
     jsonPosition.putIfAbsent("z", () =>  pos.z);{}
     jsonPosition.putIfAbsent("object", () => 
-        {"id": pos.object.id, "color": {"r": pos.object.color.r, "g": pos.object.color.g, "b": pos.object.color.b}});
+        {"id": pos.object.id,"type": pos.object.type, "color": {"r": pos.object.color.r, "g": pos.object.color.g, "b": pos.object.color.b}});
     //_logger.info("Some Radius Calc with result:" + stringify(jsonPosition));
     jsonMap.putIfAbsent(jsonMap.length.toString(), () => jsonPosition);
 
@@ -118,7 +118,7 @@ class MovingAreaViewSubscription extends WorldSubscription {
   Map getStateAsMap(){
     Map jsonMap = new Map();
     Map jsonViewArea = new Map();
-    world.getObjectsForRect(toFollow.pos.x - 5, toFollow.pos.y - 5, toFollow.pos.z - 2, 11, 11 , 4).forEach((Position pos)
+    world.getObjectsForRect(toFollow.pos.x - 6, toFollow.pos.y - 6, toFollow.pos.z - 3, 12, 12 , 6).forEach((Position pos)
         => WorldAreaViewCubicSubscription.addInfoAboutPositionInto(pos, jsonViewArea));
     jsonMap.putIfAbsent("viewArea",() => jsonViewArea);
     jsonMap.putIfAbsent("spectatorPos", () => {"x": toFollow.pos.x - 5, "y": toFollow.pos.y - 5, "z": toFollow.pos.z - 2});
