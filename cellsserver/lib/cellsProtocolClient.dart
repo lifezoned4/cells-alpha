@@ -58,6 +58,7 @@ class ClientCommEngine {
   Function onDelayStatusChange;
   Function onErrorChange;
   Function onUpdatedChache;
+  Function onSpectatorChange;
   
   DsaKeyPair keyPair;
   String serverURL;
@@ -93,6 +94,14 @@ class ClientCommEngine {
     });    
   }
   
+  
+  moveSpectatorWebSocket(int dx, int dy, int dz){
+    Map jsonMap = new Map();
+    jsonMap.putIfAbsent("command", () => "moveSpectator");
+    jsonMap.putIfAbsent("data", () => {"dx": dx, "dy": dy, "dz": dz});
+    ws.send(stringify(jsonMap));
+  }
+  
   static const String emptyChar = "-";
   static const String somethingChar = "X";
   static const String somethingInbetweenChar = "x";
@@ -122,6 +131,8 @@ class ClientCommEngine {
     for(int runnerI = 0; runnerI < runnerIMax; runnerI++)
     { 
       // TODO typeSafe runVarContext 
+      if(constA < 0 || constB < 0)
+        return {"found": null, "depth": -1};
       Map runVarContext = runVar(runnerI, constA, constB, runnerIMax);
       WorldObjectFacade facade = clientcache[runVarContext["x"]][runVarContext["y"]][runVarContext["z"]];
       if(facade != null && facade.type == somethingChar && !facade.isTooOld())
@@ -135,9 +146,9 @@ class ClientCommEngine {
   }
   
   Map<int, Map<int, Map<int, WorldObjectFacade>>> clientcache = new Map<int, Map<int, Map<int, WorldObjectFacade>>>();
-  int worldWidth = 20;
-  int worldHeight = 20;
-  int worldDepth = 20;
+  int worldWidth = 100;
+  int worldHeight = 100;
+  int worldDepth = 5;
   
   _dealWithWebSocketMsg(MessageEvent msg){
     try {
@@ -169,6 +180,10 @@ class ClientCommEngine {
             });
             onUpdatedChache();
             break;
+          case "spectatorPos":
+            Map jsonMap  = value;
+            onSpectatorChange(value);
+            break;
           case "error":
             onErrorChange(value);
             break;
@@ -177,6 +192,19 @@ class ClientCommEngine {
     } catch(ex) {
       print(ex);
     }
+  }
+  
+  commandMoveSpectator(int dx, int dy, int dz, callback){
+    String command = "MoveSpectator";
+    Map jsonMap = new Map();
+    
+    jsonMap.putIfAbsent("command", () => command);
+    jsonMap.putIfAbsent("utc", () => new DateTime.now().toUtc().millisecondsSinceEpoch);
+    jsonMap.putIfAbsent("data",() => {"dx": dx, "dy": dy, "dz": dz});
+    String msg = stringify(jsonMap);
+    
+    msg = _sign(msg);
+    _send(msg, callback); 
   }
   
   commandWebSocketAuth(Function callback){

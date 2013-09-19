@@ -7,48 +7,23 @@
     <link rel="stylesheet" href="cellsweb.css">
   </head>
   <body>
+    
+    <div style="background: rgb(0,33,0); width:1300px; height:625px">
      <p id="count"></p>     
     <div>
-      <select id="viewChoose"></select>
-      <table id="displayareaTable">
-      <tr> 
-          <td> 
-          </td>
-        <td>
-          <div id="centric">
-                    <button id="up"> up </button>
-          </div>
-        </td>
-        <td>
-        </td>      
+    <table>
+      <tr>
+        <td><div id="displayAreaUp"></div></td><td></td><td><div id="displayAreaInfo"></div></td>
       </tr>
       <tr>
-        <div id="gray">
-        <td><button id="left">left</button></td>
-        </div>
-        <td>
-        <div id="displayarea"></div> 
-        <td/>
-        <div id="gray">
-        <td><button id="right">right</button></td>
-        </div>
+        <td><div id="displayAreaCenter"></div></td>
+        <td width="20px"></td>
+        <td><div id="displayAreaRight"></div></td>
       </tr>
-      <tr> 
-        <td>
-        </td>
-        <td>
-          <br>
-          <div id="centric">
-            <button id="down"> down </button>
-          </div>
-        <td>
-        </td>
-        <td>
-        </td>      
-      </tr>
-      </table>
+    </table>
     </div>
-
+    
+  </div>
     <script type="application/dart" src="cellsweb.dart"></script>
     <script src="packages/browser/dart.js"></script>
   </body>

@@ -25,15 +25,16 @@ class ServerCommEngine {
   
   AuthEngine authEngine = new AuthEngine();
   
-  World world = new World(20,20,20);
+  World world = new World(100,100,5);
   
   ServerCommEngine(){
-    RegRestuflCommand(new RestfulWebSocketAuth(this));
+    RegRestfulCommand(new RestfulWebSocketAuth(this));
+    RegRestfulCommand(new RestfulMoveSpectator(this));
     // authEngine.addAuth(restfulCommands[RestfulWebSocketAuth.commandNameInfo], new AllAccess());
     world.start();
   }
   
-  RegRestuflCommand(RestfulCommand command){
+  RegRestfulCommand(RestfulCommand command){
     restfulCommands.putIfAbsent(command.commandName, () => command);
   }
 
@@ -47,9 +48,19 @@ class ServerCommEngine {
         User foundUser = world.users.where((user) => user.lastSendTokken == jsonMap["data"]).first;
         if(foundUser == null)
           conn.add("{""command: ""error"", ""data"":""Tokken unknown""}");
-        else
+        else {
           foundUser.socketAct = conn;
+          
+        }
         break;
+      default:
+        User foundUser = world.users.where((user) => user.socketAct == conn).first;
+        if(foundUser != null)
+        {
+          foundUser.dealWithWebSocket(message, conn);
+        }
+        break;
+        
     }
   }
   
@@ -102,6 +113,28 @@ abstract class RestfulCommand {
   }
 }
 
+class RestfulMoveSpectator extends RestfulCommand  {
+  static String commandNameInfo = "MoveSpectator";
+  
+  RestfulMoveSpectator(ServerCommEngine engine) : super(engine){
+    commandName = commandNameInfo;
+  }
+  
+  String dealWithCommand(Map<String, dynamic> jsonMap, AuthContext context){
+    super.dealWithCommand(jsonMap, context);
+    if (jsonMap["data"]["dx"].abs() + jsonMap["data"]["dy"].abs() + jsonMap["data"]["dz"].abs() > 1)
+      return "Invalid";
+    if(engine.world.users.where((user) => user.username == context.username).isNotEmpty) {
+      User foundUser = engine.world.users.where((user) => (user.pubKey == user.pubKey) && (user.username == context.username)).first;
+      foundUser.spectator.toFollow.pos.dx = jsonMap["data"]["dx"];
+      foundUser.spectator.toFollow.pos.dy = jsonMap["data"]["dy"];
+      foundUser.spectator.toFollow.pos.dz = jsonMap["data"]["dz"];
+      return "Okay";
+    }
+    else { return "Invalid";}
+  }
+}
+
 class RestfulWebSocketAuth extends  RestfulCommand {      
   static String commandNameInfo = "WebSocketAuth";
   static const int ticksInTokken = 120;
@@ -125,7 +158,8 @@ class RestfulWebSocketAuth extends  RestfulCommand {
     newUser.ticksLeft = ticksInTokken;
     engine.world.users.add(newUser);
     newUser.subscriptions.add(new WorldTicksSubscription(engine.world, newUser));
-    newUser.subscriptions.add(new WorldAreaViewCubicSubscription(engine.world, newUser,10,10,10,15));
+    newUser.spectator = new MovingAreaViewSubscription(engine.world, newUser, engine.world.spectatorPos.object);    
+    newUser.subscriptions.add(newUser.spectator);
     }
    return tokken.toString();
  }

@@ -87,6 +87,7 @@ class Position {
   
   putOn(WorldObject object){
     this.object = object;
+    object.pos = this;
   }
 }
 
@@ -119,7 +120,7 @@ class World extends ITickable {
   Position spectatorPos;
   World(this.width, this.height, this.depth){
    firstObjectPos = new Position(this, 2, 2, 2);
-   spectatorPos = new Position(this, 10, 10, 10);
+   spectatorPos = new Position(this, 5, 5, 2);
    firstObjectPos.putOn(new WorldObject(new Color(0,255,0)));
    spectatorPos.putOn(new WorldObject(new Color(255,0,0)));
   }
@@ -130,7 +131,7 @@ class World extends ITickable {
   
   tick(){
     ticksTillStart++;
-    _logger.info("Tick: ${ticksTillStart}");
+    // _logger.info("Tick: ${ticksTillStart}");
     
     makeMoves();
     
@@ -145,6 +146,13 @@ class World extends ITickable {
                                                      z - radius < position.z && position.z < z + radius).toSet();
     return debugger;
   }
+  
+  
+  HashSet<Position> getObjectsForRect(int x, int y, int z, int width, int height, int depth){
+    return  positions.where((position) => x < position.x && position.x < x + width &&
+        y < position.y && position.y < y + height &&
+        z < position.z && position.z < z + depth).toSet();
+  }    
   
   makeMoves(){  
     makeSpecialMoves();

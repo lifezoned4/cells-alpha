@@ -16,9 +16,23 @@ class User extends ITickable {
   String username;  
   int lastSendTokken;
   int ticksLeft = 0;
-  
+  MovingAreaViewSubscription spectator;
   
   User(this.username, this.pubKey, this.lastSendTokken);
+  
+  dealWithWebSocket(String message, WebSocket conn){
+      print(message);
+      Map jsonMap = parse(message);
+      switch(jsonMap["command"]){
+        case "moveSpectator":
+          if (jsonMap["data"]["dx"].abs() + jsonMap["data"]["dy"].abs() + jsonMap["data"]["dz"].abs() > 1)
+            return;
+          this.spectator.toFollow.pos.dx = jsonMap["data"]["dx"];
+          this.spectator.toFollow.pos.dy = jsonMap["data"]["dy"];
+          this.spectator.toFollow.pos.dz = jsonMap["data"]["dz"];
+          break;
+      }
+  }
   
   String getSendData(){
     Map jsonMap = new Map();
@@ -89,7 +103,7 @@ class WorldAreaViewCubicSubscription extends WorldSubscription {
     jsonPosition.putIfAbsent("z", () =>  pos.z);{}
     jsonPosition.putIfAbsent("object", () => 
         {"id": pos.object.id, "color": {"r": pos.object.color.r, "g": pos.object.color.g, "b": pos.object.color.b}});
-    _logger.info("Some Radius Calc with result:" + stringify(jsonPosition));
+    //_logger.info("Some Radius Calc with result:" + stringify(jsonPosition));
     jsonMap.putIfAbsent(jsonMap.length.toString(), () => jsonPosition);
 
   }
@@ -104,9 +118,10 @@ class MovingAreaViewSubscription extends WorldSubscription {
   Map getStateAsMap(){
     Map jsonMap = new Map();
     Map jsonViewArea = new Map();
-    world.getObjectsForCube(toFollow.pos.x, toFollow.pos.y, toFollow.pos.z, 5).forEach((Position pos)
+    world.getObjectsForRect(toFollow.pos.x - 5, toFollow.pos.y - 5, toFollow.pos.z - 2, 11, 11 , 4).forEach((Position pos)
         => WorldAreaViewCubicSubscription.addInfoAboutPositionInto(pos, jsonViewArea));
     jsonMap.putIfAbsent("viewArea",() => jsonViewArea);
+    jsonMap.putIfAbsent("spectatorPos", () => {"x": toFollow.pos.x - 5, "y": toFollow.pos.y - 5, "z": toFollow.pos.z - 2});
     return jsonMap;
   }
 }

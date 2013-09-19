@@ -10,7 +10,7 @@ import 'cellsProtocolServer.dart';
 
 final _logger = new Logger("cellsComm");
 
-final String _ip = "127.0.0.1";
+final String _ip = "192.168.17.118";
 final int _port = 8080;
 
 
@@ -43,6 +43,7 @@ main(){
           Encoding.getByName("ASCII").decodeStream(request).then(
                                                               (t){_logger.info("Request POST: " + t);
                                                                   String reponse =_serverCommEngine.dealWithRestful(t);
+                                                                  request.response.headers.set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");                                                                  
                                                                   request.response.headers.set("Access-Control-Allow-Origin","*");
                                                                   request.response.add(Encoding.getByName("ASCII").encoder.convert(reponse));
                                                                   request.response.close();
@@ -56,7 +57,9 @@ main(){
        else {
          try {
           _logger.warning("Uri not found: ${request.uri.path}");
-           request.response.close();
+          request.response.headers.set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");                              
+          request.response.headers.set("Access-Control-Allow-Origin","*");
+          request.response.close();
          } catch (ex) {
            _logger.warning("Error on response close", ex);
          }
@@ -76,9 +79,20 @@ main(){
      _logger.warning("Binding HttpServer failed!", ex);
    }
   }
-  , onError: (err) {
-    _logger.warning("Zoned Error: $err"); 
-  });
+  , onError: (dynamic err) {
+    try {
+    _logger.warning("Zoned Error: $err");
+    _logger.warning(err.stackTrace.toString());
+    }
+    catch(ex){
+      try {
+      _logger.warning("Yaw Dog, Zoned Zoned Error");
+      }
+      catch(exkill){
+        _logger.warning("SILENCE, I KILL YOU!");
+      } 
+    }
+   });
 }
 
 onWebSocketConn(WebSocket conn) {

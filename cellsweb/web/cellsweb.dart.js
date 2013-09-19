@@ -120,6 +120,18 @@ $$.Closure$constructorNameFallback = [H, {"": "Closure;call$1,$name"}];
 
 $$.Closure$callDartFunctionWith1Arg = [H, {"": "Closure;call$2,$name"}];
 
+$$.Closure$getHeight = [B, {"": "Closure;call$1,$name"}];
+
+$$.Closure$getWidth = [B, {"": "Closure;call$1,$name"}];
+
+$$.Closure$getDepth = [B, {"": "Closure;call$1,$name"}];
+
+$$.Closure$getOffsetX = [B, {"": "Closure;call$1,$name"}];
+
+$$.Closure$getOffsetY = [B, {"": "Closure;call$1,$name"}];
+
+$$.Closure$getOffsetZ = [B, {"": "Closure;call$1,$name"}];
+
 $$.Closure$main = [B, {"": "Closure;call$0,$name"}];
 
 $$.Closure$_asyncRunCallback = [P, {"": "Closure;call$0,$name"}];
@@ -129,6 +141,18 @@ $$.Closure$_defaultEquals = [P, {"": "Closure;call$2,$name"}];
 $$.Closure$_defaultHashCode = [P, {"": "Closure;call$1,$name"}];
 
 $$.Closure$identical = [P, {"": "Closure;call$2,$name"}];
+
+$$.Closure$runVarXY_1 = [B, {"": "Closure;call$4,$name"}];
+
+$$.Closure$runVarXY_6 = [B, {"": "Closure;call$4,$name"}];
+
+$$.Closure$runVarZY_2 = [B, {"": "Closure;call$4,$name"}];
+
+$$.Closure$runVarZY_5 = [B, {"": "Closure;call$4,$name"}];
+
+$$.Closure$runVarXZ_3 = [B, {"": "Closure;call$4,$name"}];
+
+$$.Closure$runVarZX_4 = [B, {"": "Closure;call$4,$name"}];
 
 (function (reflectionData) {
   function map(x){x={x:x};delete x.x;return x}
@@ -296,8 +320,8 @@ JSArray0: {"": "List/Interceptor;",
   },
   addAll$1: function(receiver, collection) {
     var t1;
-    for (t1 = new H.ListIterator(collection, collection.length, 0, null); t1.moveNext$0();)
-      this.add$1(receiver, t1._liblib$_current);
+    for (t1 = J.get$iterator$ax(collection); t1.moveNext$0();)
+      this.add$1(receiver, t1.get$current());
   },
   forEach$1: function(receiver, f) {
     return H.IterableMixinWorkaround_forEach(receiver, f);
@@ -322,6 +346,11 @@ JSArray0: {"": "List/Interceptor;",
     if (start === end)
       return [];
     return receiver.slice(start, end);
+  },
+  get$first: function(receiver) {
+    if (receiver.length > 0)
+      return receiver[0];
+    throw H.wrapException(new P.StateError("No elements"));
   },
   toString$0: function(receiver) {
     return H.IterableMixinWorkaround_toStringIterable(receiver, "[", "]");
@@ -1840,7 +1869,7 @@ Primitives_stringFromCodePoints: function(codePoints) {
   var a, t1, i;
   a = [];
   for (t1 = new H.ListIterator(codePoints, codePoints.length, 0, null); t1.moveNext$0();) {
-    i = t1._liblib$_current;
+    i = t1._current;
     if (typeof i !== "number" || Math.floor(i) !== i)
       throw H.wrapException(new P.ArgumentError(i));
     if (i <= 65535)
@@ -1857,7 +1886,7 @@ Primitives_stringFromCodePoints: function(codePoints) {
 Primitives_stringFromCharCodes: function(charCodes) {
   var t1, i;
   for (t1 = new H.ListIterator(charCodes, charCodes.length, 0, null); t1.moveNext$0();) {
-    i = t1._liblib$_current;
+    i = t1._current;
     if (typeof i !== "number" || Math.floor(i) !== i)
       throw H.wrapException(new P.ArgumentError(i));
     if (i < 0)
@@ -7575,95 +7604,362 @@ toByteArray_closure: {"": "Closure;box_0,list_1",
 }}],
 ["cellsweb.dart", "cellsweb.dart", , B, {
 main: function() {
-  var displayareaXY, displayareaZY, count, t1;
-  displayareaXY = document.querySelector("#displayareaXY");
-  displayareaZY = document.querySelector("#displayareaYZ");
+  var viewer, displayarea, viewSelector, t1, t2, navViews, left, t3, up, right, down, count;
+  viewer = new B.Viewer(0, 0, 0, 0, 20, 20, 5, [$.get$Viewer_xy_1(), $.get$Viewer_zy_2(), $.get$Viewer_xz_3(), $.get$Viewer_xz_4(), $.get$Viewer_zy_5(), $.get$Viewer_xy_6()]);
+  displayarea = document.querySelector("#displayarea");
+  viewSelector = document.querySelector("#viewChoose");
+  H.IterableMixinWorkaround_forEach(viewer.views, new B.main_closure(viewSelector));
+  viewSelector.get$onChange;
+  C.EventStreamProvider_change.forElement$2$useCapture;
+  t1 = new W._ElementEventStreamImpl(viewSelector, C.EventStreamProvider_change._eventType, false);
+  H.setRuntimeTypeInfo(t1, [null]);
+  t2 = new W._EventStreamSubscription(0, t1._target, t1._eventType, new B.main_closure0(viewer, viewSelector), t1._useCapture);
+  H.setRuntimeTypeInfo(t2, [H.getRuntimeTypeArgument(t1, "_EventStream", 0)]);
+  t2._tryResume$0();
+  navViews = new B.main_closure1(viewer, viewSelector);
+  left = document.querySelector("#left");
+  left.get$onClick;
+  C.EventStreamProvider_click.forElement$2$useCapture;
+  t2 = C.EventStreamProvider_click._eventType;
+  t1 = new W._ElementEventStreamImpl(left, t2, false);
+  H.setRuntimeTypeInfo(t1, [null]);
+  t3 = new W._EventStreamSubscription(0, t1._target, t1._eventType, new B.main_closure2(navViews), t1._useCapture);
+  H.setRuntimeTypeInfo(t3, [H.getRuntimeTypeArgument(t1, "_EventStream", 0)]);
+  t3._tryResume$0();
+  up = document.querySelector("#up");
+  up.get$onClick;
+  t3 = new W._ElementEventStreamImpl(up, t2, false);
+  H.setRuntimeTypeInfo(t3, [null]);
+  t1 = new W._EventStreamSubscription(0, t3._target, t3._eventType, new B.main_closure3(navViews), t3._useCapture);
+  H.setRuntimeTypeInfo(t1, [H.getRuntimeTypeArgument(t3, "_EventStream", 0)]);
+  t1._tryResume$0();
+  right = document.querySelector("#right");
+  right.get$onClick;
+  t1 = new W._ElementEventStreamImpl(right, t2, false);
+  H.setRuntimeTypeInfo(t1, [null]);
+  t3 = new W._EventStreamSubscription(0, t1._target, t1._eventType, new B.main_closure4(navViews), t1._useCapture);
+  H.setRuntimeTypeInfo(t3, [H.getRuntimeTypeArgument(t1, "_EventStream", 0)]);
+  t3._tryResume$0();
+  down = document.querySelector("#down");
+  down.get$onClick;
+  t2 = new W._ElementEventStreamImpl(down, t2, false);
+  H.setRuntimeTypeInfo(t2, [null]);
+  t3 = new W._EventStreamSubscription(0, t2._target, t2._eventType, new B.main_closure5(navViews), t2._useCapture);
+  H.setRuntimeTypeInfo(t3, [H.getRuntimeTypeArgument(t2, "_EventStream", 0)]);
+  t3._tryResume$0();
   count = document.querySelector("#count");
-  t1 = new B.ClientCommEngine(null, null, null, null, null, "127.0.0.1:8080", "test", A.Dsa$(null), P.LinkedHashMap_LinkedHashMap(null, null, null, J.JSInt, [P.Map, J.JSInt, [P.Map, J.JSInt, B.WorldObjectFacade]]), 20, 20, 20);
-  t1.keyPair = t1.dsa.fromSecretUserPassword$2(t1.username, "test");
-  $.commEngine = t1;
-  $.commEngine.commandWebSocketAuth$1(new B.main_closure());
-  t1 = $.commEngine;
-  t1.onDelayStatusChange = new B.main_closure0(count);
-  t1.onErrorChange = new B.main_closure1(displayareaXY);
-  t1.onUpdatedChache = new B.main_closure2(displayareaXY, displayareaZY);
+  t3 = new B.ClientCommEngine(null, null, null, null, null, "192.168.17.118:8080", "test", A.Dsa$(null), P.LinkedHashMap_LinkedHashMap(null, null, null, J.JSInt, [P.Map, J.JSInt, [P.Map, J.JSInt, B.WorldObjectFacade]]), 100, 100, 5);
+  t3.keyPair = t3.dsa.fromSecretUserPassword$2(t3.username, "test");
+  $.commEngine = t3;
+  $.commEngine.commandWebSocketAuth$1(new B.main_closure6());
+  t3 = $.commEngine;
+  t3.onDelayStatusChange = new B.main_closure7(count);
+  t3.onErrorChange = new B.main_closure8(displayarea);
+  t3.onUpdatedChache = new B.main_closure9(viewer, displayarea);
 },
 
-main_closure: {"": "Closure;",
+Viewer: {"": "Object;_choosenNumber,displayOffsetX<,displayOffsetY<,displayOffsetZ<,displayWidth<,displayHeight<,displayDepth<,views",
+  updateDisplayArea$2: function(diplayArea, commEngine) {
+    var t1, t2, t3, constArun, t4, constBrun, div, returner, object, bgcolor, oldnessScalar;
+    t1 = J.getInterceptor$x(diplayArea);
+    t2 = t1.get$children(diplayArea);
+    t2.clear$0(t2);
+    t2 = this.views;
+    t3 = this._choosenNumber;
+    if (t3 >>> 0 !== t3 || t3 >= 6)
+      throw H.ioore(t3);
+    t3 = t2[t3];
+    constArun = t3.$index(t3, "VarAOffset").call$1(this);
+    if (typeof constArun !== "number")
+      return this.updateDisplayArea$2$bailout(1, diplayArea, commEngine, constArun, t1, t2);
+    while (true) {
+      t3 = this._choosenNumber;
+      if (t3 >>> 0 !== t3 || t3 >= 6)
+        throw H.ioore(t3);
+      t3 = t2[t3];
+      t3 = t3.$index(t3, "VarAOffset").call$1(this);
+      t4 = this._choosenNumber;
+      if (t4 >>> 0 !== t4 || t4 >= 6)
+        throw H.ioore(t4);
+      t4 = t2[t4];
+      t4 = J.$add$ns(t3, t4.$index(t4, "iMaxVarA").call$1(this));
+      if (typeof t4 !== "number")
+        throw H.iae(t4);
+      if (!(constArun < t4))
+        break;
+      t3 = t1.get$children(diplayArea);
+      t3.add$1(t3, document.createElement("br"));
+      t3 = this._choosenNumber;
+      if (t3 >>> 0 !== t3 || t3 >= 6)
+        throw H.ioore(t3);
+      t3 = t2[t3];
+      constBrun = t3.$index(t3, "VarBOffset").call$1(this);
+      if (typeof constBrun !== "number")
+        return this.updateDisplayArea$2$bailout(2, diplayArea, commEngine, constArun, t1, t2, C.JSNumber_methods, constBrun);
+      while (true) {
+        t3 = this._choosenNumber;
+        if (t3 >>> 0 !== t3 || t3 >= 6)
+          throw H.ioore(t3);
+        t3 = t2[t3];
+        t3 = t3.$index(t3, "VarBOffset").call$1(this);
+        t4 = this._choosenNumber;
+        if (t4 >>> 0 !== t4 || t4 >= 6)
+          throw H.ioore(t4);
+        t4 = t2[t4];
+        t4 = J.$add$ns(t3, t4.$index(t4, "iMaxVarB").call$1(this));
+        if (typeof t4 !== "number")
+          throw H.iae(t4);
+        if (!(constBrun < t4))
+          break;
+        div = document.createElement("button");
+        div.textContent = "--";
+        div.id = "XYField";
+        t3 = this._choosenNumber;
+        if (t3 >>> 0 !== t3 || t3 >= 6)
+          throw H.ioore(t3);
+        t3 = t2[t3];
+        t3 = t3.$index(t3, "runnerFunc");
+        t4 = this._choosenNumber;
+        if (t4 >>> 0 !== t4 || t4 >= 6)
+          throw H.ioore(t4);
+        t4 = t2[t4];
+        returner = commEngine.getView$4(constArun, constBrun, t3, t4.$index(t4, "iMaxRunner").call$1(this));
+        object = returner.$index(returner, "found");
+        if (object != null && !object.isTooOld$0()) {
+          t3 = J.$lt$n(returner.$index(returner, "depth"), 10) ? "0" : "";
+          div.textContent = C.JSString_methods.$add(t3, J.toString$0(returner.$index(returner, "depth")));
+          J.set$color$x(div.style, "#000000");
+          bgcolor = J.get$color$x(object);
+          oldnessScalar = 1 / ((object.oldness$0() + 1) / 1000);
+          J.set$background$x(div.style, "rgb(" + H.S(J.round$0$n(J.$mul$n(J.get$r$x(bgcolor), oldnessScalar))) + "," + H.S(J.round$0$n(J.$mul$n(bgcolor.get$g(), oldnessScalar))) + ", " + H.S(J.round$0$n(J.$mul$n(bgcolor.get$b(), oldnessScalar))) + ")");
+        }
+        t3 = t1.get$children(diplayArea);
+        t3.add$1(t3, div);
+        ++constBrun;
+      }
+      ++constArun;
+    }
+  },
+  updateDisplayArea$2$bailout: function(state0, diplayArea, commEngine, constArun, t1, t2, t3, constBrun) {
+    switch (state0) {
+      case 0:
+        t1 = J.getInterceptor$x(diplayArea);
+        t2 = t1.get$children(diplayArea);
+        t2.clear$0(t2);
+        t2 = this.views;
+        t3 = this._choosenNumber;
+        if (t3 >>> 0 !== t3 || t3 >= 6)
+          throw H.ioore(t3);
+        t3 = t2[t3];
+        constArun = t3.$index(t3, "VarAOffset").call$1(this);
+      case 1:
+        state0 = 0;
+      case 2:
+        var t4, t5, div, t6, returner, object, bgcolor, oldnessScalar;
+        L0:
+          while (true)
+            switch (state0) {
+              case 0:
+                t3 = this._choosenNumber;
+                if (t3 >>> 0 !== t3 || t3 >= 6)
+                  throw H.ioore(t3);
+                t3 = t2[t3];
+                t3 = t3.$index(t3, "VarAOffset").call$1(this);
+                t4 = this._choosenNumber;
+                if (t4 >>> 0 !== t4 || t4 >= 6)
+                  throw H.ioore(t4);
+                t4 = t2[t4];
+                t4 = J.$add$ns(t3, t4.$index(t4, "iMaxVarA").call$1(this));
+                t3 = J.getInterceptor$n(constArun);
+                if (typeof t4 !== "number")
+                  throw H.iae(t4);
+                if (!t3.$lt(constArun, t4))
+                  break L0;
+                t4 = t1.get$children(diplayArea);
+                t4.add$1(t4, document.createElement("br"));
+                t4 = this._choosenNumber;
+                if (t4 >>> 0 !== t4 || t4 >= 6)
+                  throw H.ioore(t4);
+                t4 = t2[t4];
+                constBrun = t4.$index(t4, "VarBOffset").call$1(this);
+              case 2:
+                state0 = 0;
+                while (true) {
+                  t4 = this._choosenNumber;
+                  if (t4 >>> 0 !== t4 || t4 >= 6)
+                    throw H.ioore(t4);
+                  t4 = t2[t4];
+                  t4 = t4.$index(t4, "VarBOffset").call$1(this);
+                  t5 = this._choosenNumber;
+                  if (t5 >>> 0 !== t5 || t5 >= 6)
+                    throw H.ioore(t5);
+                  t5 = t2[t5];
+                  t5 = J.$add$ns(t4, t5.$index(t5, "iMaxVarB").call$1(this));
+                  t4 = J.getInterceptor$n(constBrun);
+                  if (typeof t5 !== "number")
+                    throw H.iae(t5);
+                  if (!t4.$lt(constBrun, t5))
+                    break;
+                  div = document.createElement("button");
+                  div.textContent = "--";
+                  div.id = "XYField";
+                  t5 = this._choosenNumber;
+                  if (t5 >>> 0 !== t5 || t5 >= 6)
+                    throw H.ioore(t5);
+                  t5 = t2[t5];
+                  t5 = t5.$index(t5, "runnerFunc");
+                  t6 = this._choosenNumber;
+                  if (t6 >>> 0 !== t6 || t6 >= 6)
+                    throw H.ioore(t6);
+                  t6 = t2[t6];
+                  returner = commEngine.getView$4(constArun, constBrun, t5, t6.$index(t6, "iMaxRunner").call$1(this));
+                  object = returner.$index(returner, "found");
+                  if (object != null && !object.isTooOld$0()) {
+                    t5 = J.$lt$n(returner.$index(returner, "depth"), 10) ? "0" : "";
+                    div.textContent = C.JSString_methods.$add(t5, J.toString$0(returner.$index(returner, "depth")));
+                    J.set$color$x(div.style, "#000000");
+                    bgcolor = J.get$color$x(object);
+                    oldnessScalar = 1 / ((object.oldness$0() + 1) / 1000);
+                    J.set$background$x(div.style, "rgb(" + H.S(J.round$0$n(J.$mul$n(J.get$r$x(bgcolor), oldnessScalar))) + "," + H.S(J.round$0$n(J.$mul$n(bgcolor.get$g(), oldnessScalar))) + ", " + H.S(J.round$0$n(J.$mul$n(bgcolor.get$b(), oldnessScalar))) + ")");
+                  }
+                  t5 = t1.get$children(diplayArea);
+                  t5.add$1(t5, div);
+                  constBrun = t4.$add(constBrun, 1);
+                }
+                constArun = t3.$add(constArun, 1);
+            }
+    }
+  },
+  static: {
+"": "Viewer_xy_1,Viewer_xy_6,Viewer_zy_2,Viewer_zy_5,Viewer_xz_4,Viewer_xz_3",
+Viewer_getHeight: function(viewer) {
+  return viewer.get$displayHeight();
+},
+
+Viewer_getWidth: function(viewer) {
+  return viewer.get$displayWidth();
+},
+
+Viewer_getDepth: function(viewer) {
+  return viewer.get$displayDepth();
+},
+
+Viewer_getOffsetX: function(viewer) {
+  return viewer.get$displayOffsetX();
+},
+
+Viewer_getOffsetY: function(viewer) {
+  return viewer.get$displayOffsetY();
+},
+
+Viewer_getOffsetZ: function(viewer) {
+  return viewer.get$displayOffsetZ();
+}}
+
+},
+
+main_closure: {"": "Closure;viewSelector_0",
+  call$1: function(view) {
+    var t1, t2, t3, t4;
+    t1 = this.viewSelector_0;
+    t2 = J.getInterceptor$x(t1);
+    t3 = t2.get$children(t1);
+    t4 = W.OptionElement_OptionElement(null, null, null, null);
+    t4.textContent = J.$index$asx(view, "Name");
+    t4.value = C.JSInt_methods.toString$0(J.get$length$asx(t2.get$options(t1)));
+    return t3.add$1(t3, t4);
+  }
+},
+
+main_closure0: {"": "Closure;viewer_1,viewSelector_2",
+  call$1: function(e) {
+    var t1, t2;
+    t1 = H.Primitives_parseInt(J.get$value$x(J.get$first$ax(J.get$selectedOptions$x(this.viewSelector_2))), null, null);
+    t2 = J.getInterceptor(t1);
+    H.Primitives_printString(t2.toString$0(t1));
+    this.viewer_1._choosenNumber = t2.$mod(t1, 6);
+    return t1;
+  }
+},
+
+main_closure1: {"": "Closure;viewer_3,viewSelector_4",
+  call$1: function($name) {
+    var t1, t2;
+    t1 = this.viewer_3;
+    t2 = t1.views;
+    t2 = H.Arrays_indexOf(t2, H.IterableMixinWorkaround_firstWhere(t2, new B.main__closure(t1, $name), null), 0, 6);
+    H.Primitives_printString(C.JSNumber_methods.toString$0(t2));
+    t1._choosenNumber = C.JSNumber_methods.$mod(t2, 6);
+    J.set$selectedIndex$x(this.viewSelector_4, t1._choosenNumber);
+  }
+},
+
+main__closure: {"": "Closure;viewer_5,name_6",
+  call$1: function(e) {
+    var t1, t2, t3;
+    t1 = J.$index$asx(e, "Name");
+    t2 = this.viewer_5;
+    t3 = t2._choosenNumber;
+    if (t3 >>> 0 !== t3 || t3 >= 6)
+      throw H.ioore(t3);
+    t3 = t2.views[t3];
+    return J.$eq(t1, t3.$index(t3, this.name_6));
+  }
+},
+
+main_closure2: {"": "Closure;navViews_7",
+  call$1: function(e) {
+    this.navViews_7.call$1("left");
+  }
+},
+
+main_closure3: {"": "Closure;navViews_8",
+  call$1: function(e) {
+    this.navViews_8.call$1("up");
+  }
+},
+
+main_closure4: {"": "Closure;navViews_9",
+  call$1: function(e) {
+    this.navViews_9.call$1("right");
+  }
+},
+
+main_closure5: {"": "Closure;navViews_10",
+  call$1: function(e) {
+    this.navViews_10.call$1("down");
+  }
+},
+
+main_closure6: {"": "Closure;",
   call$1: function(response) {
-    var parsedTokken = H.Primitives_parseInt(response, null, new B.main__closure());
+    var parsedTokken = H.Primitives_parseInt(response, null, new B.main__closure0());
     if (!J.$eq(parsedTokken, 0))
       $.commEngine.initWwebSocket$1(parsedTokken);
   }
 },
 
-main__closure: {"": "Closure;",
+main__closure0: {"": "Closure;",
   call$1: function(wrongInt) {
     return 0;
   }
 },
 
-main_closure0: {"": "Closure;count_0",
+main_closure7: {"": "Closure;count_11",
   call$1: function(data) {
-    this.count_0.textContent = J.toString$0(data);
+    this.count_11.textContent = J.toString$0(data);
   }
 },
 
-main_closure1: {"": "Closure;displayareaXY_1",
+main_closure8: {"": "Closure;displayarea_12",
   call$1: function(data) {
-    this.displayareaXY_1.textContent = J.toString$0(data);
+    this.displayarea_12.textContent = J.toString$0(data);
   }
 },
 
-main_closure2: {"": "Closure;displayareaXY_2,displayareaZY_3",
+main_closure9: {"": "Closure;viewer_13,displayarea_14",
   call$0: function() {
-    var t1, t2, t3, y, x, div, returner, object, bgcolor, oldnessScalar, z;
-    t1 = this.displayareaXY_2;
-    t2 = J.getInterceptor$x(t1);
-    t3 = t2.get$children(t1);
-    t3.clear$0(t3);
-    for (y = 0; y < $.commEngine.worldHeight; ++y) {
-      t3 = t2.get$children(t1);
-      t3.add$1(t3, document.createElement("br"));
-      for (x = 0; x < $.commEngine.worldWidth; ++x) {
-        div = document.createElement("button");
-        div.id = "XYField";
-        returner = $.commEngine.getXYView$2(x, y);
-        object = returner.$index(returner, "found");
-        if (object != null && !object.isTooOld$0()) {
-          div.textContent = returner.$index(returner, "depth");
-          J.set$color$x(div.style, "#000000");
-          bgcolor = J.get$color$x(object);
-          oldnessScalar = 1 / ((object.oldness$0() + 1) / 1000);
-          J.set$background$x(div.style, "rgb(" + H.S(J.round$0$n(J.$mul$n(J.get$r$x(bgcolor), oldnessScalar))) + "," + H.S(J.round$0$n(J.$mul$n(bgcolor.get$g(), oldnessScalar))) + ", " + H.S(J.round$0$n(J.$mul$n(bgcolor.get$b(), oldnessScalar))) + ")");
-        }
-        t3 = t2.get$children(t1);
-        t3.add$1(t3, div);
-      }
-    }
-    t1 = this.displayareaZY_3;
-    t2 = J.getInterceptor$x(t1);
-    t3 = t2.get$children(t1);
-    t3.clear$0(t3);
-    for (y = 0; y < $.commEngine.worldHeight; ++y) {
-      t3 = t2.get$children(t1);
-      t3.add$1(t3, document.createElement("br"));
-      for (z = $.commEngine.worldDepth - 1; z >= 0; --z) {
-        div = document.createElement("button");
-        div.id = "YZField";
-        returner = $.commEngine.getZYView$2(z, y);
-        object = returner.$index(returner, "found");
-        if (object != null && !object.isTooOld$0()) {
-          div.textContent = returner.$index(returner, "depth");
-          J.set$color$x(div.style, "#000000");
-          bgcolor = J.get$color$x(object);
-          oldnessScalar = 1 / ((object.oldness$0() + 1) / 1000);
-          J.set$background$x(div.style, "rgb(" + H.S(J.round$0$n(J.$mul$n(J.get$r$x(bgcolor), oldnessScalar))) + "," + H.S(J.round$0$n(J.$mul$n(bgcolor.get$g(), oldnessScalar))) + ", " + H.S(J.round$0$n(J.$mul$n(bgcolor.get$b(), oldnessScalar))) + ")");
-        }
-        t3 = t2.get$children(t1);
-        t3.add$1(t3, div);
-      }
-    }
+    this.viewer_13.updateDisplayArea$2(this.displayarea_14, $.commEngine);
   }
 }},
 1],
@@ -7672,7 +7968,7 @@ _CryptoUtils_bytesToHex: function(bytes) {
   var result, t1, part, t2, t3;
   result = P.StringBuffer$("");
   for (t1 = new H.ListIterator(bytes, bytes.length, 0, null); t1.moveNext$0();) {
-    part = t1._liblib$_current;
+    part = t1._current;
     t2 = J.getInterceptor$n(part);
     t3 = t2.$lt(part, 16) ? "0" : "";
     t2 = t3 + t2.toRadixString$1(part, 16);
@@ -7839,9 +8135,14 @@ _CryptoUtils_bytesToBase64: function(bytes, urlSafe, addLineSeparator) {
 
 _HashBase: {"": "Object;",
   add$1: function(_, data) {
+    var t1, t2;
     if (this._digestCalled)
       throw H.wrapException(new P.StateError("Hash update method called after digest was retrieved"));
-    this._lengthInBytes = this._lengthInBytes + data.length;
+    t1 = this._lengthInBytes;
+    t2 = J.get$length$asx(data);
+    if (typeof t2 !== "number")
+      throw H.iae(t2);
+    this._lengthInBytes = t1 + t2;
     C.JSArray_methods.addAll$1(this._pendingData, data);
     this._iterate$0();
   },
@@ -8569,10 +8870,35 @@ Arrays_copy$bailout: function(state0, src, srcStart, dst, dstStart, count, i) {
   }
 },
 
+Arrays_indexOf: function(a, element, startIndex, endIndex) {
+  var i;
+  if (startIndex >= a.length)
+    return -1;
+  if (startIndex < 0)
+    startIndex = 0;
+  for (i = startIndex; i < endIndex; ++i) {
+    if (i < 0 || i >= a.length)
+      throw H.ioore(i);
+    if (J.$eq(a[i], element))
+      return i;
+  }
+  return -1;
+},
+
 IterableMixinWorkaround_forEach: function(iterable, f) {
   var t1;
   for (t1 = new H.ListIterator(iterable, iterable.length, 0, null); t1.moveNext$0();)
-    f.call$1(t1._liblib$_current);
+    f.call$1(t1._current);
+},
+
+IterableMixinWorkaround_firstWhere: function(iterable, test, orElse) {
+  var t1, element;
+  for (t1 = new H.ListIterator(iterable, iterable.length, 0, null); t1.moveNext$0();) {
+    element = t1._current;
+    if (test.call$1(element) === true)
+      return element;
+  }
+  throw H.wrapException(new P.StateError("No matching element"));
 },
 
 IterableMixinWorkaround_toStringIterable: function(iterable, leftDelimiter, rightDelimiter) {
@@ -8624,23 +8950,23 @@ IterableMixinWorkaround_setRangeList: function(list, start, end, from, skipCount
   H.Arrays_copy(from, skipCount, list, start, $length);
 },
 
-ListIterator: {"": "Object;_iterable,_liblib$_length,_index,_liblib$_current",
+ListIterator: {"": "Object;_iterable,_length,_index,_current",
   get$current: function() {
-    return this._liblib$_current;
+    return this._current;
   },
   moveNext$0: function() {
     var t1, t2, $length, t3;
     t1 = this._iterable;
     t2 = J.getInterceptor$asx(t1);
     $length = t2.get$length(t1);
-    if (this._liblib$_length !== $length)
+    if (this._length !== $length)
       throw H.wrapException(new P.ConcurrentModificationError(t1));
     t3 = this._index;
     if (t3 >= $length) {
-      this._liblib$_current = null;
+      this._current = null;
       return false;
     }
-    this._liblib$_current = t2.elementAt$1(t1, t3);
+    this._current = t2.elementAt$1(t1, t3);
     this._index = this._index + 1;
     return true;
   }
@@ -8663,21 +8989,21 @@ MappedIterable: {"": "IterableBase;_iterable,_f",
   }
 },
 
-MappedIterator: {"": "Iterator;_liblib$_current,_iterator,_f",
+MappedIterator: {"": "Iterator;_current,_iterator,_f",
   _f$1: function(arg0) {
     return this._f.call$1(arg0);
   },
   moveNext$0: function() {
     var t1 = this._iterator;
     if (t1.moveNext$0()) {
-      this._liblib$_current = this._f$1(t1.get$current());
+      this._current = this._f$1(t1.get$current());
       return true;
     }
-    this._liblib$_current = null;
+    this._current = null;
     return false;
   },
   get$current: function() {
-    return this._liblib$_current;
+    return this._current;
   },
   $asIterator: function($S, $T) {
     return [$T];
@@ -8792,7 +9118,7 @@ Future_wait: function(futures) {
   t2 = new P.Future_wait_handleError(t1);
   t1.remaining_2 = 0;
   for (t3 = new H.ListIterator(futures, futures.length, 0, null); t3.moveNext$0();) {
-    future = t3._liblib$_current;
+    future = t3._current;
     pos = t1.remaining_2;
     t1.remaining_2 = pos + 1;
     t4 = future.catchError$1(t2);
@@ -9095,7 +9421,7 @@ _Future__propagateToListeners: function(source, listeners) {
     t2.listenerValueOrError_2 = null;
     t2.isPropagationAborted_3 = false;
     t4._openCallbacks = t4._openCallbacks - 1;
-    t4._runInZone$2(new P._Future__propagateToListeners_closure0(t2, t1, hasError, listeners), false);
+    t4._runInZone$2(new P._Future__propagateToListeners_closure0(t1, t2, hasError, listeners), false);
     if (t2.isPropagationAborted_3 === true)
       return;
     t3 = t2.listenerHasValue_1 === true;
@@ -9171,7 +9497,7 @@ _Future__propagateToListeners_closure: {"": "Closure;box_2,listener_3",
   }
 },
 
-_Future__propagateToListeners_closure0: {"": "Closure;box_1,box_2,hasError_4,listener_5",
+_Future__propagateToListeners_closure0: {"": "Closure;box_2,box_1,hasError_4,listener_5",
   call$0: function() {
     var value, error, test, matchesTest, e, s, t1, t2, t3, exception;
     try {
@@ -10045,6 +10371,20 @@ LinkedHashMapKeyIterator: {"": "Object;_map,_modifications,_cell,_liblib1$_curre
   }
 },
 
+UnmodifiableListView: {"": "UnmodifiableListBase;_source",
+  get$length: function(_) {
+    return this._source.length;
+  },
+  $index: function(_, index) {
+    var t1 = this._source;
+    if (index >>> 0 !== index || index >= t1.length)
+      throw H.ioore(index);
+    return t1[index];
+  },
+  $asUnmodifiableListBase: null,
+  $asList: null
+},
+
 IterableBase: {"": "Object;",
   forEach$1: function(_, f) {
     var t1;
@@ -10108,6 +10448,11 @@ ListMixin: {"": "Object;",
       if ($length !== this.get$length(receiver))
         throw H.wrapException(new P.ConcurrentModificationError(receiver));
     }
+  },
+  get$first: function(receiver) {
+    if (this.get$length(receiver) === 0)
+      throw H.wrapException(new P.StateError("No elements"));
+    return this.$index(receiver, 0);
   },
   where$1: function(receiver, test) {
     var t1 = new H.WhereIterable(receiver, test);
@@ -10860,10 +11205,7 @@ Duration: {"": "Object;_duration<",
     return new P.Duration(0 + (truncated == -0.0 ? 0 : truncated));
   },
   $lt: function(_, other) {
-    var t1 = other.get$_duration();
-    if (typeof t1 !== "number")
-      throw H.iae(t1);
-    return C.JSNumber_methods.$lt(this._duration, t1);
+    return this._duration < other.get$_duration();
   },
   $gt: function(_, other) {
     var t1 = other.get$_duration();
@@ -11129,6 +11471,10 @@ StringBuffer$: function($content) {
 
 }}],
 ["dart.dom.html", "dart:html", , W, {
+OptionElement_OptionElement: function(data, value, defaultSelected, selected) {
+  return new Option();
+},
+
 WebSocket_WebSocket: function(url, protocol_OR_protocols) {
   return new WebSocket(url);
 },
@@ -11188,6 +11534,46 @@ _ChildrenElementList: {"": "ListBase;_element,_childElements",
   }
 },
 
+_FrozenElementList: {"": "ListBase;_nodeList,_elementList",
+  get$length: function(_) {
+    return this._nodeList.length;
+  },
+  $index: function(_, index) {
+    var t1 = this._nodeList;
+    if (index >>> 0 !== index || index >= t1.length)
+      throw H.ioore(index);
+    return t1[index];
+  },
+  $indexSet: function(_, index, value) {
+    throw H.wrapException(new P.UnsupportedError("Cannot modify list"));
+  },
+  set$length: function(_, newLength) {
+    throw H.wrapException(new P.UnsupportedError("Cannot modify list"));
+  },
+  _FrozenElementList$_wrap$1: function(_nodeList, $T) {
+    var t1 = C.NodeList_methods.where$1(this._nodeList, new W._FrozenElementList$_wrap_closure());
+    this._elementList = P.List_List$from(t1, true, H.getRuntimeTypeArgument(t1, "IterableBase", 0));
+  },
+  $asListBase: null,
+  $asList: null,
+  $isList: true,
+  static: {
+_FrozenElementList$_wrap: function(_nodeList, $T) {
+  var t1 = new W._FrozenElementList(_nodeList, null);
+  H.setRuntimeTypeInfo(t1, [$T]);
+  t1._FrozenElementList$_wrap$1(_nodeList, $T);
+  return t1;
+}}
+
+},
+
+_FrozenElementList$_wrap_closure: {"": "Closure;",
+  call$1: function(e) {
+    var t1 = J.getInterceptor(e);
+    return typeof e === "object" && e !== null && !!t1.$isElement;
+  }
+},
+
 Interceptor_ListMixin: {"": "Interceptor+ListMixin;", $isList: true, $asList: null},
 
 Interceptor_ListMixin_ImmutableListMixin: {"": "Interceptor_ListMixin+ImmutableListMixin;", $asList: null, $isList: true},
@@ -11231,6 +11617,19 @@ Interceptor_ListMixin0: {"": "Interceptor+ListMixin;", $isList: true, $asList: n
 
 Interceptor_ListMixin_ImmutableListMixin0: {"": "Interceptor_ListMixin0+ImmutableListMixin;", $asList: null, $isList: true},
 
+SelectElement_options_closure: {"": "Closure;",
+  call$1: function(e) {
+    var t1 = J.getInterceptor(e);
+    return typeof e === "object" && e !== null && !!t1.$isOptionElement;
+  }
+},
+
+SelectElement_selectedOptions_closure: {"": "Closure;",
+  call$1: function(o) {
+    return J.get$selected$x(o);
+  }
+},
+
 _EventStream: {"": "Stream;_target,_eventType,_useCapture",
   listen$4$cancelOnError$onDone$onError: function(onData, cancelOnError, onDone, onError) {
     var t1 = new W._EventStreamSubscription(0, this._target, this._eventType, onData, this._useCapture);
@@ -11241,11 +11640,17 @@ _EventStream: {"": "Stream;_target,_eventType,_useCapture",
   $asStream: null
 },
 
+_ElementEventStreamImpl: {"": "_EventStream;_target,_eventType,_useCapture", $as_EventStream: null},
+
 _EventStreamSubscription: {"": "StreamSubscription;_pauseCount,_target,_eventType,_onData,_useCapture",
   cancel$0: function() {
-    if (this._target == null)
+    var t1, t2;
+    t1 = this._target;
+    if (t1 == null)
       return;
-    this._unlisten$0();
+    t2 = this._onData;
+    if (t2 != null)
+      J.$$dom_removeEventListener$3$x(t1, this._eventType, t2, this._useCapture);
     this._target = null;
     this._onData = null;
   },
@@ -11253,11 +11658,6 @@ _EventStreamSubscription: {"": "StreamSubscription;_pauseCount,_target,_eventTyp
     var t1 = this._onData;
     if (t1 != null && this._pauseCount <= 0)
       J.$$dom_addEventListener$3$x(this._target, this._eventType, t1, this._useCapture);
-  },
-  _unlisten$0: function() {
-    var t1 = this._onData;
-    if (t1 != null)
-      J.$$dom_removeEventListener$3$x(this._target, this._eventType, t1, this._useCapture);
   },
   $asStreamSubscription: null
 },
@@ -11278,22 +11678,22 @@ ImmutableListMixin: {"": "Object;",
   $asList: null
 },
 
-FixedSizeListIterator: {"": "Object;_array,_length,_position,_current",
+FixedSizeListIterator: {"": "Object;_array,_liblib$_length,_position,_liblib$_current",
   moveNext$0: function() {
     var nextPosition, t1;
     nextPosition = this._position + 1;
-    t1 = this._length;
+    t1 = this._liblib$_length;
     if (nextPosition < t1) {
       t1 = this._array;
       if (typeof t1 !== "string" && (typeof t1 !== "object" || t1 === null || t1.constructor !== Array && !H.isJsIndexable(t1, t1[init.dispatchPropertyName])))
         return this.moveNext$0$bailout(1, nextPosition, t1);
       if (nextPosition >>> 0 !== nextPosition || nextPosition >= t1.length)
         throw H.ioore(nextPosition);
-      this._current = t1[nextPosition];
+      this._liblib$_current = t1[nextPosition];
       this._position = nextPosition;
       return true;
     }
-    this._current = null;
+    this._liblib$_current = null;
     this._position = t1;
     return false;
   },
@@ -11301,7 +11701,7 @@ FixedSizeListIterator: {"": "Object;_array,_length,_position,_current",
     switch (state0) {
       case 0:
         nextPosition = this._position + 1;
-        t1 = this._length;
+        t1 = this._liblib$_length;
       case 1:
         if (state0 === 1 || state0 === 0 && nextPosition < t1)
           switch (state0) {
@@ -11309,17 +11709,17 @@ FixedSizeListIterator: {"": "Object;_array,_length,_position,_current",
               t1 = this._array;
             case 1:
               state0 = 0;
-              this._current = J.$index$asx(t1, nextPosition);
+              this._liblib$_current = J.$index$asx(t1, nextPosition);
               this._position = nextPosition;
               return true;
           }
-        this._current = null;
+        this._liblib$_current = null;
         this._position = t1;
         return false;
     }
   },
   get$current: function() {
-    return this._current;
+    return this._liblib$_current;
   },
   static: {
 FixedSizeListIterator$: function(array) {
@@ -11330,7 +11730,7 @@ FixedSizeListIterator$: function(array) {
 
 HtmlElement: {"": "Element;"},
 
-AnchorElement: {"": "HtmlElement;type%",
+AnchorElement: {"": "HtmlElement;type=",
   toString$0: function(receiver) {
     return receiver.toString();
   }
@@ -11338,7 +11738,7 @@ AnchorElement: {"": "HtmlElement;type%",
 
 Blob: {"": "Interceptor;type="},
 
-ButtonElement: {"": "HtmlElement;type%"},
+ButtonElement: {"": "HtmlElement;type=,value="},
 
 CharacterData: {"": "Node;data=,length="},
 
@@ -11364,6 +11764,8 @@ CssStyleDeclaration: {"": "Interceptor_CssStyleDeclarationBase;length=",
   }
 },
 
+DataListElement: {"": "HtmlElement;options="},
+
 DomException: {"": "Interceptor;",
   toString$0: function(receiver) {
     return receiver.toString();
@@ -11381,7 +11783,7 @@ Element: {"": "Node;",
   $asElement: null
 },
 
-EmbedElement: {"": "HtmlElement;type%"},
+EmbedElement: {"": "HtmlElement;type="},
 
 Event: {"": "Interceptor;type="},
 
@@ -11436,19 +11838,21 @@ HttpRequest: {"": "XmlHttpRequestEventTarget;",
   }
 },
 
-InputElement: {"": "HtmlElement;type%", $isElement: true, $asElement: null},
+InputElement: {"": "HtmlElement;type=,value=", $isElement: true, $asElement: null},
 
 KeygenElement: {"": "HtmlElement;type="},
 
-LIElement: {"": "HtmlElement;type%"},
+LIElement: {"": "HtmlElement;type=,value="},
 
-LinkElement: {"": "HtmlElement;type%"},
+LinkElement: {"": "HtmlElement;type="},
 
 MessageEvent: {"": "Event;",
   get$data: function(receiver) {
     return P.convertNativeToDart_AcceptStructuredClone(receiver.data, true);
   }
 },
+
+MeterElement: {"": "HtmlElement;value="},
 
 MidiMessageEvent: {"": "Event;data="},
 
@@ -11507,21 +11911,52 @@ NodeList: {"": "Interceptor_ListMixin_ImmutableListMixin0;",
   $isJavaScriptIndexingBehavior: true
 },
 
-OListElement: {"": "HtmlElement;type%"},
+OListElement: {"": "HtmlElement;type="},
 
-ObjectElement: {"": "HtmlElement;data=,type%"},
+ObjectElement: {"": "HtmlElement;data=,type="},
 
-OutputElement: {"": "HtmlElement;type="},
+OptionElement: {"": "HtmlElement;selected=,value=", $isOptionElement: true, $asOptionElement: null},
 
-ScriptElement: {"": "HtmlElement;type%"},
+OutputElement: {"": "HtmlElement;type=,value="},
 
-SelectElement: {"": "HtmlElement;length=,type="},
+ParamElement: {"": "HtmlElement;value="},
 
-SourceElement: {"": "HtmlElement;type%"},
+ProgressElement: {"": "HtmlElement;value="},
 
-StyleElement: {"": "HtmlElement;type%"},
+ScriptElement: {"": "HtmlElement;type="},
 
-TextAreaElement: {"": "HtmlElement;type="},
+SelectElement: {"": "HtmlElement;length=,selectedIndex},type=,value=",
+  get$options: function(receiver) {
+    var t1 = W._FrozenElementList$_wrap(receiver.querySelectorAll("option"), null);
+    t1 = t1.where$1(t1, new W.SelectElement_options_closure());
+    t1 = new P.UnmodifiableListView(P.List_List$from(t1, true, H.getRuntimeTypeArgument(t1, "IterableBase", 0)));
+    H.setRuntimeTypeInfo(t1, [null]);
+    return t1;
+  },
+  get$selectedOptions: function(receiver) {
+    var t1, t2;
+    if (receiver.multiple === true) {
+      t1 = this.get$options(receiver);
+      t1 = t1.where$1(t1, new W.SelectElement_selectedOptions_closure());
+      t1 = new P.UnmodifiableListView(P.List_List$from(t1, true, H.getRuntimeTypeArgument(t1, "IterableBase", 0)));
+      H.setRuntimeTypeInfo(t1, [null]);
+      return t1;
+    } else {
+      t1 = this.get$options(receiver);
+      t2 = receiver.selectedIndex;
+      t1 = t1._source;
+      if (t2 >>> 0 !== t2 || t2 >= t1.length)
+        throw H.ioore(t2);
+      return [t1[t2]];
+    }
+  }
+},
+
+SourceElement: {"": "HtmlElement;type="},
+
+StyleElement: {"": "HtmlElement;type="},
+
+TextAreaElement: {"": "HtmlElement;type=,value="},
 
 TextEvent: {"": "UIEvent;data="},
 
@@ -11533,15 +11968,17 @@ Window: {"": "EventTarget;",
   }
 },
 
-XmlHttpRequestEventTarget: {"": "EventTarget;"}}],
+XmlHttpRequestEventTarget: {"": "EventTarget;"},
+
+_Attr: {"": "Node;value="}}],
 ["dart.dom.svg", "dart:svg", , P, {
 FEColorMatrixElement: {"": "SvgElement;type="},
 
 FETurbulenceElement: {"": "SvgElement;type="},
 
-ScriptElement0: {"": "SvgElement;type%"},
+ScriptElement0: {"": "SvgElement;type="},
 
-StyleElement0: {"": "SvgElement;type%"},
+StyleElement0: {"": "SvgElement;type="},
 
 SvgElement: {"": "Element;",
   get$children: function(receiver) {
@@ -12325,7 +12762,7 @@ _utf16CodeUnitsToCodepoints: function(utf16CodeUnits, offset, $length, replaceme
   t3 = t1._liblib3$_length;
   if (t3 == null)
     throw H.iae(t3);
-  source = new P._ListRangeIteratorImpl(t1._source, t2 - 1, t2 + t3);
+  source = new P._ListRangeIteratorImpl(t1._liblib3$_source, t2 - 1, t2 + t3);
   decoder = new P.Utf16CodeUnitDecoder(source, replacementCodepoint, null);
   codepoints = P.List_List(source._liblib3$_end - source._offset - 1, J.JSInt);
   H.setRuntimeTypeInfo(codepoints, [J.JSInt]);
@@ -12381,7 +12818,7 @@ _addToEncoding$bailout: function(state0, offset, bytes, value, buffer) {
 codepointsToUtf8: function(codepoints, offset, $length) {
   var source, t1, t2, t3, t4, t5, t6, t7, encodedLength, t8, value, encoded, insertAt, insertAt0;
   source = P._ListRange$(codepoints, offset, $length);
-  t1 = source._source;
+  t1 = source._liblib3$_source;
   t2 = source._offset;
   t3 = source._liblib3$_length;
   if (t3 == null)
@@ -12390,7 +12827,7 @@ codepointsToUtf8: function(codepoints, offset, $length) {
   --t2;
   t4 = new P._ListRangeIteratorImpl(t1, t2, t3);
   t5 = t4._liblib3$_end;
-  t6 = t4._source;
+  t6 = t4._liblib3$_source;
   if (typeof t6 !== "object" || t6 === null || (t6.constructor !== Array || !!t6.immutable$list) && !H.isJsIndexable(t6, t6[init.dispatchPropertyName]))
     return P.codepointsToUtf8$bailout(1, t6, t4, t1, t2, t3, t5);
   t7 = t6.length;
@@ -12416,7 +12853,7 @@ codepointsToUtf8: function(codepoints, offset, $length) {
   H.setRuntimeTypeInfo(encoded, [J.JSInt]);
   t1 = new P._ListRangeIteratorImpl(t1, t2, t3);
   t2 = t1._liblib3$_end;
-  t3 = t1._source;
+  t3 = t1._liblib3$_source;
   if (typeof t3 !== "object" || t3 === null || (t3.constructor !== Array || !!t3.immutable$list) && !H.isJsIndexable(t3, t3[init.dispatchPropertyName]))
     return P.codepointsToUtf8$bailout(2, 0, 0, t1, t2, t3, 0, encoded);
   t4 = encoded.length;
@@ -12470,7 +12907,7 @@ codepointsToUtf8$bailout: function(state0, t6, t4, t1, t2, t3, t5, encoded) {
   switch (state0) {
     case 0:
       source = P._ListRange$(codepoints, offset, $length);
-      t1 = source._source;
+      t1 = source._liblib3$_source;
       t2 = source._offset;
       t3 = source._liblib3$_length;
       if (t3 == null)
@@ -12479,7 +12916,7 @@ codepointsToUtf8$bailout: function(state0, t6, t4, t1, t2, t3, t5, encoded) {
       --t2;
       t4 = new P._ListRangeIteratorImpl(t1, t2, t3);
       t5 = t4._liblib3$_end;
-      t6 = t4._source;
+      t6 = t4._liblib3$_source;
     case 1:
       state0 = 0;
       t7 = J.getInterceptor$asx(t6);
@@ -12502,7 +12939,7 @@ codepointsToUtf8$bailout: function(state0, t6, t4, t1, t2, t3, t5, encoded) {
       H.setRuntimeTypeInfo(encoded, [J.JSInt]);
       t1 = new P._ListRangeIteratorImpl(t1, t2, t3);
       t2 = t1._liblib3$_end;
-      t3 = t1._source;
+      t3 = t1._liblib3$_source;
     case 2:
       var source, t7, encodedLength, t8, value, insertAt, insertAt0;
       state0 = 0;
@@ -12567,7 +13004,7 @@ Utf16CodeUnitDecoder: {"": "Object;utf16CodeUnitIterator,replacementCodepoint,_l
     t3 = t1._liblib3$_end;
     if (!(t2 < t3))
       return false;
-    t2 = t1._source;
+    t2 = t1._liblib3$_source;
     if (typeof t2 !== "object" || t2 === null || (t2.constructor !== Array || !!t2.immutable$list) && !H.isJsIndexable(t2, t2[init.dispatchPropertyName]))
       return this.moveNext$0$bailout(1, t2, t1, t3);
     t4 = t1._offset;
@@ -12636,7 +13073,7 @@ Utf16CodeUnitDecoder: {"": "Object;utf16CodeUnitIterator,replacementCodepoint,_l
         t3 = t1._liblib3$_end;
         if (!(t2 < t3))
           return false;
-        t2 = t1._source;
+        t2 = t1._liblib3$_source;
       case 1:
         state0 = 0;
         t4 = J.getInterceptor$asx(t2);
@@ -12709,14 +13146,14 @@ Utf16CodeUnitDecoder: {"": "Object;utf16CodeUnitIterator,replacementCodepoint,_l
   }
 },
 
-_ListRange: {"": "IterableBase;_source,_offset,_liblib3$_length",
+_ListRange: {"": "IterableBase;_liblib3$_source,_offset,_liblib3$_length",
   get$iterator: function(_) {
     var t1, t2;
     t1 = this._offset;
     t2 = this._liblib3$_length;
     if (t2 == null)
       throw H.iae(t2);
-    return new P._ListRangeIteratorImpl(this._source, t1 - 1, t1 + t2);
+    return new P._ListRangeIteratorImpl(this._liblib3$_source, t1 - 1, t1 + t2);
   },
   get$length: function(_) {
     return this._liblib3$_length;
@@ -12724,7 +13161,7 @@ _ListRange: {"": "IterableBase;_source,_offset,_liblib3$_length",
   _ListRange$3: function(source, offset, $length) {
     var t1, t2, t3;
     t1 = this._offset;
-    if (t1 < 0 || t1 > J.get$length$asx(this._source))
+    if (t1 < 0 || t1 > J.get$length$asx(this._liblib3$_source))
       throw H.wrapException(new P.RangeError("value " + t1));
     t2 = this._liblib3$_length;
     if (t2 != null) {
@@ -12738,7 +13175,7 @@ _ListRange: {"": "IterableBase;_source,_offset,_liblib3$_length",
     if (t2 == null)
       throw t2.$add();
     t1 = t2 + t1;
-    if (t1 > J.get$length$asx(this._source))
+    if (t1 > J.get$length$asx(this._liblib3$_source))
       throw H.wrapException(new P.RangeError("value " + t1));
   },
   static: {
@@ -12751,10 +13188,10 @@ _ListRange$: function(source, offset, $length) {
 
 },
 
-_ListRangeIteratorImpl: {"": "Object;_source,_offset,_liblib3$_end",
+_ListRangeIteratorImpl: {"": "Object;_liblib3$_source,_offset,_liblib3$_end",
   get$current: function() {
     var t1, t2;
-    t1 = this._source;
+    t1 = this._liblib3$_source;
     if (typeof t1 !== "object" || t1 === null || (t1.constructor !== Array || !!t1.immutable$list) && !H.isJsIndexable(t1, t1[init.dispatchPropertyName]))
       return this.get$current$bailout(1, t1);
     t2 = this._offset;
@@ -12925,7 +13362,7 @@ convertNativeToDart_AcceptStructuredClone_walk: {"": "Closure;mustCopy_4,findSlo
       copy = H.makeLiteralMap([]);
       this.writeSlot_7.call$2(slot, copy);
       for (t1 = Object.keys(e), t1 = new H.ListIterator(t1, t1.length, 0, null); t1.moveNext$0();) {
-        key = t1._liblib$_current;
+        key = t1._current;
         copy.$indexSet(copy, key, this.call$1(e[key]));
       }
       return copy;
@@ -12975,7 +13412,7 @@ convertNativeToDart_AcceptStructuredClone_walk: {"": "Closure;mustCopy_4,findSlo
       copy = H.makeLiteralMap([]);
       this.writeSlot_7.call$2(slot, copy);
       for (t1 = Object.keys(e), t1 = new H.ListIterator(t1, t1.length, 0, null); t1.moveNext$0();) {
-        key = t1._liblib$_current;
+        key = t1._current;
         copy.$indexSet(copy, key, this.call$1(e[key]));
       }
       return copy;
@@ -13070,19 +13507,27 @@ FilteredElementList_removeRange_closure: {"": "Closure;",
 ["protocolClient", "package:cellsserver/cellsProtocolClient.dart", , B, {
 ColorFacade: {"": "Object;r*,g@,b@"},
 
-WorldObjectFacade: {"": "Object;color>,type*,utctimestamp?",
+WorldObjectFacade: {"": "Object;color>,type>,utctimestamp?,id",
+  setData$3: function(type, color, id) {
+    var t1;
+    this.type = type;
+    this.color = color;
+    this.id = this.id;
+    this.utctimestamp = P.DateTime$_now().toUtc$0().millisecondsSinceEpoch;
+    if ($.get$WorldObjectFacade_listOfFacades().containsKey$1(id)) {
+      t1 = $.get$WorldObjectFacade_listOfFacades();
+      t1.$index(t1, id).set$utctimestamp(0);
+      t1 = $.get$WorldObjectFacade_listOfFacades();
+      t1.remove$1(t1, id);
+    }
+    $.get$WorldObjectFacade_listOfFacades().putIfAbsent$2(id, new B.WorldObjectFacade_setData_closure(this));
+  },
   isTooOld$0: function() {
     var t1 = new P.DateTime(Date.now(), false);
     if (t1.date === void 0)
       t1.date = new Date(t1.millisecondsSinceEpoch);
     t1.date;
-    H.Primitives_printString(C.JSNumber_methods.toString$0(t1.toUtc$0().millisecondsSinceEpoch - this.utctimestamp));
-    H.Primitives_printString(C.JSNumber_methods.toString$0(this.utctimestamp));
-    t1 = new P.DateTime(Date.now(), false);
-    if (t1.date === void 0)
-      t1.date = new Date(t1.millisecondsSinceEpoch);
-    t1.date;
-    return t1.toUtc$0().millisecondsSinceEpoch - this.utctimestamp > 5000;
+    return t1.toUtc$0().millisecondsSinceEpoch - this.utctimestamp > 2000;
   },
   oldness$0: function() {
     var t1 = new P.DateTime(Date.now(), false);
@@ -13090,6 +13535,16 @@ WorldObjectFacade: {"": "Object;color>,type*,utctimestamp?",
       t1.date = new Date(t1.millisecondsSinceEpoch);
     t1.date;
     return t1.toUtc$0().millisecondsSinceEpoch - this.utctimestamp;
+  },
+  static: {
+"": "WorldObjectFacade_listOfFacades",
+}
+
+},
+
+WorldObjectFacade_setData_closure: {"": "Closure;this_0",
+  call$0: function() {
+    return this.this_0;
   }
 },
 
@@ -13113,145 +13568,69 @@ ClientCommEngine: {"": "Object;ws@,onDelayStatusChange,onErrorChange,onUpdatedCh
     H.setRuntimeTypeInfo(t2, [H.getRuntimeTypeArgument(t1, "_EventStream", 0)]);
     t2._tryResume$0();
   },
-  getZYView$2: function(z, y) {
-    var x, t1, depthX, found, t2;
-    for (x = this.worldWidth - 1, t1 = this.clientcache, depthX = 0; found = null, x >= 0; --x) {
-      t2 = t1.$index(t1, x);
-      if (typeof t2 !== "string" && (typeof t2 !== "object" || t2 === null || t2.constructor !== Array && !H.isJsIndexable(t2, t2[init.dispatchPropertyName])))
-        return this.getZYView$2$bailout(1, z, y, t2, x, t1, depthX);
-      if (y < 0 || y >= t2.length)
-        throw H.ioore(y);
-      t2 = t2[y];
-      if (typeof t2 !== "string" && (typeof t2 !== "object" || t2 === null || t2.constructor !== Array && !H.isJsIndexable(t2, t2[init.dispatchPropertyName])))
-        return this.getZYView$2$bailout(2, z, y, t2, x, t1, depthX);
-      if (z < 0 || z >= t2.length)
-        throw H.ioore(z);
-      if (J.get$type$x(t2[z]) === "X") {
-        t2 = t1.$index(t1, x);
-        if (typeof t2 !== "string" && (typeof t2 !== "object" || t2 === null || t2.constructor !== Array && !H.isJsIndexable(t2, t2[init.dispatchPropertyName])))
-          return this.getZYView$2$bailout(3, z, y, t2, 0, t1, depthX);
-        if (y >= t2.length)
-          throw H.ioore(y);
-        t2 = t2[y];
-        if (typeof t2 !== "string" && (typeof t2 !== "object" || t2 === null || t2.constructor !== Array && !H.isJsIndexable(t2, t2[init.dispatchPropertyName])))
-          return this.getZYView$2$bailout(4, z, y, t2, 0, t1, depthX);
-        if (z >= t2.length)
-          throw H.ioore(z);
-        found = t2[z];
-        break;
-      }
-      ++depthX;
-    }
-    return H.makeLiteralMap(["found", found, "depth", depthX]);
-  },
-  getZYView$2$bailout: function(state0, z, y, t2, x, t1, depthX) {
-    switch (state0) {
-      case 0:
-        x = this.worldWidth - 1;
-        t1 = this.clientcache;
-        depthX = 0;
-      default:
-        var found;
-        L0:
-          while (true)
-            switch (state0) {
-              case 0:
-                found = null;
-                if (!(x >= 0))
-                  break L0;
-                t2 = t1.$index(t1, x);
-              case 1:
-                state0 = 0;
-                t2 = J.$index$asx(t2, y);
-              case 2:
-                state0 = 0;
-              default:
-                if (state0 === 4 || state0 === 3 || state0 === 0 && J.get$type$x(J.$index$asx(t2, z)) === "X")
-                  switch (state0) {
-                    case 0:
-                      t2 = t1.$index(t1, x);
-                    case 3:
-                      state0 = 0;
-                      t2 = J.$index$asx(t2, y);
-                    case 4:
-                      state0 = 0;
-                      found = J.$index$asx(t2, z);
-                      break L0;
-                  }
-                ++depthX;
-                --x;
-            }
-        return H.makeLiteralMap(["found", found, "depth", depthX]);
-    }
-  },
-  getXYView$2: function(x, y) {
-    var t1, t2, depth, z, found, t3;
-    for (t1 = this.worldDepth, t2 = this.clientcache, depth = 0, z = 0; found = null, z < t1; ++z) {
-      t3 = t2.$index(t2, x);
+  getView$4: function(constA, constB, runVar, runnerIMax) {
+    var t1, depth, runnerI, found, runVarContext, t2, t3, t4, facade;
+    if (typeof runnerIMax !== "number")
+      throw H.iae(runnerIMax);
+    t1 = this.clientcache;
+    depth = 0;
+    runnerI = 0;
+    for (; found = null, runnerI < runnerIMax; ++runnerI) {
+      runVarContext = runVar.call$4(runnerI, constA, constB, runnerIMax);
+      t2 = J.getInterceptor$asx(runVarContext);
+      t3 = t1.$index(t1, t2.$index(runVarContext, "x"));
       if (typeof t3 !== "string" && (typeof t3 !== "object" || t3 === null || t3.constructor !== Array && !H.isJsIndexable(t3, t3[init.dispatchPropertyName])))
-        return this.getXYView$2$bailout(1, x, y, t3, depth, z, t2, t1);
-      if (y < 0 || y >= t3.length)
-        throw H.ioore(y);
-      t3 = t3[y];
-      if (typeof t3 !== "string" && (typeof t3 !== "object" || t3 === null || t3.constructor !== Array && !H.isJsIndexable(t3, t3[init.dispatchPropertyName])))
-        return this.getXYView$2$bailout(2, x, y, t3, depth, z, t2, t1);
-      if (z >= t3.length)
-        throw H.ioore(z);
-      if (J.get$type$x(t3[z]) === "X") {
-        t3 = t2.$index(t2, x);
-        if (typeof t3 !== "string" && (typeof t3 !== "object" || t3 === null || t3.constructor !== Array && !H.isJsIndexable(t3, t3[init.dispatchPropertyName])))
-          return this.getXYView$2$bailout(3, x, y, t3, depth, z, t2, t1);
-        if (y >= t3.length)
-          throw H.ioore(y);
-        t3 = t3[y];
-        if (typeof t3 !== "string" && (typeof t3 !== "object" || t3 === null || t3.constructor !== Array && !H.isJsIndexable(t3, t3[init.dispatchPropertyName])))
-          return this.getXYView$2$bailout(4, x, y, t3, depth, z, t2, t1);
-        if (z >= t3.length)
-          throw H.ioore(z);
-        found = t3[z];
+        return this.getView$4$bailout(1, runnerI, constA, runVar, runnerIMax, constB, runVarContext, t2, t3, t1, depth);
+      t4 = t2.$index(runVarContext, "y");
+      if (t4 >>> 0 !== t4 || t4 >= t3.length)
+        throw H.ioore(t4);
+      t4 = t3[t4];
+      if (typeof t4 !== "string" && (typeof t4 !== "object" || t4 === null || t4.constructor !== Array && !H.isJsIndexable(t4, t4[init.dispatchPropertyName])))
+        return this.getView$4$bailout(2, runnerI, constA, runVar, runnerIMax, constB, runVarContext, t2, t4, t1, depth);
+      t2 = t2.$index(runVarContext, "z");
+      if (t2 >>> 0 !== t2 || t2 >= t4.length)
+        throw H.ioore(t2);
+      facade = t4[t2];
+      if (facade != null && J.get$type$x(facade) === "X" && !facade.isTooOld$0()) {
+        found = facade;
         break;
       }
       ++depth;
     }
     return H.makeLiteralMap(["found", found, "depth", depth]);
   },
-  getXYView$2$bailout: function(state0, x, y, t3, depth, z, t2, t1) {
+  getView$4$bailout: function(state0, runnerI, constA, runVar, runnerIMax, constB, runVarContext, t2, t3, t1, depth) {
     switch (state0) {
       case 0:
-        t1 = this.worldDepth;
-        t2 = this.clientcache;
+        if (typeof runnerIMax !== "number")
+          throw H.iae(runnerIMax);
+        t1 = this.clientcache;
         depth = 0;
-        z = 0;
+        runnerI = 0;
       default:
-        var found;
+        var found, facade;
         L0:
           while (true)
             switch (state0) {
               case 0:
                 found = null;
-                if (!(z < t1))
+                if (!(runnerI < runnerIMax))
                   break L0;
-                t3 = t2.$index(t2, x);
+                runVarContext = runVar.call$4(runnerI, constA, constB, runnerIMax);
+                t2 = J.getInterceptor$asx(runVarContext);
+                t3 = t1.$index(t1, t2.$index(runVarContext, "x"));
               case 1:
                 state0 = 0;
-                t3 = J.$index$asx(t3, y);
+                t3 = J.$index$asx(t3, t2.$index(runVarContext, "y"));
               case 2:
                 state0 = 0;
-              default:
-                if (state0 === 4 || state0 === 3 || state0 === 0 && J.get$type$x(J.$index$asx(t3, z)) === "X")
-                  switch (state0) {
-                    case 0:
-                      t3 = t2.$index(t2, x);
-                    case 3:
-                      state0 = 0;
-                      t3 = J.$index$asx(t3, y);
-                    case 4:
-                      state0 = 0;
-                      found = J.$index$asx(t3, z);
-                      break L0;
-                  }
+                facade = J.$index$asx(t3, t2.$index(runVarContext, "z"));
+                if (facade != null && J.get$type$x(facade) === "X" && !facade.isTooOld$0()) {
+                  found = facade;
+                  break L0;
+                }
                 ++depth;
-                ++z;
+                ++runnerI;
             }
         return H.makeLiteralMap(["found", found, "depth", depth]);
     }
@@ -13305,7 +13684,29 @@ ClientCommEngine: {"": "Object;ws@,onDelayStatusChange,onErrorChange,onUpdatedCh
   },
   static: {
 "": "ClientCommEngine_commandNode,ClientCommEngine_webSocketNode,ClientCommEngine_emptyChar,ClientCommEngine_somethingChar,ClientCommEngine_somethingInbetweenChar,ClientCommEngine_somethingFarChar,ClientCommEngine_somethingFarFarChar",
-}
+ClientCommEngine_runVarXY_1: function(runnerI, constA, constB, runnerIMax) {
+  return H.makeLiteralMap(["x", constB, "y", constA, "z", runnerI]);
+},
+
+ClientCommEngine_runVarXY_6: function(runnerI, constA, constB, runnerIMax) {
+  return H.makeLiteralMap(["x", constB, "y", constA, "z", J.$sub$n(J.$sub$n(runnerIMax, 1), runnerI)]);
+},
+
+ClientCommEngine_runVarZY_2: function(runnerI, constA, constB, runnerIMax) {
+  return H.makeLiteralMap(["x", J.$sub$n(J.$sub$n(runnerIMax, 1), runnerI), "y", constA, "z", constB]);
+},
+
+ClientCommEngine_runVarZY_5: function(runnerI, constA, constB, runnerIMax) {
+  return H.makeLiteralMap(["x", runnerI, "y", constA, "z", constB]);
+},
+
+ClientCommEngine_runVarXZ_3: function(runnerI, constA, constB, runnerIMax) {
+  return H.makeLiteralMap(["x", constB, "y", runnerI, "z", constA]);
+},
+
+ClientCommEngine_runVarZX_4: function(runnerI, constA, constB, runnerIMax) {
+  return H.makeLiteralMap(["x", constA, "y", J.$sub$n(J.$sub$n(runnerIMax, 1), runnerI), "z", constB]);
+}}
 
 },
 
@@ -13371,9 +13772,7 @@ ClientCommEngine_initWwebSocket__closure3: {"": "Closure;",
     t1.r = 0;
     t1.g = 0;
     t1.b = 0;
-    t1 = new B.WorldObjectFacade(t1, "", null);
-    t1.utctimestamp = P.DateTime$_now().toUtc$0().millisecondsSinceEpoch;
-    return t1;
+    return new B.WorldObjectFacade(t1, "", 0, -1);
   }
 },
 
@@ -13409,14 +13808,15 @@ ClientCommEngine__dealWithWebSocketMsg__closure: {"": "Closure;this_1",
 
 ClientCommEngine__dealWithWebSocketMsg__closure0: {"": "Closure;this_2",
   call$2: function(k, v) {
-    var vmap, toWorkOn, t1;
+    var vmap, toWorkOn, color, t1;
     vmap = v;
     t1 = this.this_2.get$clientcache();
     toWorkOn = J.$index$asx(J.$index$asx(t1.$index(t1, J.$index$asx(vmap, "x")), J.$index$asx(vmap, "y")), J.$index$asx(vmap, "z"));
-    J.set$type$x(toWorkOn, "X");
-    J.set$r$x(J.get$color$x(toWorkOn), J.$index$asx(J.$index$asx(J.$index$asx(vmap, "object"), "color"), "r"));
-    J.get$color$x(toWorkOn).set$g(J.$index$asx(J.$index$asx(J.$index$asx(vmap, "object"), "color"), "g"));
-    J.get$color$x(toWorkOn).set$b(J.$index$asx(J.$index$asx(J.$index$asx(vmap, "object"), "color"), "b"));
+    color = new B.ColorFacade(null, null, null);
+    J.set$r$x(color, J.$index$asx(J.$index$asx(J.$index$asx(vmap, "object"), "color"), "r"));
+    color.set$g(J.$index$asx(J.$index$asx(J.$index$asx(vmap, "object"), "color"), "g"));
+    color.set$b(J.$index$asx(J.$index$asx(J.$index$asx(vmap, "object"), "color"), "b"));
+    toWorkOn.setData$3("X", color, J.$index$asx(J.$index$asx(vmap, "object"), "id"));
     toWorkOn.set$utctimestamp(P.DateTime$_now().toUtc$0().millisecondsSinceEpoch);
   }
 },
@@ -13496,11 +13896,23 @@ init.globalFunctions.typeNameInFirefox$closure = H.typeNameInFirefox$closure = n
 init.globalFunctions.typeNameInIE$closure = H.typeNameInIE$closure = new H.Closure$typeNameInIE(H.typeNameInIE, "typeNameInIE$closure");
 init.globalFunctions.constructorNameFallback$closure = H.constructorNameFallback$closure = new H.Closure$constructorNameFallback(H.constructorNameFallback, "constructorNameFallback$closure");
 init.globalFunctions.callDartFunctionWith1Arg$closure = H.callDartFunctionWith1Arg$closure = new H.Closure$callDartFunctionWith1Arg(H.callDartFunctionWith1Arg, "callDartFunctionWith1Arg$closure");
+init.globalFunctions.Viewer_getHeight$closure = B.Viewer_getHeight$closure = new B.Closure$getHeight(B.Viewer_getHeight, "Viewer_getHeight$closure");
+init.globalFunctions.Viewer_getWidth$closure = B.Viewer_getWidth$closure = new B.Closure$getWidth(B.Viewer_getWidth, "Viewer_getWidth$closure");
+init.globalFunctions.Viewer_getDepth$closure = B.Viewer_getDepth$closure = new B.Closure$getDepth(B.Viewer_getDepth, "Viewer_getDepth$closure");
+init.globalFunctions.Viewer_getOffsetX$closure = B.Viewer_getOffsetX$closure = new B.Closure$getOffsetX(B.Viewer_getOffsetX, "Viewer_getOffsetX$closure");
+init.globalFunctions.Viewer_getOffsetY$closure = B.Viewer_getOffsetY$closure = new B.Closure$getOffsetY(B.Viewer_getOffsetY, "Viewer_getOffsetY$closure");
+init.globalFunctions.Viewer_getOffsetZ$closure = B.Viewer_getOffsetZ$closure = new B.Closure$getOffsetZ(B.Viewer_getOffsetZ, "Viewer_getOffsetZ$closure");
 init.globalFunctions.main$closure = B.main$closure = new B.Closure$main(B.main, "main$closure");
 init.globalFunctions._asyncRunCallback$closure = P._asyncRunCallback$closure = new P.Closure$_asyncRunCallback(P._asyncRunCallback, "_asyncRunCallback$closure");
 init.globalFunctions._defaultEquals$closure = P._defaultEquals$closure = new P.Closure$_defaultEquals(P._defaultEquals, "_defaultEquals$closure");
 init.globalFunctions._defaultHashCode$closure = P._defaultHashCode$closure = new P.Closure$_defaultHashCode(P._defaultHashCode, "_defaultHashCode$closure");
 init.globalFunctions.identical$closure = P.identical$closure = new P.Closure$identical(P.identical, "identical$closure");
+init.globalFunctions.ClientCommEngine_runVarXY_1$closure = B.ClientCommEngine_runVarXY_1$closure = new B.Closure$runVarXY_1(B.ClientCommEngine_runVarXY_1, "ClientCommEngine_runVarXY_1$closure");
+init.globalFunctions.ClientCommEngine_runVarXY_6$closure = B.ClientCommEngine_runVarXY_6$closure = new B.Closure$runVarXY_6(B.ClientCommEngine_runVarXY_6, "ClientCommEngine_runVarXY_6$closure");
+init.globalFunctions.ClientCommEngine_runVarZY_2$closure = B.ClientCommEngine_runVarZY_2$closure = new B.Closure$runVarZY_2(B.ClientCommEngine_runVarZY_2, "ClientCommEngine_runVarZY_2$closure");
+init.globalFunctions.ClientCommEngine_runVarZY_5$closure = B.ClientCommEngine_runVarZY_5$closure = new B.Closure$runVarZY_5(B.ClientCommEngine_runVarZY_5, "ClientCommEngine_runVarZY_5$closure");
+init.globalFunctions.ClientCommEngine_runVarXZ_3$closure = B.ClientCommEngine_runVarXZ_3$closure = new B.Closure$runVarXZ_3(B.ClientCommEngine_runVarXZ_3, "ClientCommEngine_runVarXZ_3$closure");
+init.globalFunctions.ClientCommEngine_runVarZX_4$closure = B.ClientCommEngine_runVarZX_4$closure = new B.Closure$runVarZX_4(B.ClientCommEngine_runVarZX_4, "ClientCommEngine_runVarZX_4$closure");
 // Runtime type support
 // getInterceptor methods
 J.getInterceptor = function(receiver) {
@@ -13616,6 +14028,8 @@ C.C_JsonCodec = new P.JsonCodec();
 C.C_UnknownJavaScriptObject = new J.UnknownJavaScriptObject();
 C.C__Random = new P._Random();
 C.Duration_0 = new P.Duration(0);
+C.EventStreamProvider_change = new W.EventStreamProvider("change");
+C.EventStreamProvider_click = new W.EventStreamProvider("click");
 C.EventStreamProvider_message = new W.EventStreamProvider("message");
 C.EventStreamProvider_open = new W.EventStreamProvider("open");
 C.EventStreamProvider_readystatechange = new W.EventStreamProvider("readystatechange");
@@ -13766,6 +14180,9 @@ J.get$color$x = function(receiver) {
 J.get$data$x = function(receiver) {
   return J.getInterceptor$x(receiver).get$data(receiver);
 };
+J.get$first$ax = function(receiver) {
+  return J.getInterceptor$ax(receiver).get$first(receiver);
+};
 J.get$hashCode$ = function(receiver) {
   return J.getInterceptor(receiver).get$hashCode(receiver);
 };
@@ -13781,8 +14198,17 @@ J.get$length$asx = function(receiver) {
 J.get$r$x = function(receiver) {
   return J.getInterceptor$x(receiver).get$r(receiver);
 };
+J.get$selected$x = function(receiver) {
+  return J.getInterceptor$x(receiver).get$selected(receiver);
+};
+J.get$selectedOptions$x = function(receiver) {
+  return J.getInterceptor$x(receiver).get$selectedOptions(receiver);
+};
 J.get$type$x = function(receiver) {
   return J.getInterceptor$x(receiver).get$type(receiver);
+};
+J.get$value$x = function(receiver) {
+  return J.getInterceptor$x(receiver).get$value(receiver);
 };
 J.remove$0$ax = function(receiver) {
   return J.getInterceptor$ax(receiver).remove$0(receiver);
@@ -13808,8 +14234,8 @@ J.set$color$x = function(receiver, value) {
 J.set$r$x = function(receiver, value) {
   return J.getInterceptor$x(receiver).set$r(receiver, value);
 };
-J.set$type$x = function(receiver, value) {
-  return J.getInterceptor$x(receiver).set$type(receiver, value);
+J.set$selectedIndex$x = function(receiver, value) {
+  return J.getInterceptor$x(receiver).set$selectedIndex(receiver, value);
 };
 J.toInt$0$n = function(receiver) {
   return J.getInterceptor$n(receiver).toInt$0(receiver);
@@ -13872,6 +14298,24 @@ Isolate.$lazy($, "undefinedLiteralPropertyPattern", "TypeErrorDecoder_undefinedL
 Isolate.$lazy($, "getTypeNameOf", "getTypeNameOf", "get$getTypeNameOf", function() {
   return H.getFunctionForTypeNameOf();
 });
+Isolate.$lazy($, "xy_1", "Viewer_xy_1", "get$Viewer_xy_1", function() {
+  return H.makeLiteralMap(["Name", "XY_1", "iMaxVarA", B.Viewer_getHeight$closure, "iMaxVarB", B.Viewer_getWidth$closure, "VarAOffset", B.Viewer_getOffsetX$closure, "VarBOffset", B.Viewer_getOffsetY$closure, "iMaxRunner", B.Viewer_getDepth$closure, "runnerFunc", B.ClientCommEngine_runVarXY_1$closure, "left", "ZY_5", "right", "ZY_2", "up", "XZ_3", "down", "XZ_4"]);
+});
+Isolate.$lazy($, "xy_6", "Viewer_xy_6", "get$Viewer_xy_6", function() {
+  return H.makeLiteralMap(["Name", "XY_6", "iMaxVarA", B.Viewer_getHeight$closure, "iMaxVarB", B.Viewer_getWidth$closure, "VarAOffset", B.Viewer_getOffsetY$closure, "VarBOffset", B.Viewer_getOffsetX$closure, "iMaxRunner", B.Viewer_getDepth$closure, "runnerFunc", B.ClientCommEngine_runVarXY_6$closure, "left", "ZY_2", "right", "ZY_5", "up", "XZ_4", "down", "XZ_3"]);
+});
+Isolate.$lazy($, "zy_2", "Viewer_zy_2", "get$Viewer_zy_2", function() {
+  return H.makeLiteralMap(["Name", "ZY_2", "iMaxVarA", B.Viewer_getDepth$closure, "iMaxVarB", B.Viewer_getHeight$closure, "VarAOffset", B.Viewer_getOffsetZ$closure, "VarBOffset", B.Viewer_getOffsetY$closure, "iMaxRunner", B.Viewer_getWidth$closure, "runnerFunc", B.ClientCommEngine_runVarZY_2$closure, "left", "XY_1", "right", "XY_6", "up", "XZ_3", "down", "XZ_4"]);
+});
+Isolate.$lazy($, "zy_5", "Viewer_zy_5", "get$Viewer_zy_5", function() {
+  return H.makeLiteralMap(["Name", "ZY_5", "iMaxVarA", B.Viewer_getHeight$closure, "iMaxVarB", B.Viewer_getDepth$closure, "VarAOffset", B.Viewer_getOffsetY$closure, "VarBOffset", B.Viewer_getOffsetZ$closure, "iMaxRunner", B.Viewer_getWidth$closure, "runnerFunc", B.ClientCommEngine_runVarZY_5$closure, "left", "XY_6", "right", "XY_1", "up", "XZ_3", "down", "XZ_4"]);
+});
+Isolate.$lazy($, "xz_4", "Viewer_xz_4", "get$Viewer_xz_4", function() {
+  return H.makeLiteralMap(["Name", "XZ_4", "iMaxVarA", B.Viewer_getWidth$closure, "iMaxVarB", B.Viewer_getDepth$closure, "VarAOffset", B.Viewer_getOffsetX$closure, "VarBOffset", B.Viewer_getOffsetZ$closure, "iMaxRunner", B.Viewer_getHeight$closure, "runnerFunc", B.ClientCommEngine_runVarZX_4$closure, "left", "ZY_5", "right", "ZY_2", "up", "XY_1", "down", "XY_6"]);
+});
+Isolate.$lazy($, "xz_3", "Viewer_xz_3", "get$Viewer_xz_3", function() {
+  return H.makeLiteralMap(["Name", "XZ_3", "iMaxVarA", B.Viewer_getDepth$closure, "iMaxVarB", B.Viewer_getWidth$closure, "VarAOffset", B.Viewer_getOffsetZ$closure, "VarBOffset", B.Viewer_getOffsetX$closure, "iMaxRunner", B.Viewer_getHeight$closure, "runnerFunc", B.ClientCommEngine_runVarXZ_3$closure, "left", "ZY_2", "right", "ZY_5", "up", "XY_6", "down", "XY_1"]);
+});
 Isolate.$lazy($, "_toStringList", "IterableMixinWorkaround__toStringList", "get$IterableMixinWorkaround__toStringList", function() {
   return P.List_List(null, null);
 });
@@ -13896,10 +14340,13 @@ Isolate.$lazy($, "parameters3072", "Dsa_parameters3072", "get$Dsa_parameters3072
   t2 = Z.BigInteger$("CFA0478A54717B08CE64805B76E5B14249A77A4838469DF7F7DC987EFCCFB11D", 16, null);
   return new A.DsaParameters(Z.BigInteger$("5E5CBA992E0A680D885EB903AEA78E4A45A469103D448EDE3B7ACCC54D521E37F84A4BDD5B06B0970CC2D2BBB715F7B82846F9A0C393914C792E6A923E2117AB805276A975AADB5261D91673EA9AAFFEECBFA6183DFCB5D3B7332AA19275AFA1F8EC0B60FB6F66CC23AE4870791D5982AAD1AA9485FD8F4A60126FEB2CF05DB8A7F0F09B3397F3937F2E90B9E5B9C9B6EFEF642BC48351C46FB171B9BFA9EF17A961CE96C7E7A7CC3D3D03DFAD1078BA21DA425198F07D2481622BCE45969D9C4D6063D72AB7A0F08B2F49A7CC6AF335E08C4720E31476B67299E231F8BD90B39AC3AE3BE0C6B6CACEF8289A2E2873D58E51E029CAFBD55E6841489AB66B5B4B9BA6E2F784660896AFF387D92844CCB8B69475496DE19DA2E58259B090489AC8E62363CDF82CFD8EF2A427ABCD65750B506F56DDE3B988567A88126B914D7828E2B63A6D7ED0747EC59E0E0A23CE7D8A74C1D2C2A7AFB6A29799620F00E11C33787F7DED3B30E1A22D09F1FBDA1ABBBFBF25CAE05A13F812E34563F99410E73B", 16, null), t2, t1, 256, 3072, 128);
 });
+Isolate.$lazy($, "listOfFacades", "WorldObjectFacade_listOfFacades", "get$WorldObjectFacade_listOfFacades", function() {
+  return P.LinkedHashMap_LinkedHashMap(null, null, null, J.JSInt, B.WorldObjectFacade);
+});
 // Native classes
 H.defineNativeMethods("ArrayBuffer|DOMError|FileError|MediaError|MediaKeyError|Navigator|NavigatorUserMediaError|PositionError|SQLError|SVGAnimatedEnumeration|SVGAnimatedLength|SVGAnimatedNumberList", J.Interceptor);
 
-H.defineNativeMethods("HTMLAppletElement|HTMLAreaElement|HTMLAudioElement|HTMLBRElement|HTMLBaseElement|HTMLBaseFontElement|HTMLBodyElement|HTMLCanvasElement|HTMLContentElement|HTMLDListElement|HTMLDataListElement|HTMLDetailsElement|HTMLDialogElement|HTMLDirectoryElement|HTMLDivElement|HTMLFontElement|HTMLFrameElement|HTMLFrameSetElement|HTMLHRElement|HTMLHeadElement|HTMLHeadingElement|HTMLHtmlElement|HTMLIFrameElement|HTMLImageElement|HTMLLabelElement|HTMLLegendElement|HTMLMapElement|HTMLMarqueeElement|HTMLMediaElement|HTMLMenuElement|HTMLMetaElement|HTMLMeterElement|HTMLModElement|HTMLOptGroupElement|HTMLOptionElement|HTMLParagraphElement|HTMLParamElement|HTMLPreElement|HTMLProgressElement|HTMLQuoteElement|HTMLShadowElement|HTMLSpanElement|HTMLTableCaptionElement|HTMLTableCellElement|HTMLTableColElement|HTMLTableDataCellElement|HTMLTableElement|HTMLTableHeaderCellElement|HTMLTableRowElement|HTMLTableSectionElement|HTMLTemplateElement|HTMLTitleElement|HTMLTrackElement|HTMLUListElement|HTMLUnknownElement|HTMLVideoElement", W.HtmlElement);
+H.defineNativeMethods("HTMLAppletElement|HTMLAreaElement|HTMLAudioElement|HTMLBRElement|HTMLBaseElement|HTMLBaseFontElement|HTMLBodyElement|HTMLCanvasElement|HTMLContentElement|HTMLDListElement|HTMLDetailsElement|HTMLDialogElement|HTMLDirectoryElement|HTMLDivElement|HTMLFontElement|HTMLFrameElement|HTMLFrameSetElement|HTMLHRElement|HTMLHeadElement|HTMLHeadingElement|HTMLHtmlElement|HTMLIFrameElement|HTMLImageElement|HTMLLabelElement|HTMLLegendElement|HTMLMapElement|HTMLMarqueeElement|HTMLMediaElement|HTMLMenuElement|HTMLMetaElement|HTMLModElement|HTMLOptGroupElement|HTMLParagraphElement|HTMLPreElement|HTMLQuoteElement|HTMLShadowElement|HTMLSpanElement|HTMLTableCaptionElement|HTMLTableCellElement|HTMLTableColElement|HTMLTableDataCellElement|HTMLTableElement|HTMLTableHeaderCellElement|HTMLTableRowElement|HTMLTableSectionElement|HTMLTemplateElement|HTMLTitleElement|HTMLTrackElement|HTMLUListElement|HTMLUnknownElement|HTMLVideoElement", W.HtmlElement);
 
 H.defineNativeMethodsNonleaf("HTMLElement", W.HtmlElement);
 
@@ -13915,6 +14362,8 @@ H.defineNativeMethods("CompositionEvent", W.CompositionEvent);
 
 H.defineNativeMethods("CSS2Properties|CSSStyleDeclaration|MSStyleCSSProperties", W.CssStyleDeclaration);
 
+H.defineNativeMethods("HTMLDataListElement", W.DataListElement);
+
 H.defineNativeMethods("DOMException", W.DomException);
 
 H.defineNativeMethodsNonleaf("Element", W.Element);
@@ -13925,7 +14374,7 @@ H.defineNativeMethods("AudioProcessingEvent|AutocompleteErrorEvent|BeforeLoadEve
 
 H.defineNativeMethodsNonleaf("Event", W.Event);
 
-H.defineNativeMethods("WebSocket", W.EventTarget);
+H.defineNativeMethods("MediaStream|WebSocket", W.EventTarget);
 
 H.defineNativeMethodsNonleaf("EventTarget", W.EventTarget);
 
@@ -13947,9 +14396,11 @@ H.defineNativeMethods("HTMLLinkElement", W.LinkElement);
 
 H.defineNativeMethods("MessageEvent", W.MessageEvent);
 
+H.defineNativeMethods("HTMLMeterElement", W.MeterElement);
+
 H.defineNativeMethods("MIDIMessageEvent", W.MidiMessageEvent);
 
-H.defineNativeMethods("Attr|Document|DocumentFragment|DocumentType|Entity|HTMLDocument|Notation|SVGDocument|ShadowRoot", W.Node);
+H.defineNativeMethods("Document|DocumentFragment|DocumentType|Entity|HTMLDocument|Notation|SVGDocument|ShadowRoot", W.Node);
 
 H.defineNativeMethodsNonleaf("Node", W.Node);
 
@@ -13959,7 +14410,13 @@ H.defineNativeMethods("HTMLOListElement", W.OListElement);
 
 H.defineNativeMethods("HTMLObjectElement", W.ObjectElement);
 
+H.defineNativeMethods("HTMLOptionElement", W.OptionElement);
+
 H.defineNativeMethods("HTMLOutputElement", W.OutputElement);
+
+H.defineNativeMethods("HTMLParamElement", W.ParamElement);
+
+H.defineNativeMethods("HTMLProgressElement", W.ProgressElement);
 
 H.defineNativeMethods("HTMLScriptElement", W.ScriptElement);
 
@@ -13980,6 +14437,8 @@ H.defineNativeMethodsNonleaf("UIEvent", W.UIEvent);
 H.defineNativeMethods("DOMWindow|Window", W.Window);
 
 H.defineNativeMethodsNonleaf("XMLHttpRequestEventTarget", W.XmlHttpRequestEventTarget);
+
+H.defineNativeMethods("Attr", W._Attr);
 
 H.defineNativeMethods("SVGFEColorMatrixElement", P.FEColorMatrixElement);
 
