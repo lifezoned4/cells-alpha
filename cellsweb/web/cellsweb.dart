@@ -15,7 +15,6 @@ class Viewer {
   
   get viewNumber => _choosenNumber;
   set viewNumber(int value) {
-    print(value);
     _choosenNumber = value % views.length;
   }
   List<Map> views = [xy_1, zy_2, xz_3, xz_4, zy_5, xy_6];
@@ -130,16 +129,7 @@ class Viewer {
               "up": "XZ_4",
               "down": "XZ_3"
               };
-  
-  
-  
-    
 
-  
-  
-  
-  
-  
   updateDisplayArea (DivElement displayArea, ClientCommEngine commEngine) {
     String text = "";
     displayArea.children.clear();
@@ -169,6 +159,7 @@ class Viewer {
           ColorFacade bgcolor = object.color;
           double oldnessScalar = (1-((object.oldness() + 1)/2000));
           bt.style.background = "rgb(${(bgcolor.r * oldnessScalar).round()},${(bgcolor.g * oldnessScalar).round()}, ${(bgcolor.b * oldnessScalar).round()})"; 
+          bt.onClick.listen((e) => commEngine.selectInfoAbout(object.id));
         }
         cell.children.add(bt);
         line.children.add(cell); 
@@ -216,6 +207,9 @@ InitClient(String url, String user, String password){
   InputElement urlElm = query("#url");
   InputElement userElm = query("#user");
   InputElement passwordElm = query("#password");
+  
+  DivElement infoarea = query("#infoarea");
+  infoarea.text = "Nothing selected.";
   
   connect.disabled = true;
   urlElm.disabled = true;
@@ -269,7 +263,9 @@ InitClient(String url, String user, String password){
   };
   
  
-  
+  commEngine.onChangeRequestedInfo = (data){
+    infoarea.text = data;
+  };
   
   commEngine.onUpdatedChache = () {
     viewerXY_1.updateDisplayAreaInfo(displayareaInfo, commEngine);

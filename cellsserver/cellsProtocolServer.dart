@@ -30,6 +30,7 @@ class ServerCommEngine {
   ServerCommEngine(){
     RegRestfulCommand(new RestfulWebSocketAuth(this));
     RegRestfulCommand(new RestfulMoveSpectator(this));
+    RegRestfulCommand(new RestfulSelectInfoAbout(this));
     // authEngine.addAuth(restfulCommands[RestfulWebSocketAuth.commandNameInfo], new AllAccess());
     world.start();
   }
@@ -131,6 +132,37 @@ class RestfulMoveSpectator extends RestfulCommand  {
       return "Okay";
     }
     else { return "Invalid";}
+  }
+}
+
+class RestfulSelectInfoAbout extends RestfulCommand {
+  static String commandNameInfo = "SelectInfoAbout";
+
+  RestfulSelectInfoAbout(ServerCommEngine engine) : super(engine){
+    commandName = commandNameInfo;
+  }
+  
+  String dealWithCommand(Map<String, dynamic> jsonMap, AuthContext context){    
+    super.dealWithCommand(jsonMap, context);
+    int id = jsonMap["data"]["id"];
+    
+    var iterator =  engine.world.positions.where((e) => e.object.id == id);
+    if(iterator.length != 1)
+    {
+      _logger.warning("Error on this id: $id! Count $iterator.legnth");
+      return "Error on this id: $id!";
+    } else {
+      WorldObject object = iterator.first.object;
+      Map returner = {"id": object.id, "energy": object.energy.energyCount, 
+        "x": object.pos.x, 
+        "y": object.pos.y,
+        "z": object.pos.z};
+      if(object is Cell){
+        Cell cell = object as Cell;
+        returner.putIfAbsent("code", () => cell.greenCodeContext.toStringNames());
+      }
+      return stringify(returner);
+      }
   }
 }
 

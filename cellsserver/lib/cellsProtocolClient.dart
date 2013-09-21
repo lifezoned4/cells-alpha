@@ -31,7 +31,7 @@ class WorldObjectFacade {
   setData(String type, color, id){
     this.type = type;
     this.color = color;
-    this.id = this.id;
+    this.id = id;
     utctimestamp = new DateTime.now().toUtc().millisecondsSinceEpoch;
     if(listOfFacades.containsKey(id))
     {
@@ -57,6 +57,7 @@ class ClientCommEngine {
   WebSocket ws;
   Function onDelayStatusChange;
   Function onErrorChange;
+  Function onChangeRequestedInfo;
   Function onUpdatedChache;
   Function onSpectatorChange;
   
@@ -224,10 +225,31 @@ class ClientCommEngine {
     _send(msg, callback); 
   }
   
+  selectInfoAbout(int id){
+    print(id);
+    commandSelectInfoAbout(id, (value) => onChangeRequestedInfo(value));
+  }
+  
+  commandSelectInfoAbout(int id, Function callback){
+    try {
+      String command = "SelectInfoAbout";
+      Map jsonMap = new Map();
+      jsonMap.putIfAbsent("command", () => command);
+      jsonMap.putIfAbsent("utc", () => new DateTime.now().toUtc().millisecondsSinceEpoch);
+      jsonMap.putIfAbsent("data", () => {"id": id});
+      String msg = stringify(jsonMap);
+      
+      msg = _sign(msg);
+      _send(msg, callback);
+    } catch(ex) {
+      onErrorChange("Getting Info for $id failed");
+    }    
+  }
+  
   commandWebSocketAuth(Function callback){
     try {
       String command = "WebSocketAuth";
-      Map jsonMap = new Map<String, dynamic>();
+      Map jsonMap = new Map();
       
       jsonMap.putIfAbsent("command", () => command);
       jsonMap.putIfAbsent("utc", () => new DateTime.now().toUtc().millisecondsSinceEpoch);
@@ -236,7 +258,7 @@ class ClientCommEngine {
       msg = _sign(msg);
       _send(msg, callback);
     } catch(ex) {
-      onErrorChange("Connection Failed");
+      onErrorChange("Connection failed");
     }
   }
   

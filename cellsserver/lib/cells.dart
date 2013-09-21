@@ -3,6 +3,8 @@ import "dart:async";
 import "dart:collection";
 import "dart:math";
 
+import "greenCode.dart";
+
 import "package:logging/logging.dart";
 
 final _logger = new Logger("cells");
@@ -111,6 +113,9 @@ class Cell extends WorldObject {
   static Color green = new Color(0,254,0);
   static Color blue = new Color(0,0,254);
   static Color red = new Color(254,0,0);
+  
+  GreenCodeContext greenCodeContext = null;
+  
   Cell(int colorIndex) : super(new Color(0,0,0)){
     type = "C";
     if(colorIndex == 0)
@@ -119,6 +124,17 @@ class Cell extends WorldObject {
       color = blue;
     else if(colorIndex == 2)
       color = red;
+  }
+  
+  factory Cell.withCode(int colorIndex, String codeString){
+    Cell constructCell = new Cell(colorIndex);
+    if(codeString.contains(";"))
+      constructCell.greenCodeContext = new GreenCodeContext.byNames(codeString);
+    else if(codeString == "RANDOM")
+      constructCell.greenCodeContext = new GreenCodeContext.byRandom(200);
+    else
+      constructCell.greenCodeContext = new GreenCodeContext.byHex(codeString);
+    return constructCell;
   }
 }
 
@@ -151,7 +167,7 @@ class World extends ITickable {
     
     for(int i = 0; i < 200; i++){
       Random rnd = new Random();
-      Cell object = new Cell(rnd.nextInt(3));
+      Cell object = new Cell.withCode(rnd.nextInt(3), "RANDOM");
       Position newObjectPosition = new Position(this, rnd.nextInt(width), rnd.nextInt(height), rnd.nextInt(depth));
       newObjectPosition.putOn(object);
       positions.add(newObjectPosition);
@@ -182,7 +198,8 @@ class World extends ITickable {
   tick(){
     ticksTillStart++;
     // _logger.info("Tick: ${ticksTillStart}");
-    
+   
+    makeGreenCodeCalc();
     makeMoves();
     
     users.forEach((user) => user.tick());
@@ -204,10 +221,17 @@ class World extends ITickable {
         z < position.z && position.z < z + depth).toSet();
   }    
   
+  
+  makeGreenCodeCalc(){
+   positions.forEach((pos){ if (pos.object is Cell)
+                              (pos.object as Cell).greenCodeContext.doGreenCode();    
+                        });
+  }
+  
   makeMoves(){ 
    Random rnd = new Random();
    Set<Position> dealWith = positions.toSet();
-   dealWith.forEach((e){
+   /*dealWith.forEach((e){
      if(e.object is Cell)
      switch(rnd.nextInt(3)){
        case 0:
@@ -220,14 +244,14 @@ class World extends ITickable {
          e.dz = rnd.nextInt(3)-1;         
          break;       
      }
-    });
+    }); */
    dealWith.forEach((pos) => tryMakeMove(pos));
   }
   
   
   tryMakeMove(Position pos){
     positions.remove(pos);
-    
+   
     pos.move();   
    
     if(positions.contains(pos)){
