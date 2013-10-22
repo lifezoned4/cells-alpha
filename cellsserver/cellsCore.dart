@@ -101,9 +101,12 @@ class WorldAreaViewCubicSubscription extends WorldSubscription {
     jsonPosition.putIfAbsent("x", () =>  pos.x);
     jsonPosition.putIfAbsent("y", () =>  pos.y);
     jsonPosition.putIfAbsent("z", () =>  pos.z);{}
+    int ColorMod = 0;
     jsonPosition.putIfAbsent("object", () => 
-        {"id": pos.object.id,"type": pos.object.type, "color": {"r": pos.object.color.r, "g": pos.object.color.g, "b": pos.object.color.b}});
-    //_logger.info("Some Radius Calc with result:" + stringify(jsonPosition));
+        {"id": pos.object.id,"type": pos.object.type, "color": 
+           {"r": pos.object.getColor().r, 
+            "g": pos.object.getColor().g, 
+            "b": pos.object.getColor().b}});
     jsonMap.putIfAbsent(jsonMap.length.toString(), () => jsonPosition);
 
   }

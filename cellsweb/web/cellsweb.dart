@@ -158,7 +158,7 @@ class Viewer {
           // bt.style.fontSize = "${18 - returner["depth"]}px";
           ColorFacade bgcolor = object.color;
           double oldnessScalar = (1-((object.oldness() + 1)/2000));
-          bt.style.background = "rgb(${(bgcolor.r * oldnessScalar).round()},${(bgcolor.g * oldnessScalar).round()}, ${(bgcolor.b * oldnessScalar).round()})"; 
+          bt.style.background = "rgb(${((bgcolor.r) * oldnessScalar).round()},${((bgcolor.g) * oldnessScalar).round()}, ${((bgcolor.b) * oldnessScalar).round()})"; 
           bt.onClick.listen((e) => commEngine.selectInfoAbout(object.id));
         }
         cell.children.add(bt);

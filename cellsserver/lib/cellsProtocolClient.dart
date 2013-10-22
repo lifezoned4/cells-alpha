@@ -161,9 +161,9 @@ class ClientCommEngine {
   }
   
   Map<int, Map<int, Map<int, WorldObjectFacade>>> clientcache = new Map<int, Map<int, Map<int, WorldObjectFacade>>>();
-  int worldWidth = 100;
-  int worldHeight = 100;
-  int worldDepth = 5;
+  int worldWidth = 40;
+  int worldHeight = 40;
+  int worldDepth = 3;
   
   _dealWithWebSocketMsg(MessageEvent msg){
     try {

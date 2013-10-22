@@ -25,7 +25,7 @@ class ServerCommEngine {
   
   AuthEngine authEngine = new AuthEngine();
   
-  World world = new World(100,100,5);
+  World world = new World(40,40,3);
   
   ServerCommEngine(){
     RegRestfulCommand(new RestfulWebSocketAuth(this));

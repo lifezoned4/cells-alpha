@@ -1,25 +1,34 @@
 library greenCode;
 
 import 'dart:math';
+import 'package:logging/logging.dart';
+
+Logger _logger = new Logger("greenCode");
 
 class Direction {
-  static const N = const Direction._(0,-1,0,0);
-  static const E = const Direction._(1,0,0,1);
-  static const S = const Direction._(0,1,0,2);
-  static const W = const Direction._(-1,0,0,3);
-  static const UP = const Direction._(0,0,-1,4);
-  static const DOWN = const Direction._(0,0,1,5);
-  static const NONE = const Direction._(0,0,0,6);
-  static const SELF = const Direction._(0,0,0,7);
+  static Direction N = new Direction._(0,-1,0,0);
+  static Direction E = new Direction._(1,0,0,1);
+  static Direction S = new Direction._(0,1,0,2);
+  static Direction W = new Direction._(-1,0,0,3);
+  static Direction UP = new Direction._(0,0,-1,4);
+  static Direction DOWN = new Direction._(0,0,1,5);
+  static Direction NONE = new Direction._(0,0,0,6);
+  static Direction SELF = new Direction._(0,0,0,7);
   
   static get values => [N,E,S,W,UP,DOWN,NONE,SELF];
 
-  final int value;
-  final int dirX;
-  final int dirY;
-  final int dirZ;
+  int value;
+  int dirX;
+  int dirY;
+  int dirZ;
 
-  const Direction._(this.dirX, this.dirY ,this.dirZ, this.value);
+  Direction() {
+   dirX = 0;
+   dirY = 0;
+   dirZ = 0;
+  }
+  
+  Direction._(this.dirX, this.dirY ,this.dirZ, this.value);
 }
 
 class GreenCodeContext {    
@@ -35,6 +44,8 @@ class GreenCodeContext {
   Direction nextMove = Direction.NONE;
   Direction copyTo = Direction.NONE;
   Direction eatOn = Direction.NONE;
+  bool eat = false;
+
   
   Map<String, int> registers = {"AX": 0, "BX" : 0, "CX":0};
     
@@ -107,7 +118,8 @@ class GreenCodeContext {
   doGreenCode(){
     nextMove = Direction.NONE;
     copyTo = Direction.NONE;
-    eatOn = Direction.NONE;    
+    eatOn = Direction.NONE;
+    eat = false;    
     if(code.length != 0){
       IP = IP % code.length;
       code[IP].doOn(this);
@@ -136,7 +148,8 @@ abstract class GreenCode {
                                       new GreenCodeSearchB(),
                                       new GreenCodePop(),
                                       new GreenCodePush(),
-                                      new GreenCodeHead()];
+                                      new GreenCodeHead(),
+                                      new GreenCodeEatDir()];
   
   static GreenCode factoriesHexBytes(String hexByte){
     var returner = factories.where((e){ 
@@ -241,6 +254,18 @@ class GreenCodeIfNot0 extends GreenCode {
 class GreenCodeEat extends GreenCode {    
   GreenCodeEat(){
       name = "eat";
+      hexCode = "2A";
+  } 
+    
+  doOn(GreenCodeContext context){
+    context.eat = true;
+  }
+}
+
+
+class GreenCodeEatDir extends GreenCode {    
+  GreenCodeEatDir(){
+      name = "eatD";
       hexCode = "0A";
   } 
     
@@ -251,6 +276,7 @@ class GreenCodeEat extends GreenCode {
     else 
       arg = context.registers["BX"];
     context.eatOn = Direction.values.firstWhere((e) => e.value == arg % Direction.values.length);
+    context.eat = true;
   }
 }
 
