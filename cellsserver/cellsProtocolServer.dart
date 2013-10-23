@@ -25,7 +25,7 @@ class ServerCommEngine {
   
   AuthEngine authEngine = new AuthEngine();
   
-  World world = new World(40,40,3);
+  World world = new World(30,16,3);
   
   ServerCommEngine(){
     RegRestfulCommand(new RestfulWebSocketAuth(this));
@@ -159,7 +159,7 @@ class RestfulSelectInfoAbout extends RestfulCommand {
         "z": object.pos.z};
       if(object is Cell){
         Cell cell = object as Cell;
-        returner.putIfAbsent("code", () => cell.greenCodeContext.toStringNames());
+        returner.putIfAbsent("code", () => cell.greenCodeContext.codeToStringNames());
       }
       return stringify(returner);
       }

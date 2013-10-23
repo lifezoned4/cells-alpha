@@ -13,9 +13,8 @@ class Direction {
   static Direction UP = new Direction._(0,0,-1,4);
   static Direction DOWN = new Direction._(0,0,1,5);
   static Direction NONE = new Direction._(0,0,0,6);
-  static Direction SELF = new Direction._(0,0,0,7);
   
-  static get values => [N,E,S,W,UP,DOWN,NONE,SELF];
+  static get values => [N,E,S,W,UP,DOWN,NONE];
 
   int value;
   int dirX;
@@ -38,14 +37,16 @@ class GreenCodeContext {
   int WriteHead = 0;
   int ReadHead = 0;
   int IP = 0;
+  int copyCost = 0;
+  
   
   List<int> stack = new List<int>();
   
   Direction nextMove = Direction.NONE;
-  Direction copyTo = Direction.NONE;
+  Direction injectTo = Direction.NONE;
   Direction eatOn = Direction.NONE;
   bool eat = false;
-
+  bool inject = false;
   
   Map<String, int> registers = {"AX": 0, "BX" : 0, "CX":0};
     
@@ -109,15 +110,18 @@ class GreenCodeContext {
     }
   }
   
-  String toStringNames(){
+  String codeToStringNames(){
     String returner = "";
-    code.forEach((element) => returner+=element.name + ";");
+    code.forEach((element){
+      returner+=element.name + ";";
+    });
     return returner;
   }
   
   doGreenCode(){
     nextMove = Direction.NONE;
-    copyTo = Direction.NONE;
+    injectTo = Direction.NONE;
+    inject = false;
     eatOn = Direction.NONE;
     eat = false;    
     if(code.length != 0){
@@ -141,6 +145,7 @@ abstract class GreenCode {
                                       new GreenCodeIfBit1(),
                                       new GreenCodeInc(),
                                       new GreenCodeCopy(),
+                                      new GreenCodeInject(),
                                       new GreenCodeEat(),
                                       new GreenCodeJumpF(),
                                       new GreenCodeJumpB(),
@@ -298,9 +303,44 @@ class GreenCodeMove extends GreenCode {
   }
 }
 
+
 class GreenCodeCopy extends GreenCode {    
   GreenCodeCopy(){
       name = "copy";
+      hexCode = "C9";
+  } 
+    
+  doOn(GreenCodeContext context){
+    
+    int momReadHead = context.ReadHead;
+    int costCounter = context.FaceHead - context.ReadHead;
+    if(costCounter < 0)
+      costCounter = context.code.length + costCounter;
+    int iCounter = 0;
+    while(iCounter < costCounter)
+    {         
+         momReadHead++;
+         momReadHead %= context.code.length;
+         Random rnd = new Random();
+         GreenCode toWrite;
+         // Mutationsfaktor
+         if(rnd.nextInt(100) == 17)
+         {
+           toWrite = GreenCode.factories[rnd.nextInt(GreenCode.factories.length)];
+         }
+         else
+           toWrite = context.code[momReadHead];
+         context.code.insert(context.WriteHead, toWrite);
+         context.WriteHead++;
+         iCounter++;;
+    }
+    context.copyCost+=costCounter;
+  }
+}
+
+class GreenCodeInject extends GreenCode {    
+  GreenCodeInject(){
+      name = "Inj";
       hexCode = "09";
   } 
     
@@ -310,7 +350,8 @@ class GreenCodeCopy extends GreenCode {
       arg = context.registers[context.code[context.getAddresse(context.IP + 1)].register];
     else 
       arg = context.registers["BX"];
-    context.copyTo = Direction.values.firstWhere((e) => e.value == arg % Direction.values.length);
+    context.injectTo = Direction.values.firstWhere((e) => e.value == arg % Direction.values.length);
+    context.inject = true;
   }
 }
 

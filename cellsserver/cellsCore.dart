@@ -101,7 +101,6 @@ class WorldAreaViewCubicSubscription extends WorldSubscription {
     jsonPosition.putIfAbsent("x", () =>  pos.x);
     jsonPosition.putIfAbsent("y", () =>  pos.y);
     jsonPosition.putIfAbsent("z", () =>  pos.z);{}
-    int ColorMod = 0;
     jsonPosition.putIfAbsent("object", () => 
         {"id": pos.object.id,"type": pos.object.type, "color": 
            {"r": pos.object.getColor().r, 
@@ -121,10 +120,10 @@ class MovingAreaViewSubscription extends WorldSubscription {
   Map getStateAsMap(){
     Map jsonMap = new Map();
     Map jsonViewArea = new Map();
-    world.getObjectsForRect(toFollow.pos.x - 6, toFollow.pos.y - 6, toFollow.pos.z - 3, 12, 12 , 6).forEach((Position pos)
+    world.getObjectsForRect(toFollow.pos.x - (world.width/2).ceil(), toFollow.pos.y - (world.height/2).ceil(), toFollow.pos.z - (world.depth/2).ceil(), world.width, world.height , world.depth).forEach((Position pos)
         => WorldAreaViewCubicSubscription.addInfoAboutPositionInto(pos, jsonViewArea));
     jsonMap.putIfAbsent("viewArea",() => jsonViewArea);
-    jsonMap.putIfAbsent("spectatorPos", () => {"x": toFollow.pos.x - 5, "y": toFollow.pos.y - 5, "z": toFollow.pos.z - 2});
+    jsonMap.putIfAbsent("spectatorPos", () => {"x": toFollow.pos.x - (world.width/2).ceil(), "y": toFollow.pos.y - (world.height/2).ceil(), "z": toFollow.pos.z - (world.depth/2)});
     return jsonMap;
   }
 }

@@ -9,9 +9,9 @@ class Viewer {
   int displayOffsetX = 0;
   int displayOffsetY = 0;
   int displayOffsetZ = 0;
-  int displayWidth = 11;
-  int displayHeight = 11;
-  int displayDepth = 5;
+  int displayWidth = 30;
+  int displayHeight = 16;
+  int displayDepth = 3;
   
   get viewNumber => _choosenNumber;
   set viewNumber(int value) {
@@ -221,11 +221,11 @@ InitClient(String url, String user, String password){
   Viewer viewer = new Viewer();
   
   Viewer viewerXY_1 = new Viewer()..viewNumber = 0;
-  Viewer viewerZY_2 = new Viewer()..viewNumber = 1;
-  Viewer viewerZX_3 = new Viewer()..viewNumber = 2;
+// Viewer viewerZY_2 = new Viewer()..viewNumber = 1;
+// Viewer viewerZX_3 = new Viewer()..viewNumber = 2;
     
-  DivElement displayareaUp = query("#displayAreaUp");
-  DivElement displayareaCenter = query("#displayAreaCenter");
+ //  DivElement displayareaUp = query("#displayAreaUp");
+ // DivElement displayareaCenter = query("#displayAreaCenter");
   DivElement displayareaRight = query("#displayAreaRight");
   DivElement displayareaInfo = query("#displayAreaInfo");
   
@@ -270,22 +270,22 @@ InitClient(String url, String user, String password){
   commEngine.onUpdatedChache = () {
     viewerXY_1.updateDisplayAreaInfo(displayareaInfo, commEngine);
     viewerXY_1.updateDisplayArea(displayareaRight, commEngine);
-    viewerZY_2.updateDisplayArea(displayareaCenter, commEngine);
-    viewerZX_3.updateDisplayArea(displayareaUp, commEngine);
+   // viewerZY_2.updateDisplayArea(displayareaCenter, commEngine);
+   // viewerZX_3.updateDisplayArea(displayareaUp, commEngine);
   };
   
   commEngine.onSpectatorChange = (data) {
     viewerXY_1.displayOffsetX = data["x"];
-    viewerZY_2.displayOffsetX = data["x"];
-    viewerZX_3.displayOffsetX = data["x"];
+ //   viewerZY_2.displayOffsetX = data["x"];
+ //   viewerZX_3.displayOffsetX = data["x"];
     
     viewerXY_1.displayOffsetY = data["y"];
-    viewerZY_2.displayOffsetY = data["y"];
-    viewerZX_3.displayOffsetY = data["y"];
+ //   viewerZY_2.displayOffsetY = data["y"];
+ //  viewerZX_3.displayOffsetY = data["y"];
     
     viewerXY_1.displayOffsetZ = data["z"];
-    viewerZY_2.displayOffsetZ = data["z"];
-    viewerZX_3.displayOffsetZ = data["z"];
+ //   viewerZY_2.displayOffsetZ = data["z"];
+ //   viewerZX_3.displayOffsetZ = data["z"];
     commEngine.onUpdatedChache();
   };
   }

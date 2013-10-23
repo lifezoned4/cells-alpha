@@ -18,6 +18,8 @@ class Color {
   static Color Green = new Color(0,254,0);
   static Color Blue = new Color(0,0,254);
   
+  Color Copy() => new Color(r, g, b);
+  
   int r;
   int g;
   int b;  
@@ -135,14 +137,26 @@ class Cell extends WorldObject {
   GreenCodeContext greenCodeContext = null;
  
   
-  Cell(Color toSet) : super(new Color(0,0,0)){
+  Cell(Color toSet) : super(toSet){
     type = "C";
     if(toSet.r == Color.Green.r && toSet.g == Color.Green.g && toSet.b == Color.Green.b)
+    {
       _color = Color.Green;
+      outputColor = Color.Red.Copy();
+      outputColor.r = (outputColor.r / Color.Red.r).toInt();
+    }
     else if(toSet.r == Color.Blue.r && toSet.g == Color.Blue.g && toSet.b == Color.Blue.b)
+    {
       _color = Color.Blue;
+      outputColor = Color.Green.Copy();
+      outputColor.g = (outputColor.g / Color.Green.g).toInt();
+    }
     else if(toSet.r == Color.Red.r && toSet.g == Color.Red.g && toSet.b == Color.Red.b)
+    {
       _color = Color.Red;
+      outputColor = Color.Blue.Copy();
+      outputColor.b = (outputColor.b / Color.Blue.b).toInt();
+    } 
   }
   
   factory Cell.withCode(Color toSet, String codeString){
@@ -154,6 +168,35 @@ class Cell extends WorldObject {
     else
       constructCell.greenCodeContext = new GreenCodeContext.byHex(codeString);
     return constructCell;
+  }
+  
+  Color outputColor;
+  int outputBuffer = 0;
+  consumeEnergy(int inc){
+    int out = energy.decEnergyBy(1);
+    outputBuffer+= out;
+    if(outputBuffer > energy.energyCount/10)
+    {      
+      ejectOutput(null);
+    }
+  }
+
+  void makeConsumptions(){
+     consumeEnergy((greenCodeContext.copyCost/100).ceil());
+  }
+  
+  void ejectOutput(Position toPlaceOn) {
+     Random rnd = new Random();
+    Color bufColor = new Color(outputColor.r * outputBuffer, outputColor.g * outputBuffer, outputColor.b * outputBuffer);
+    if(toPlaceOn == null)
+      toPlaceOn = new Position(pos.isIn, min(0, max(pos.x + rnd.nextInt(2)-1, pos.isIn.width)),
+                                                  min(0, max(pos.y + rnd.nextInt(2)-1, pos.isIn.height)),
+                                                  min(0, max(pos.z + rnd.nextInt(2)-1, pos.isIn.depth)));
+    pos.isIn.newOutputMass(toPlaceOn ,bufColor);
+  }
+  
+  die(){
+    ejectOutput(pos);
   }
 }
 
@@ -225,6 +268,12 @@ class World extends ITickable {
     }
   }
     
+  newOutputMass(Position pos, Color createColor)
+  {
+     Mass mass = new Mass(createColor);
+     pos.putOn(mass);
+  }
+  
   Boot findBoot(String user){
     var iterable = positions.where((pos) => pos.object is Boot).where((pos) => (pos.object as Boot).user == user);
     
@@ -281,10 +330,16 @@ class World extends ITickable {
     
   makeMovesAndEatsAndKill(){ 
    Set<Position> dealWith = positions.toSet();
-
   
-   dealWith.forEach((pos) => tryMakeMove(pos));
+   dealWith.forEach((pos) => tryMakeMoves(pos));
 
+   dealWith.forEach((pos){ if(pos.object is Cell) 
+                              {
+                                  Cell cell = pos.object;
+                                  cell.makeConsumptions();
+                              } 
+   });
+   
    Set<Position> allreadyFeed = new Set<Position>();
    dealWith.forEach((pos) => tryEatFor(pos, allreadyFeed));
 
@@ -297,8 +352,10 @@ class World extends ITickable {
           dead.add(pos);
       } else if(pos.object is Cell){
         Cell cell = pos.object;
-        if(cell.energy.energyCount == 0)
+        if(cell.energy.energyCount == 0){
+          cell.die();
           dead.add(pos);
+        }
       }
       });
    
@@ -307,6 +364,18 @@ class World extends ITickable {
   }
   
    static const int MassConsume = 75;
+  
+  tryIfInject(Position pos){
+    if(!pos.object is Cell)
+      return;
+    Cell cell = pos.object;
+    if(!cell.greenCodeContext.inject)
+      return;
+    if(cell.greenCodeContext.injectTo != Direction.NONE)
+    {
+      
+    }
+  }
    
   tryEatFor(Position pos, Set<Position> allreadyFeed){
     HashSet<Position> surrounding = getObjectsForRect(pos.x - 1, pos.y -1, pos.z -1, 3, 3, 3);
@@ -372,7 +441,9 @@ class World extends ITickable {
       Cell cell = pos.object;
       if(cell.greenCodeContext.eat){
         bool eaten = false;
-        int hunger = 2*log(cell.energy.energyCount).round();
+        if(cell.energy.energyCount == 0)
+          return;
+        int hunger = 2*log(cell.energy.energyCount).ceil();
         int startHunger = hunger;
         while(picks.length > 0 || !eaten)
         {
@@ -422,7 +493,7 @@ class World extends ITickable {
         }
         if(hunger == startHunger)
         {
-          cell.energy.decEnergyBy((log(cell.energy.energyCount) / log(10)).round());
+         cell.consumeEnergy((log(cell.energy.energyCount) / log(10)).ceil());
         }
       }
     }
@@ -430,14 +501,16 @@ class World extends ITickable {
     allreadyFeed.add(pos);
  }
   
-  tryMakeMove(Position pos){
+  tryMakeMoves(Position pos){
     positions.remove(pos);
     
     if(pos.object is Cell)
     {
       Cell cell = pos.object;
       if(0 != (cell.greenCodeContext.nextMove.dirX + cell.greenCodeContext.nextMove.dirY + cell.greenCodeContext.nextMove.dirZ).abs());
-      ;//   _logger.info("Moving Cell: ${cell.id}");
+      {         
+        cell.consumeEnergy(1);
+      }
       pos.dx = cell.greenCodeContext.nextMove.dirX;
       pos.dy = cell.greenCodeContext.nextMove.dirY;
       pos.dz = cell.greenCodeContext.nextMove.dirZ;
