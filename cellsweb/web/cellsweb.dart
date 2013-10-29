@@ -3,15 +3,23 @@ import 'package:cellsserver/cellsProtocolClient.dart';
 
 ClientCommEngine commEngine;
 
-class Viewer {  
+class Viewer {
   int _choosenNumber = 0;
  
   int displayOffsetX = 0;
   int displayOffsetY = 0;
   int displayOffsetZ = 0;
-  int displayWidth = 30;
-  int displayHeight = 16;
-  int displayDepth = 3;
+  int displayWidth = 0;
+  int displayHeight = 0;
+  int displayDepth = 0;
+  
+  ClientCommEngine commEngine;
+  
+  Viewer(this.commEngine){
+    displayWidth = commEngine.clientMaxWidth();
+    displayHeight = commEngine.clientMaxHeight();
+    displayDepth = commEngine.clientMaxDepth();
+  }
   
   get viewNumber => _choosenNumber;
   set viewNumber(int value) {
@@ -130,7 +138,7 @@ class Viewer {
               "down": "XZ_3"
               };
 
-  updateDisplayArea (DivElement displayArea, ClientCommEngine commEngine) {
+  updateDisplayArea (DivElement displayArea) {
     String text = "";
     displayArea.children.clear();
     TableElement table = new TableElement();
@@ -169,83 +177,53 @@ class Viewer {
     displayArea.children.add(table);
   }
   
-  updateDisplayAreaInfo (DivElement displayArea, ClientCommEngine engine){
-    displayArea.children.clear();
-    LabelElement labelX = new LabelElement();
-    labelX.text = "X: ${(displayOffsetX + 5).round()} / ${engine.worldWidth -1}";
-    
-    BRElement br1 = new BRElement();
-    
-    LabelElement labelY = new LabelElement();
-    labelY.text = "Y: ${(displayOffsetY + 5).round()} / ${engine.worldHeight -1}";
-    
-    BRElement br2 = new BRElement();
-    
-    LabelElement labelZ = new LabelElement();
-    labelZ.text = "Z: ${(displayOffsetZ + 2).round()} / ${engine.worldDepth -1}";
-    
-    displayArea.children.add(labelX);
-    displayArea.children.add(br1);
-    displayArea.children.add(labelY);
-    displayArea.children.add(br2);
-    displayArea.children.add(labelZ);
+  
+  // SHOULD BE THE SAME AS IN cellsCore.dart MovingAreaViewSubscription class
+  static const int watchAreaWidth = 6;
+  static const int watchAreaHeight = 6;
+  static const int watchAreaDepth = 6;
+  
+  updateDisplayAreaInfo (DivElement displayArea){
+      displayArea.children.clear();
+      LabelElement labelX = new LabelElement();
+      labelX.text = "X: ${(displayOffsetX + watchAreaWidth).round()} / ${commEngine.worldWidth -1}";
+      
+      BRElement br1 = new BRElement();
+      
+      LabelElement labelY = new LabelElement();
+      labelY.text = "Y: ${(displayOffsetY + watchAreaHeight).round()} / ${commEngine.worldHeight -1}";
+      
+      BRElement br2 = new BRElement();
+      
+      LabelElement labelZ = new LabelElement();
+      labelZ.text = "Z: ${(displayOffsetZ + watchAreaDepth).round()} / ${commEngine.worldDepth -1}";
+      
+      displayArea.children.add(labelX);
+      displayArea.children.add(br1);
+      displayArea.children.add(labelY);
+      displayArea.children.add(br2);
+      displayArea.children.add(labelZ);
   }
 }
 
-void main() {
-  
-    InputElement url = query("#url");
-    InputElement user = query("#user");
-    InputElement password = query("#password");
-        
-    ButtonElement connect = query("#connect")..onClick.listen((e) => InitClient(url.value, user.value, password.value));
+HideConnectionBar(){
+ query("#loginarea").hidden = true;
 }
 
-InitClient(String url, String user, String password){
+
+InitAdminClient(String url, String user, String password)
+{
+  HideConnectionBar();
   
-  ButtonElement connect = query("#connect");
-  InputElement urlElm = query("#url");
-  InputElement userElm = query("#user");
-  InputElement passwordElm = query("#password");
-  
-  DivElement infoarea = query("#infoarea");
-  infoarea.text = "Nothing selected.";
-  
-  connect.disabled = true;
-  urlElm.disabled = true;
-  userElm.disabled = true;
-  passwordElm.disabled = true;
-  
+  DivElement displayArea = query("#displayarea");
+ 
   DivElement errorbar = query('#errorbar');
-  
-  Viewer viewer = new Viewer();
-  
-  Viewer viewerXY_1 = new Viewer()..viewNumber = 0;
-// Viewer viewerZY_2 = new Viewer()..viewNumber = 1;
-// Viewer viewerZX_3 = new Viewer()..viewNumber = 2;
-    
- //  DivElement displayareaUp = query("#displayAreaUp");
- // DivElement displayareaCenter = query("#displayAreaCenter");
-  DivElement displayareaRight = query("#displayAreaRight");
-  DivElement displayareaInfo = query("#displayAreaInfo");
-  
-  window.onKeyDown.listen((e){   
-    if(e.keyCode == KeyCode.A)
-      commEngine.moveSpectatorWebSocket(-1, 0 , 0);
-    if(e.keyCode == KeyCode.D)
-      commEngine.moveSpectatorWebSocket(1, 0 , 0);
-    if(e.keyCode == KeyCode.S)
-      commEngine.moveSpectatorWebSocket(0, 1 , 0);
-    if(e.keyCode == KeyCode.W)
-      commEngine.moveSpectatorWebSocket(0, -1 , 0);
-    if(e.keyCode == KeyCode.Q)
-      commEngine.moveSpectatorWebSocket(0, 0 , -1);
-    if(e.keyCode == KeyCode.E)
-      commEngine.moveSpectatorWebSocket(0, 0 , 1);
-  });
+  errorbar.text = "Logging in progress...";
   
   commEngine = new ClientCommEngine.fromUser(url, user, password);
   
+  Viewer viewer = new Viewer(commEngine)..viewNumber = 0;
+    
   commEngine.onErrorChange = (data) {
     errorbar.text = data;
   };
@@ -254,38 +232,84 @@ InitClient(String url, String user, String password){
       (String response){
            int parsedTokken = int.parse(response, onError: (wrongInt) => 0);
            if(parsedTokken != 0)
-            commEngine.initWwebSocket(parsedTokken);
-      }
+            commEngine.initWebSocket(parsedTokken);
+      }, ClientCommEngine.AdminMode
       );
+  
+  commEngine.onUpdatedChache = () {
+    viewer.updateDisplayArea(displayArea);
+  };
+}
+
+InitUserClient(String url, String user, String password){
+  HideConnectionBar();
+
+  DivElement displayArea = query("#displayarea");
+
+  DivElement errorbar = query('#errorbar');
+  errorbar.text = "Logging in progress...";
+  
+  DivElement movebar = query("#movebar");
+  DivElement infoarea = query("#infoarea");
+  
+  movebar.hidden = false;
+  
+  commEngine = new ClientCommEngine.fromUser(url, user, password);
+  
+  Viewer viewer = new Viewer(commEngine)..viewNumber = 0;
+  
+  (query("#buttonLeft") as ButtonElement).onClick.listen((a)=>commEngine.moveSpectatorWebSocket(-1, 0 , 0));
+
+  (query("#buttonRight") as ButtonElement).onClick.listen((a)=>commEngine.moveSpectatorWebSocket(1, 0 , 0));
+
+  (query("#buttonUp") as ButtonElement).onClick.listen((a)=>commEngine.moveSpectatorWebSocket(0, 1 , 0));
+
+  (query("#buttonDown") as ButtonElement).onClick.listen((a)=>commEngine.moveSpectatorWebSocket(0, -1 , 0));
+  
+  (query("#buttonRise") as ButtonElement).onClick.listen((a)=>commEngine.moveSpectatorWebSocket(0, 0 , 1));
+  
+  (query("#buttonSink") as ButtonElement).onClick.listen((a)=>commEngine.moveSpectatorWebSocket(0, 0 , -1));
+    
+  commEngine.onErrorChange = (data) {
+    errorbar.text = data;
+  };
+  
+  commEngine.commandWebSocketAuth(
+      (String response){
+           int parsedTokken = int.parse(response, onError: (wrongInt) => 0);
+           if(parsedTokken != 0)
+            commEngine.initWebSocket(parsedTokken);
+      }, ClientCommEngine.UserMode
+      );
+  
+  viewer.displayWidth = viewer.displayWidth = Viewer.watchAreaWidth;
+  viewer.displayHeight = viewer.displayHeight = Viewer.watchAreaHeight; 
+  viewer.displayDepth = viewer.displayDepth = Viewer.watchAreaDepth;
+  
   
   commEngine.onDelayStatusChange = (data) {
        
   };
   
- 
-  commEngine.onChangeRequestedInfo = (data){
-    infoarea.text = data;
-  };
-  
   commEngine.onUpdatedChache = () {
-    viewerXY_1.updateDisplayAreaInfo(displayareaInfo, commEngine);
-    viewerXY_1.updateDisplayArea(displayareaRight, commEngine);
-   // viewerZY_2.updateDisplayArea(displayareaCenter, commEngine);
-   // viewerZX_3.updateDisplayArea(displayareaUp, commEngine);
+    viewer.updateDisplayArea(displayArea);
+    viewer.updateDisplayAreaInfo(infoarea);
   };
   
   commEngine.onSpectatorChange = (data) {
-    viewerXY_1.displayOffsetX = data["x"];
- //   viewerZY_2.displayOffsetX = data["x"];
- //   viewerZX_3.displayOffsetX = data["x"];
-    
-    viewerXY_1.displayOffsetY = data["y"];
- //   viewerZY_2.displayOffsetY = data["y"];
- //  viewerZX_3.displayOffsetY = data["y"];
-    
-    viewerXY_1.displayOffsetZ = data["z"];
- //   viewerZY_2.displayOffsetZ = data["z"];
- //   viewerZX_3.displayOffsetZ = data["z"];
+    viewer.displayOffsetX = data["x"];
+    viewer.displayOffsetY = data["y"];
+    viewer.displayOffsetZ = data["z"];
     commEngine.onUpdatedChache();
   };
-  }
+
+}
+
+void main() {  
+    InputElement url = query("#url");
+    InputElement user = query("#user");
+    InputElement password = query("#password");
+        
+    ButtonElement connectAdmin = query("#connectadmin")..onClick.listen((e) => InitAdminClient(url.value, user.value, password.value));
+    ButtonElement connectUser = query("#connectuser")..onClick.listen((e) => InitUserClient(url.value, user.value, password.value));
+}

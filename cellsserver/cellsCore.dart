@@ -113,6 +113,10 @@ class WorldAreaViewCubicSubscription extends WorldSubscription {
 
 class MovingAreaViewSubscription extends WorldSubscription {
   
+  static const int watchAreaWidth = 6;
+  static const int watchAreaHeight = 6;
+  static const int watchAreaDepth = 6;
+  
   WorldObject toFollow;
   
   MovingAreaViewSubscription(world, user, this.toFollow) : super(world, user);
@@ -120,10 +124,12 @@ class MovingAreaViewSubscription extends WorldSubscription {
   Map getStateAsMap(){
     Map jsonMap = new Map();
     Map jsonViewArea = new Map();
-    world.getObjectsForRect(toFollow.pos.x - (world.width/2).ceil(), toFollow.pos.y - (world.height/2).ceil(), toFollow.pos.z - (world.depth/2).ceil(), world.width, world.height , world.depth).forEach((Position pos)
+    world.getObjectsForRect(toFollow.pos.x - (watchAreaWidth/2).ceil(), 
+                            toFollow.pos.y - (watchAreaHeight/2).ceil(),
+                            toFollow.pos.z - (watchAreaDepth/2).ceil(), watchAreaWidth, watchAreaHeight , watchAreaDepth).forEach((Position pos)
         => WorldAreaViewCubicSubscription.addInfoAboutPositionInto(pos, jsonViewArea));
     jsonMap.putIfAbsent("viewArea",() => jsonViewArea);
-    jsonMap.putIfAbsent("spectatorPos", () => {"x": toFollow.pos.x - (world.width/2).ceil(), "y": toFollow.pos.y - (world.height/2).ceil(), "z": toFollow.pos.z - (world.depth/2)});
+    jsonMap.putIfAbsent("spectatorPos", () => {"x": toFollow.pos.x - (watchAreaWidth/2).ceil(), "y": toFollow.pos.y - (watchAreaHeight/2).ceil(), "z": toFollow.pos.z - (watchAreaDepth/2)});
     return jsonMap;
   }
 }

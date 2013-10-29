@@ -21,14 +21,19 @@ final _logger = new Logger("cellsProtocolServer");
 Dsa dsa = new Dsa();
 
 class ServerCommEngine {
+  static const int Width = 30;
+  static const int Height = 16;
+  static const int Depth = 3;
+  
   Map<String, RestfulCommand> restfulCommands = new Map<String, RestfulCommand>();
   
   AuthEngine authEngine = new AuthEngine();
   
-  World world = new World(30,16,3);
+  World world = new World(Width, Height, Depth);
   
   ServerCommEngine(){
-    RegRestfulCommand(new RestfulWebSocketAuth(this));
+    RegRestfulCommand(new RestfulWebSocketAuthUser(this));
+    RegRestfulCommand(new RestfulWebSocketAuthAdmin(this));
     RegRestfulCommand(new RestfulMoveSpectator(this));
     RegRestfulCommand(new RestfulSelectInfoAbout(this));
     // authEngine.addAuth(restfulCommands[RestfulWebSocketAuth.commandNameInfo], new AllAccess());
@@ -166,17 +171,15 @@ class RestfulSelectInfoAbout extends RestfulCommand {
   }
 }
 
-class RestfulWebSocketAuth extends  RestfulCommand {      
-  static String commandNameInfo = "WebSocketAuth";
+class RestfulWebSocketAuthUser extends  RestfulCommand {      
+  static String commandNameInfo = "WebSocketAuthUser";
   static const int ticksInTokken = 120;
-  
-  
-  RestfulWebSocketAuth(ServerCommEngine engine) : super(engine){
+    
+  RestfulWebSocketAuthUser(ServerCommEngine engine) : super(engine){
     commandName = commandNameInfo;
   }
   
  String dealWithCommand(Map<String, dynamic> jsonMap, AuthContext context){
-   
    super.dealWithCommand(jsonMap, context);
    int tokken = new Random().nextInt(1<<32 -1);
    if(engine.world.users.where((user) => user.username == context.username).isNotEmpty) {
@@ -197,6 +200,34 @@ class RestfulWebSocketAuth extends  RestfulCommand {
     newUser.bootSubcription = new MovingAreaViewSubscription(engine.world, newUser, boot);    
     newUser.subscriptions.add(newUser.bootSubcription);
     }
+   return tokken.toString();
+ }
+}
+
+class RestfulWebSocketAuthAdmin extends  RestfulCommand {      
+  static String commandNameInfo = "WebSocketAuthAdmin";
+  static const int ticksInTokken = 120;
+  
+  
+  RestfulWebSocketAuthAdmin(ServerCommEngine engine) : super(engine){
+    commandName = commandNameInfo;
+  }
+  
+ String dealWithCommand(Map<String, dynamic> jsonMap, AuthContext context){   
+   super.dealWithCommand(jsonMap, context);
+   int tokken = new Random().nextInt(1<<32 -1);
+    User newAdminUser = new User(context.username, context.pubKey, tokken);
+    newAdminUser.ticksLeft = ticksInTokken;
+    engine.world.users.add(newAdminUser);
+    newAdminUser.subscriptions.add(new WorldTicksSubscription(engine.world, newAdminUser));
+    newAdminUser.bootSubcription = null;
+    newAdminUser.subscriptions.add(new WorldAreaViewCubicSubscription
+        (engine.world, newAdminUser, 
+            (ServerCommEngine.Width/2).ceil(), 
+            (ServerCommEngine.Height/2).ceil(), 
+            (ServerCommEngine.Depth/2).ceil(), (max(max(ServerCommEngine.Width.toDouble(), 
+                                                       ServerCommEngine.Height.toDouble()), 
+                                                       ServerCommEngine.Depth.toDouble())/2).ceil()));
    return tokken.toString();
  }
 }

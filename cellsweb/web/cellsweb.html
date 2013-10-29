@@ -9,33 +9,35 @@
   <body>
     
     <div style="background: rgb(0,33,0); width:1300px; height:625px">
-    <label>cells:// </label><input type="url" value="132.252.250.11:8080" id="url">
-     <label>User: </label><input id="user" value="test">
-     <label>Password</label><input value="test" type="password" id="password">
-     <button id="connect">Connect</button> 
+     <div  id="loginarea">
+       <label>cells:// </label><input type="url" value="132.252.231.45:8080" id="url">
+       <label>User: </label><input id="user" value="test">
+       <label>Password</label><input value="test" type="password" id="password">
+       <button id="connectuser">User Connect</button> 
+       <button id="connectadmin">Admin Connect</button>     
+     </div>
+     
+     <div id="movebar" hidden="true">
+       <button id="buttonUp">Up </button>
+       <button id="buttonDown">Down </button>
+       <button id="buttonLeft">Left </button>
+       <button id="buttonRight">Right </button>
+       <button id="buttonSink">Sink </button>
+       <button id="buttonRise">Rise </button>
+     </div>
+     <table>
+       <tr>
+      <div id="infoarea"></div>
+      </tr>
+      <tr>
+      <div id="displayarea"> </div>
+      </tr>
+      <tr>
+      <div id="errorbar"> </div>
+      </tr>
+    </table>
     <div>
-    <table>
-    <tr>
-    <td>
-    <table>
-      <tr>
-        <td><div id="displayAreaInfo"></div></td><td></td><td><div id="displayAreaUp"></div></td>
-      </tr>
-      <tr>
-        <td><div id="displayAreaCenter"></div></td>
-        <td width="20px"></td>
-        <td><div id="displayAreaRight"></div></td>
-      </tr>
-    </table>
-    </div>
-    </td>
-    <td>
-    <div id="infoarea"></div>
-    </td>
-    </tr>
-    </table>
-    <div id="errorbar"></div>
-  </div>
+     
     <script type="application/dart" src="cellsweb.dart"></script>
     <script src="packages/browser/dart.js"></script>
   </body>

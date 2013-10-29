@@ -74,7 +74,7 @@ class ClientCommEngine {
     throw new Exception("Not implemented!");
   }
   
-  initWwebSocket(int tokken){
+  initWebSocket(int tokken){
     var webSocket = new WebSocket("ws://" + serverURL + webSocketNode);
     webSocket.onOpen.listen((e) {   
       Map jsonMap = new Map();
@@ -165,6 +165,10 @@ class ClientCommEngine {
   int worldHeight = 16;
   int worldDepth = 3;
   
+  int clientMaxWidth() => worldWidth;
+  int clientMaxHeight() => worldHeight;
+  int clientMaxDepth() => worldDepth;
+  
   _dealWithWebSocketMsg(MessageEvent msg){
     try {
       Map jsonMap = parse(msg.data);
@@ -175,12 +179,13 @@ class ClientCommEngine {
         switch(command)
         {
           case "ticksLeft":
-            onDelayStatusChange(value);
+            if(onDelayStatusChange != null)
+              onDelayStatusChange(value);
             if(value == 0){
               commandWebSocketAuth((tokken){
                 onErrorChange("New tokken: $tokken");
-                initWwebSocket(int.parse(tokken)); 
-              });
+                initWebSocket(int.parse(tokken)); 
+              }, mode);
             }
           break;            
           case "viewArea":
@@ -246,9 +251,15 @@ class ClientCommEngine {
     }    
   }
   
-  commandWebSocketAuth(Function callback){
+  static const String AdminMode = "Admin";
+  static const String UserMode = "User";
+  
+  String mode;
+  
+  commandWebSocketAuth(Function callback, String mode){
     try {
-      String command = "WebSocketAuth";
+      String command = "WebSocketAuth" + mode;
+      this.mode = mode;
       Map jsonMap = new Map();
       
       jsonMap.putIfAbsent("command", () => command);
