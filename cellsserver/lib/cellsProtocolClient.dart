@@ -118,38 +118,20 @@ class ClientCommEngine {
         }
   }
   
-  
-  static Map runVarXY_1(int runnerI, int constA, int constB, int runnerIOffset, int runnerIMax) =>
-      {"x": constB, "y": constA, "z": runnerI};
-  static Map runVarZY_2(int runnerI, int constA, int constB, int runnerIOffset, int runnerIMax) => 
-          {"x": runnerI, "y": constA, "z": constB};
-  static Map runVarXZ_3(int runnerI, int constA, int constB, int runnerIOffset, int runnerIMax) =>
-          {"x": constB, "y": runnerI, "z": constA};
-  static Map runVarXY_6(int runnerI, int constA, int constB, int runnerIOffset, int runnerIMax) =>
-      {"x": constB, "y": constA, "z": 2*runnerIOffset + runnerIMax - 1 - runnerI};
-  static Map runVarZY_5(int runnerI, int constA, int constB, int runnerIOffset, int runnerIMax) =>
-      {"x": runnerI, "y": constA, "z": constB};
-  static Map runVarZX_4(int runnerI, int constA, int constB, int runnerIOffset, int runnerIMax) => 
-      {"x": constA, "y": 2*runnerIOffset + runnerIMax - 1 - runnerI, "z": constB};
-  
-  static int getWidth(ClientCommEngine comm) =>  comm.worldWidth;
-  static int getHeight(ClientCommEngine comm) =>  comm.worldHeight;
-  static int getDepth(ClientCommEngine comm) =>  comm.worldDepth;
-  
-  Map getView(int constA, Function constAConstrain, int constB, Function constBConstrain, Function runVar, int runnerIOffset, int runnerIMax, Function runnerVarConstrain) {
+ 
+  Map getView(int constX,  int constY, int offsetX, int offsetY) {
     int depth = 0;
     WorldObjectFacade found = null;
-    for(int runnerI = 0; runnerI < runnerVarConstrain(this); runnerI++)
+    for(int runnerDepth = 0; runnerDepth < worldDepth; runnerDepth++)
     { 
       // TODO typeSafe runVarContext 
-      if(constA < 0 || constB < 0 ||
-          constA >= constAConstrain(this) || 
-          constB >= constBConstrain(this))
+      if(constX < 0 || constY < 0 ||
+          constX >= worldWidth|| 
+          constY >= worldHeight)
         return {"found": new WorldObjectFacade.Empty()..type="S", "depth": 0};
-      if(runnerI < 0 || runnerI >= runnerVarConstrain(this))
+      if(runnerDepth < 0 || runnerDepth >= worldDepth)
         continue;
-      Map runVarContext = runVar(runnerI, constA, constB, runnerIOffset, runnerIMax);
-      WorldObjectFacade facade = clientcache[runVarContext["x"]][runVarContext["y"]][runVarContext["z"]];
+      WorldObjectFacade facade = clientcache[constX][constY][runnerDepth];
       if(facade != null && !facade.isTooOld())
       { 
         found = facade; 
