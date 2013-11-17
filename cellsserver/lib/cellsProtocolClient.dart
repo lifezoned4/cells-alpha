@@ -42,7 +42,7 @@ class WorldObjectFacade {
    }
   
   bool isTooOld(){
-    return oldness() > 2000;
+    return oldness() > 500;
   }
   
   int oldness(){

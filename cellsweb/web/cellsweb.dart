@@ -179,9 +179,9 @@ class Viewer {
   
   
   // SHOULD BE THE SAME AS IN cellsCore.dart MovingAreaViewSubscription class
-  static const int watchAreaWidth = 6;
-  static const int watchAreaHeight = 6;
-  static const int watchAreaDepth = 6;
+  static const int watchAreaWidth = 7;
+  static const int watchAreaHeight = 7;
+  static const int watchAreaDepth = 7;
   
   updateDisplayAreaInfo (DivElement displayArea){
       displayArea.children.clear();
@@ -207,7 +207,7 @@ class Viewer {
 }
 
 HideConnectionBar(){
- query("#loginarea").hidden = true;
+  querySelector("#loginarea").hidden = true;
 }
 
 
@@ -215,9 +215,9 @@ InitAdminClient(String url, String user, String password)
 {
   HideConnectionBar();
   
-  DivElement displayArea = query("#displayarea");
+  DivElement displayArea = querySelector("#displayarea");
  
-  DivElement errorbar = query('#errorbar');
+  DivElement errorbar = querySelector('#errorbar');
   errorbar.text = "Logging in progress...";
   
   commEngine = new ClientCommEngine.fromUser(url, user, password);
@@ -244,13 +244,13 @@ InitAdminClient(String url, String user, String password)
 InitUserClient(String url, String user, String password){
   HideConnectionBar();
 
-  DivElement displayArea = query("#displayarea");
+  DivElement displayArea = querySelector("#displayarea");
 
-  DivElement errorbar = query('#errorbar');
+  DivElement errorbar = querySelector('#errorbar');
   errorbar.text = "Logging in progress...";
   
-  DivElement movebar = query("#movebar");
-  DivElement infoarea = query("#infoarea");
+  DivElement movebar = querySelector("#movebar");
+  DivElement infoarea = querySelector("#infoarea");
   
   movebar.hidden = false;
   
@@ -258,17 +258,17 @@ InitUserClient(String url, String user, String password){
   
   Viewer viewer = new Viewer(commEngine)..viewNumber = 0;
   
-  (query("#buttonLeft") as ButtonElement).onClick.listen((a)=>commEngine.moveSpectatorWebSocket(-1, 0 , 0));
+  (querySelector("#buttonLeft") as ButtonElement).onClick.listen((a)=>commEngine.moveSpectatorWebSocket(-1, 0 , 0));
 
-  (query("#buttonRight") as ButtonElement).onClick.listen((a)=>commEngine.moveSpectatorWebSocket(1, 0 , 0));
+  (querySelector("#buttonRight") as ButtonElement).onClick.listen((a)=>commEngine.moveSpectatorWebSocket(1, 0 , 0));
 
-  (query("#buttonUp") as ButtonElement).onClick.listen((a)=>commEngine.moveSpectatorWebSocket(0, 1 , 0));
+  (querySelector("#buttonUp") as ButtonElement).onClick.listen((a)=>commEngine.moveSpectatorWebSocket(0, 1 , 0));
 
-  (query("#buttonDown") as ButtonElement).onClick.listen((a)=>commEngine.moveSpectatorWebSocket(0, -1 , 0));
+  (querySelector("#buttonDown") as ButtonElement).onClick.listen((a)=>commEngine.moveSpectatorWebSocket(0, -1 , 0));
   
-  (query("#buttonRise") as ButtonElement).onClick.listen((a)=>commEngine.moveSpectatorWebSocket(0, 0 , 1));
+  (querySelector("#buttonRise") as ButtonElement).onClick.listen((a)=>commEngine.moveSpectatorWebSocket(0, 0 , 1));
   
-  (query("#buttonSink") as ButtonElement).onClick.listen((a)=>commEngine.moveSpectatorWebSocket(0, 0 , -1));
+  (querySelector("#buttonSink") as ButtonElement).onClick.listen((a)=>commEngine.moveSpectatorWebSocket(0, 0 , -1));
     
   commEngine.onErrorChange = (data) {
     errorbar.text = data;
@@ -306,10 +306,10 @@ InitUserClient(String url, String user, String password){
 }
 
 void main() {  
-    InputElement url = query("#url");
-    InputElement user = query("#user");
-    InputElement password = query("#password");
+    InputElement url = querySelector("#url");
+    InputElement user = querySelector("#user");
+    InputElement password = querySelector("#password");
         
-    ButtonElement connectAdmin = query("#connectadmin")..onClick.listen((e) => InitAdminClient(url.value, user.value, password.value));
-    ButtonElement connectUser = query("#connectuser")..onClick.listen((e) => InitUserClient(url.value, user.value, password.value));
+    ButtonElement connectAdmin = querySelector("#connectadmin")..onClick.listen((e) => InitAdminClient(url.value, user.value, password.value));
+    ButtonElement connectUser = querySelector("#connectuser")..onClick.listen((e) => InitUserClient(url.value, user.value, password.value));
 }

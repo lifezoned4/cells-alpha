@@ -113,9 +113,9 @@ class WorldAreaViewCubicSubscription extends WorldSubscription {
 
 class MovingAreaViewSubscription extends WorldSubscription {
   
-  static const int watchAreaWidth = 6;
-  static const int watchAreaHeight = 6;
-  static const int watchAreaDepth = 6;
+  static const int watchAreaWidth = 7;
+  static const int watchAreaHeight = 7;
+  static const int watchAreaDepth = 7;
   
   WorldObject toFollow;
   
