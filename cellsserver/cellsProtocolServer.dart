@@ -1,9 +1,9 @@
 library protocolServer;
 
 import 'dart:io';
-import 'dart:json';
-import 'dart:utf';
 import 'dart:math';
+import 'dart:convert' show UTF8;
+import 'dart:convert' show JSON;
 
 import 'package:bignum/bignum.dart';
 import 'package:logging/logging.dart';
@@ -48,7 +48,7 @@ class ServerCommEngine {
   
   dealWithWebSocket(String message, WebSocket conn){
     _logger.info(message);
-    Map jsonMap = parse(message);
+    Map jsonMap = JSON.decode(message);
     switch(jsonMap["command"]){
       case "tokken":
         User foundUser = world.users.where((user) => user.lastSendTokken == jsonMap["data"]).first;
@@ -71,8 +71,8 @@ class ServerCommEngine {
   
   String dealWithRestful(String json){
     try {
-      Map<String, dynamic> msg = parse(json);
-      Map<String, dynamic> command = parse(msg["msg"]);
+      Map<String, dynamic> msg = JSON.decode(json);
+      Map<String, dynamic> command = JSON.decode(msg["msg"]);
       AuthContext context = new AuthContext(msg["username"], new BigInteger(msg["pubKey"], 16));
       if(valideSigning(msg) && restfulCommands.containsKey(command["command"]))
         return restfulCommands[command["command"]].dealWithCommand(command, context);
@@ -91,7 +91,7 @@ class ServerCommEngine {
     BigInteger signS = new BigInteger(msg["signS"], 16);
     BigInteger publicKey = new BigInteger(msg["pubKey"], 16);
     try {
-      dsa.verify(base64Decode(CryptoUtils.bytesToBase64(encodeUtf8(msg["msg"]))), new DsaSignature(signR, signS), publicKey);
+      dsa.verify(base64Decode(CryptoUtils.bytesToBase64(UTF8.encode(msg["msg"]))), new DsaSignature(signR, signS), publicKey);
       return true;
     }
     on InvalidSignatureException catch(ex) {
@@ -163,10 +163,10 @@ class RestfulSelectInfoAbout extends RestfulCommand {
         "y": object.pos.y,
         "z": object.pos.z};
       if(object is Cell){
-        Cell cell = object as Cell;
+        Cell cell = object;
         returner.putIfAbsent("code", () => cell.greenCodeContext.codeToStringNames());
       }
-      return stringify(returner);
+      return JSON.encode(returner);
       }
   }
 }

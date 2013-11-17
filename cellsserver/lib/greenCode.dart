@@ -190,7 +190,6 @@ abstract class GreenCode {
       return this;
     else return null;
   }
-  factoryDo(String hexNibble);
   doOn(GreenCodeContext context);
 }
 
@@ -246,7 +245,7 @@ class GreenCodeIfNot0 extends GreenCode {
     
   doOn(GreenCodeContext context){
     if(context.code[context.getAddresse(context.IP + 1)] is GreenCodeNop)
-    {  if(context.registers[context.code[context.getAddresse(context.IP + 1)].register] == 0)
+    {  if(context.registers[(context.code[context.getAddresse(context.IP + 1)] as GreenCodeNop).register] == 0)
         context.IP = context.getAddresse(context.IP + 2);
       else
         context.IP = context.getAddresse(context.IP + 2);
@@ -277,7 +276,7 @@ class GreenCodeEatDir extends GreenCode {
   doOn(GreenCodeContext context){
     int arg;
     if(context.code[context.getAddresse(context.IP + 1)] is GreenCodeNop)
-      arg = context.registers[context.code[context.getAddresse(context.IP + 1)].register];
+      arg = context.registers[(context.code[context.getAddresse(context.IP + 1)] as GreenCodeNop).register];
     else 
       arg = context.registers["BX"];
     context.eatOn = Direction.values.firstWhere((e) => e.value == arg % Direction.values.length);
@@ -295,7 +294,7 @@ class GreenCodeMove extends GreenCode {
   doOn(GreenCodeContext context){
     int arg;
     if(context.code[context.getAddresse(context.IP + 1)] is GreenCodeNop)
-      arg = context.registers[context.code[context.getAddresse(context.IP + 1)].register];
+      arg = context.registers[(context.code[context.getAddresse(context.IP + 1)] as GreenCodeNop).register];
     else 
       arg = context.registers["BX"];
      context.nextMove = Direction.values.firstWhere((e) => e.value == arg % Direction.values.length);
@@ -347,7 +346,7 @@ class GreenCodeInject extends GreenCode {
   doOn(GreenCodeContext context){
     int arg;
     if(context.code[context.getAddresse(context.IP + 1)] is GreenCodeNop)
-      arg = context.registers[context.code[context.getAddresse(context.IP + 1)].register];
+      arg = context.registers[(context.code[context.getAddresse(context.IP + 1)] as GreenCodeNop).register];
     else 
       arg = context.registers["BX"];
     context.injectTo = Direction.values.firstWhere((e) => e.value == arg % Direction.values.length);
@@ -364,8 +363,8 @@ class GreenCodeIfNotEqu extends GreenCode {
     
   doOn(GreenCodeContext context){
     if(context.code[context.getAddresse(context.IP + 1)] is GreenCodeNop)
-    {  if(context.registers[context.code[context.getAddresse(context.IP + 1)].register] 
-      ==  context.registers[context.code[context.getAddresse(context.IP + 1)].compliment().register])
+    {  if(context.registers[(context.code[context.getAddresse(context.IP + 1)] as GreenCodeNop).register] 
+      ==  context.registers[(context.code[context.getAddresse(context.IP + 1)] as GreenCodeNop).compliment().register])
         context.IP = context.getAddresse(context.IP + 2);
     else
       context.IP = context.getAddresse(context.IP + 1);
@@ -384,7 +383,7 @@ class GreenCodeIfBit1 extends GreenCode {
     
   doOn(GreenCodeContext context){
     if(context.code[context.getAddresse(context.IP + 1)] is GreenCodeNop)
-    {  if((context.registers[context.code[context.getAddresse(context.IP + 1)].register] & 1) != 1)
+    {  if((context.registers[(context.code[context.getAddresse(context.IP + 1)] as GreenCodeNop).register] & 1) != 1)
         context.IP = context.getAddresse(context.IP + 2);
       else
         context.IP = context.getAddresse(context.IP + 1);
@@ -518,7 +517,7 @@ class GreenCodePush extends GreenCode {
   doOn(GreenCodeContext context){
     int arg;
     if(context.code[context.getAddresse(context.IP + 1)] is GreenCodeNop)
-      context.stack.add(context.registers[context.code[context.getAddresse(context.IP + 1)].register]);
+      context.stack.add(context.registers[(context.code[context.getAddresse(context.IP + 1)] as GreenCodeNop).register]);
     else 
       context.stack.add(context.registers["BX"]);
   }
@@ -534,7 +533,7 @@ class GreenCodePop extends GreenCode {
     int arg;
     if(context.code[context.getAddresse(context.IP + 1)] is GreenCodeNop)
       if(context.stack.length > 0)
-        context.registers[context.code[context.getAddresse(context.IP + 1)].register] = context.stack.removeLast();
+        context.registers[(context.code[context.getAddresse(context.IP + 1)] as GreenCodeNop).register] = context.stack.removeLast();
     else 
     {
       if(context.stack.length > 0)
@@ -550,7 +549,7 @@ class GreenCodeInc extends GreenCode {
   }
   doOn(GreenCodeContext context){
     if(context.code[context.getAddresse(context.IP + 1)] is GreenCodeNop)
-      context.registers[context.code[context.getAddresse(context.IP + 1)].register]++;
+      context.registers[(context.code[context.getAddresse(context.IP + 1)] as GreenCodeNop).register ]++;
     else 
       context.registers["BX"]++;
   }

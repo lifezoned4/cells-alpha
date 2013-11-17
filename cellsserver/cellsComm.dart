@@ -10,18 +10,18 @@ import 'cellsProtocolServer.dart';
 
 final _logger = new Logger("cellsComm");
 
-final String _ip = "132.252.231.45";
+final String _ip = "192.168.1.27";
 final int _port = 8080;
 
 
 ServerCommEngine _serverCommEngine;
 
 main(){ 
-    Logger.root.onRecord.listen(new PrintHandler()); 
+    Logger.root.onRecord.listen(new LogPrintHandler()); 
    _logger.info("Starting up Cells Communication Layer");
    _logger.info("WebServer will be listening on ${_ip}:${_port}");
       
-   runZonedExperimental((){
+   runZoned((){
    _serverCommEngine = new ServerCommEngine();
    try {
    HttpServer.bind(_ip, _port)

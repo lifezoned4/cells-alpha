@@ -4,7 +4,7 @@
 library bytes;
 
 import 'dart:typed_data';
-import 'dart:utf';
+import 'dart:convert' show UTF8;
 import 'package:crypto/crypto.dart';
 import 'package:bignum/bignum.dart';
 
@@ -16,7 +16,7 @@ ByteData toByteArray(List<int> ints){
 }
 
 ByteData toBytes(String string){
-  List<int> byteList = encodeUtf8(string);
+  List<int> byteList = UTF8.encode(string);
   ByteData ba = new ByteData.view(new Uint8List(byteList.length).buffer);
   int offset = 0;
   byteList.forEach((byte) { ba.setInt8(offset, byte); offset++;});
@@ -25,7 +25,7 @@ ByteData toBytes(String string){
 
 String fromBytes(ByteData array){
   List<int> byteList = byteArrayToByteList(array);
-  return decodeUtf8(byteList);
+  return UTF8.decode(byteList);
 }
 
 List<int> byteArrayToByteList(ByteData array){
@@ -72,7 +72,7 @@ ByteData intToByteArray(int integer){
 List<int> _convertTypesToListInt(dynamic item){
   List<int> itemBytes;
   if (item is String)
-    itemBytes = encodeUtf8(item);
+    itemBytes = UTF8.encode(item);
   else if (item is List<int>)
     itemBytes = item;
   else if (item is BigInteger)

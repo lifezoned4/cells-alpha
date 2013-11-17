@@ -6,9 +6,9 @@ library dsa;
 
 
 import 'bytes.dart';
-import 'dart:utf';
 import 'dart:typed_data';
 import 'dart:math';
+import 'dart:convert' show UTF8;
 import 'package:crypto/crypto.dart';
 import 'package:bignum/bignum.dart';
 
@@ -119,8 +119,8 @@ class Dsa {
   
   DsaKeyPair fromSecretUserPassword(String user, String password) {
     String privateKeySecret = "RAINBOWMAGIC" + user + password;
-    String privateKeySecretBytes = CryptoUtils.bytesToBase64(encodeUtf8(privateKeySecret));
-    String privateKeySecretHex = CryptoUtils.bytesToHex(encodeUtf8(privateKeySecretBytes));
+    String privateKeySecretBytes = CryptoUtils.bytesToBase64(UTF8.encode(privateKeySecret));
+    String privateKeySecretHex = CryptoUtils.bytesToHex(UTF8.encode(privateKeySecretBytes));
     BigInteger privateKeyInput = new BigInteger(privateKeySecretHex, 16);    
     return fromSecret(privateKeyInput);
   }

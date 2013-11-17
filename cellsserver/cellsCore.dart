@@ -4,7 +4,7 @@ import 'package:logging/logging.dart';
 
 import "package:bignum/bignum.dart";
 import "dart:io";
-import "dart:json";
+import 'dart:convert' show JSON;
 
 import "lib/cells.dart";
 
@@ -22,7 +22,7 @@ class User extends ITickable {
   
   dealWithWebSocket(String message, WebSocket conn){
       print(message);
-      Map jsonMap = parse(message);
+      Map jsonMap = JSON.decode(message);
       switch(jsonMap["command"]){
         case "moveSpectator":
           if (jsonMap["data"]["dx"].abs() + jsonMap["data"]["dy"].abs() + jsonMap["data"]["dz"].abs() > 1)
@@ -40,7 +40,7 @@ class User extends ITickable {
     Map jsonMapData = new Map();
     subscriptions.forEach((sub) => jsonMapData.addAll(sub.getStateAsMap()));
     jsonMap.putIfAbsent("data", () => jsonMapData);
-    return stringify(jsonMap);
+    return JSON.encode(jsonMap);
   }
   
   tick(){

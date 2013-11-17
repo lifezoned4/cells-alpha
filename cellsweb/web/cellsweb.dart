@@ -236,7 +236,7 @@ InitAdminClient(String url, String user, String password)
       }, ClientCommEngine.AdminMode
       );
   
-  commEngine.onUpdatedChache = () {
+  commEngine.onUpdatedCache = () {
     viewer.updateDisplayArea(displayArea);
   };
 }
@@ -291,7 +291,7 @@ InitUserClient(String url, String user, String password){
        
   };
   
-  commEngine.onUpdatedChache = () {
+  commEngine.onUpdatedCache = () {
     viewer.updateDisplayArea(displayArea);
     viewer.updateDisplayAreaInfo(infoarea);
   };
@@ -300,7 +300,7 @@ InitUserClient(String url, String user, String password){
     viewer.displayOffsetX = data["x"];
     viewer.displayOffsetY = data["y"];
     viewer.displayOffsetZ = data["z"];
-    commEngine.onUpdatedChache();
+    commEngine.onUpdatedCache();
   };
 
 }

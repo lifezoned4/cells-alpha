@@ -143,19 +143,19 @@ class Cell extends WorldObject {
     {
       _color = Color.Green;
       outputColor = Color.Red.Copy();
-      outputColor.r = (outputColor.r / Color.Red.r).toInt();
+      outputColor.r = (outputColor.r ~/ Color.Red.r);
     }
     else if(toSet.r == Color.Blue.r && toSet.g == Color.Blue.g && toSet.b == Color.Blue.b)
     {
       _color = Color.Blue;
       outputColor = Color.Green.Copy();
-      outputColor.g = (outputColor.g / Color.Green.g).toInt();
+      outputColor.g = (outputColor.g ~/ Color.Green.g);
     }
     else if(toSet.r == Color.Red.r && toSet.g == Color.Red.g && toSet.b == Color.Red.b)
     {
       _color = Color.Red;
       outputColor = Color.Blue.Copy();
-      outputColor.b = (outputColor.b / Color.Blue.b).toInt();
+      outputColor.b = (outputColor.b ~/ Color.Blue.b);
     } 
   }
   
@@ -366,7 +366,7 @@ class World extends ITickable {
    static const int MassConsume = 75;
   
   tryIfInject(Position pos){
-    if(!pos.object is Cell)
+    if(!(pos.object is Cell))
       return;
     Cell cell = pos.object;
     if(!cell.greenCodeContext.inject)

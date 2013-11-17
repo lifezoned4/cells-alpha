@@ -1,9 +1,9 @@
 library protocolClient;
 
 import 'dart:html';
-import 'dart:json';
-import 'dart:utf';
 import 'dart:async';
+import 'dart:convert' show UTF8;
+import 'dart:convert' show JSON;
 import 'package:crypto/crypto.dart';
 import 'cryptolib/dsa.dart';
 import 'cryptolib/bytes.dart';
@@ -58,7 +58,7 @@ class ClientCommEngine {
   Function onDelayStatusChange;
   Function onErrorChange;
   Function onChangeRequestedInfo;
-  Function onUpdatedChache;
+  Function onUpdatedCache;
   Function onSpectatorChange;
   
   DsaKeyPair keyPair;
@@ -80,7 +80,7 @@ class ClientCommEngine {
       Map jsonMap = new Map();
       jsonMap.putIfAbsent("command", () => "tokken");
       jsonMap.putIfAbsent("data", () => tokken);
-      webSocket.send(stringify(jsonMap));
+      webSocket.send(JSON.encode(jsonMap));
       for(int x = 0; x <  worldWidth; x++) {
         clientcache.putIfAbsent(x, () => new Map<int, Map<int, WorldObjectFacade>>());
         for(int y = 0; y < worldHeight; y++) {
@@ -100,7 +100,7 @@ class ClientCommEngine {
     Map jsonMap = new Map();
     jsonMap.putIfAbsent("command", () => "moveSpectator");
     jsonMap.putIfAbsent("data", () => {"dx": dx, "dy": dy, "dz": dz});
-    ws.send(stringify(jsonMap));
+    ws.send(JSON.encode(jsonMap));
   }
   
   static const String emptyChar = "-";
@@ -171,7 +171,7 @@ class ClientCommEngine {
   
   _dealWithWebSocketMsg(MessageEvent msg){
     try {
-      Map jsonMap = parse(msg.data);
+      Map jsonMap = JSON.decode(msg.data);
       if(jsonMap["username"] != username)
         return;
       jsonMap.remove("username");
@@ -201,7 +201,7 @@ class ClientCommEngine {
               toWorkOn.setData(vmap["object"]["type"], color, vmap["object"]["id"]);             
               toWorkOn.utctimestamp = new DateTime.now().toUtc().millisecondsSinceEpoch;
             });
-            onUpdatedChache();
+            onUpdatedCache();
             break;
           case "spectatorPos":
             Map jsonMap  = value;
@@ -224,7 +224,7 @@ class ClientCommEngine {
     jsonMap.putIfAbsent("command", () => command);
     jsonMap.putIfAbsent("utc", () => new DateTime.now().toUtc().millisecondsSinceEpoch);
     jsonMap.putIfAbsent("data",() => {"dx": dx, "dy": dy, "dz": dz});
-    String msg = stringify(jsonMap);
+    String msg = JSON.encode(jsonMap);
     
     msg = _sign(msg);
     _send(msg, callback); 
@@ -242,7 +242,7 @@ class ClientCommEngine {
       jsonMap.putIfAbsent("command", () => command);
       jsonMap.putIfAbsent("utc", () => new DateTime.now().toUtc().millisecondsSinceEpoch);
       jsonMap.putIfAbsent("data", () => {"id": id});
-      String msg = stringify(jsonMap);
+      String msg = JSON.encode(jsonMap);
       
       msg = _sign(msg);
       _send(msg, callback);
@@ -264,7 +264,7 @@ class ClientCommEngine {
       
       jsonMap.putIfAbsent("command", () => command);
       jsonMap.putIfAbsent("utc", () => new DateTime.now().toUtc().millisecondsSinceEpoch);
-      String msg = stringify(jsonMap);
+      String msg = JSON.encode(jsonMap);
       
       msg = _sign(msg);
       _send(msg, callback);
@@ -274,14 +274,14 @@ class ClientCommEngine {
   }
   
   String _sign(String json) {
-    DsaSignature signature = dsa.sign(base64Decode(CryptoUtils.bytesToBase64(encodeUtf8(json))), keyPair.privateKey);
+    DsaSignature signature = dsa.sign(base64Decode(CryptoUtils.bytesToBase64(UTF8.encode(json))), keyPair.privateKey);
     Map jsonMapWithSign = new Map<String, dynamic>();
     jsonMapWithSign.putIfAbsent("username", () => username);
     jsonMapWithSign.putIfAbsent("pubKey", () => keyPair.publicKey.toString(16));    
     jsonMapWithSign.putIfAbsent("msg", () => json);
     jsonMapWithSign.putIfAbsent("signR", () => signature.r.toString(16));
     jsonMapWithSign.putIfAbsent("signS", () => signature.s.toString(16));
-    return stringify(jsonMapWithSign);
+    return JSON.encode(jsonMapWithSign);
   }
   
   Future<String> _send(String msg, Function callback) {

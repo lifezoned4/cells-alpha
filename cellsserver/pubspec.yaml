@@ -1,7 +1,7 @@
 name: cellsserver
-description: A sample command-line application
+description: Cells Server
 dependencies:
   bignum: any
   crypto: any
-  logging: any
   logging_handlers: any
+  logging: any

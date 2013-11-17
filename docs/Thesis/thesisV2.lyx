@@ -1,0 +1,191 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+
+\lang ngerman
+Cells
+\lang english
+: Eine interaktives Artificial Life Model im Web 
+\end_layout
+
+\begin_layout Author
+Michael Solinski
+\end_layout
+
+\begin_layout Section
+Einleitung
+\end_layout
+
+\begin_layout Paragraph
+Die 
+\lang ngerman
+Vorstellung
+\lang english
+ daran das Mathematik und Formalismen der Logik, Leben nachbilden können
+ und so künstliches Leben, Leben vom Menschen erschaffen, hervorbringen
+ können, motivierte zu dieser Arbeit.
+\end_layout
+
+\begin_layout Paragraph
+Dieses Artifical Life Model, ein Model das den Kriterien des Lebens nachempfunde
+n ist, sollte als ein Sandkasten für das explorative erkunden von Mustern
+ dienen.
+ Die Muster sind in diesem Fall Abläufe von Programmcode einer Virtuellen
+ Maschine die für den Zweck dieses Models implementiert wurde.
+\end_layout
+
+\begin_layout Paragraph
+Die Frage die sich mir stellt ist wieviel kreative Eingabe wird benötigt
+ um eine Urprogramm zu entwerfen welches in den von mir gegen System, nach
+ bestimmten Spielregeln, überlebt.
+ Fragestellungen der Evolutionstheorie und der Selbstorganisation werden
+ angegangen und es wird eine Werkzeug angeboten mit dem die erwähnten Themen
+ explorativ erforscht werden können.
+ 
+\end_layout
+
+\begin_layout Paragraph
+Im Zeitalter der Informationstechnologie wo das Web fuss gefasst hat ist
+ dieses Werkzeug eine Webapplikation welche kolleberatives herangehen an
+ das Modell erlaubt.
+ Ein Peer to Peer Netz von Modelinstanzen soll sogar den Austausch von einzelnen
+ Cells, jennen Objekten die Lebensnah modelliert sind, erlauben.
+ So kann man hoffen dass dieses Projekt nicht nur ein Werkzeug, sondern
+ sogar eine Platform für das von mir entworfene Artifical Life Model wird.
+\end_layout
+
+\begin_layout Paragraph
+Dieses Werkzeug soll das Problem lösen was bei Einbenutzerbetrieben auftritt.
+ In diesen ist oftmals nur die Eingabe von Verhalten durch einen Benutzer
+ möglich.
+ So können Ideen für Verhalten von verschiedenen Benutzern nur über umwege
+ in Konkurenz tretten.
+ In diesem hier entwickelten Werkzeug soll es jedoch möglich sein das eine
+ große Platform für Eingabe von verschieden dezentralen Orten über ein Webinterf
+ace erfolgen kann.
+ Hierfür mussten Regeln entwickelt werden um Populationsentwicklungen die
+ zuviel last auf den System in dennen das Model läuft einzugrenzen.
+\end_layout
+
+\begin_layout Paragraph
+Hierfür wurde ein Energie Ökosystem entworfen in dem es drei Arten von Energie
+ gibt.
+ Rote, Grüne und Blaue.
+\end_layout
+
+\begin_layout Paragraph
+Ein Cell muss einer dieser Farben angehören und kann jeweils nur das Komplimente
+ fressen.
+ Sobald die Cell mit dem System integagiert transformiert sie konsummierte
+ Energie in die Farbe von der sie gefressen werden kann.
+\end_layout
+
+\begin_layout Paragraph
+Hat sie genug gefressen kann sie sich vermehren.
+ Dafür kann sie ihren eigen Programmcode kopieren und in eine Energie Feld
+ oder eine andere Cell in ihrer Umgebung inizieren.
+ Beim Kopieren kann mutation der Programmcodestücke passieren.
+ Hat die Cell nicht mehr genug Energie um weiter ihre Aktionen im System
+ durchzuführen stirbt sie.
+\end_layout
+
+\begin_layout Paragraph
+Die Umgebung in der die Cells inteagieren ist ein geschlossene rechteckige
+ Fläche die in gleich große Felder unterteilt ist.
+ Optional kann eine Dritte Dimension dazugeschaltet werden und als zusetzlicher
+ Parameter untersucht werden.
+\end_layout
+
+\begin_layout Paragraph
+Dieses Model ist, da es Selektion durch Auslese im Kampf um Energie realisert,
+ ein Artifical Life Model.
+ Mutation bekräftigt hierbei den Evolutionären gedanken und erlaubt optimierung
+ auf Programmcodeebene.
+\end_layout
+
+\begin_layout Paragraph
+Zu überprüfen bleibt ob durch den Mehrbenutzer eine Vielfalt von verschiedenen
+ Verhaltensmustern entsehen.
+ 
+\end_layout
+
+\begin_layout Paragraph
+Auch der eher unrewahrscheinlich gedanken das Emergente Eigneschaften entstehen
+ können ist zu überprüfen.
+\end_layout
+
+\begin_layout Paragraph
+Da es sich bei dieser Idee um eine relativ großes Projekt handelt wird im
+ Rahmen dieser Arbeit versucht einen Prototypen zu entwickeln der die meisten
+ der oben erwähnten Anforderungen erfüllt.
+\end_layout
+
+\begin_layout Paragraph
+Ein Seitenschauplatz dieser Arbeit ist die Implementierung einer Webapplikation
+ mit der zuhilfenahme von der Programmiersprache dart und ihrer Frameworks.
+ Es wird hierbei auf Technologische Problemstellungen bezogen auf die oben
+ beschriebene Idee eingegangen.
+\end_layout
+
+\end_body
+\end_document
