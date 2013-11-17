@@ -124,12 +124,12 @@ class MovingAreaViewSubscription extends WorldSubscription {
   Map getStateAsMap(){
     Map jsonMap = new Map();
     Map jsonViewArea = new Map();
-    world.getObjectsForRect(toFollow.pos.x - (watchAreaWidth/2).ceil(), 
-                            toFollow.pos.y - (watchAreaHeight/2).ceil(),
-                            toFollow.pos.z - (watchAreaDepth/2).ceil(), watchAreaWidth, watchAreaHeight , watchAreaDepth).forEach((Position pos)
+    world.getObjectsForRect(toFollow.pos.x - (watchAreaWidth/2).floor(), 
+                            toFollow.pos.y - (watchAreaHeight/2).floor(),
+                            toFollow.pos.z - (watchAreaDepth/2).floor(), watchAreaWidth, watchAreaHeight , watchAreaDepth).forEach((Position pos)
         => WorldAreaViewCubicSubscription.addInfoAboutPositionInto(pos, jsonViewArea));
     jsonMap.putIfAbsent("viewArea",() => jsonViewArea);
-    jsonMap.putIfAbsent("spectatorPos", () => {"x": toFollow.pos.x - (watchAreaWidth/2).ceil(), "y": toFollow.pos.y - (watchAreaHeight/2).ceil(), "z": toFollow.pos.z - (watchAreaDepth/2)});
+    jsonMap.putIfAbsent("spectatorPos", () => {"x": toFollow.pos.x - (watchAreaWidth/2).floor(), "y": toFollow.pos.y - (watchAreaHeight/2).floor(), "z": toFollow.pos.z - (watchAreaDepth/2).floor()});
     return jsonMap;
   }
 }
