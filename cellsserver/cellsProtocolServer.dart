@@ -182,7 +182,7 @@ class RestfulWebSocketAuthUser extends  RestfulCommand {
  String dealWithCommand(Map<String, dynamic> jsonMap, AuthContext context){
    super.dealWithCommand(jsonMap, context);
    int tokken = new Random().nextInt(1<<32 -1);
-   if(engine.world.users.where((user) => user.username == context.username).isNotEmpty) {
+   if(engine.world.users.where((user) => user.username == context.username).isNotEmpty && engine.world.users.where((user) => user.username == context.username).first.bootSubcription != null) {
     User foundUser = engine.world.users.where((user) => (user.pubKey == user.pubKey) && (user.username == context.username)).first;
     foundUser.lastSendTokken = tokken;
     foundUser.ticksLeft = ticksInTokken;

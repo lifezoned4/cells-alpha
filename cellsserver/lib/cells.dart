@@ -3,6 +3,8 @@ import "dart:async";
 import "dart:collection";
 import "dart:math";
 
+import '../cellsCore.dart';
+
 import "greenCode.dart";
 
 import "package:logging/logging.dart";
@@ -226,7 +228,7 @@ class Boot extends WorldObject {
 }
 
 class World extends ITickable {
-  List<ITickable> users = new List<ITickable>();
+  List<User> users = new List<User>();
   int delay = 250;
   Timer timer;
   int ticksTillStart = 0; 
