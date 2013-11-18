@@ -10,7 +10,7 @@
     
     <div style="background: rgb(0,33,0); width:1300px; height:625px">
      <div  id="loginarea">
-       <label>cells:// </label><input type="url" value="192.168.1.27:8080" id="url">
+       <label>cells:// </label><input type="url" value="132.252.138.232:8080" id="url">
        <label>User: </label><input id="user" value="test">
        <label>Password</label><input value="test" type="password" id="password">
        <button id="connectuser">User Connect</button> 
@@ -27,6 +27,9 @@
        <button id="buttonRise">Rise </button>
      </div>
      <table>
+     <tr>
+      <td>
+     <table>
        <tr>
       <div id="infoarea"></div>
       </tr>
@@ -36,9 +39,145 @@
       <tr>
       <div id="errorbar"> </div>
       </tr>
-    </table>
-    <div>
+     </table>
+      </td>
+      <td>
+    <div id="bootcontroll1" hidden="true">
+     <table>
+     <tr>
+      <td>
+       <button id="button"> [ ] </button>
+        <button id="facedDisplay1"> .. </button>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <button id="button"> [ ] </button>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <button id="button"> [ ] </button>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <button id="button"> > </button>
+       <button id="button"> + </button>
+       <button id="button"> I </button>      
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <button id="button"> [ ] </button>
+       <button id="button"> ~ </button>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <button id="button"> > </button>
+       <button id="button"> + </button>
+       <button id="button"> I </button>
+      
+      </td>
+     </tr>
+          <tr>
+      <td>
+       <button id="button"> [ ] </button>
+      </td>
+     </tr>
+          <tr>
+      <td>
+       <button id="button"> [ ] </button>
+      </td>
+     </tr>
+          <tr>
+      <td>
+       <button id="button"> [ ] </button>
+      </td>
+     </tr>
+          <tr>
+      <td>
+       <button id="selectedEnergySmall"> -  </button>
+       <button id="selectedEnergyMedium"> 85  </button>
+       <button id="selectedEnergyLarge"> > </button>
+      </td>
+      </tr>     
+     </table> 
+     </td>
      
+     <td>
+      </div> 
+    <div id="bootcontroll2" hidden="true">
+     <table>
+     <tr>
+      <td>
+       <button id="facedDisplay1"> [ ] </button>
+       <button id="facedDisplay1"> .. </button>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <button id="facedDisplay2"> [ ] </button>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <button id="facedDisplay3"> [ ] </button>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <button id="button"> < </button>
+       <button id="button"> + </button>
+       <button id="button"> I </button>      
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <button id="facedDisplayCenter"> [ ] </button>
+       <button id="button"> ~ </button>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <button id="button"> < </button>
+       <button id="button"> + </button>
+       <button id="button"> I </button>      
+      </td>
+     </tr>
+      <tr>
+      <td>
+       <button id="facedDisplay4"> [ ] </button>
+      </td>
+     </tr>
+      <tr>
+      <td>
+       <button id="facedDisplay5"> [ ] </button>
+      </td>
+     </tr>
+      <tr>
+      <td>
+       <button id="facedDisplay6"> [ ] </button>
+      </td>
+      </tr>
+       <tr>
+        <td>
+         <button id="bootEnergyLarge"> < </button>
+            <button id="bootEnergyMedium"> 77  </button>
+               <button id="bootEnergySmall"> - </button>
+        </td>
+       </tr> 
+     </table> 
+     </div>
+    </tr>
+    </table>
+    <div id="bootcontroll3" hidden="true">
+      <button id="button"> RED </button>
+      <button id="button"> GREEN </button>
+      <button id="button"> BLUE </button>
+    </div>
+  
     <script type="application/dart" src="cellsweb.dart"></script>
     <script src="packages/browser/dart.js"></script>
   </body>

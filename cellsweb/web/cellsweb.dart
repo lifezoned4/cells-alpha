@@ -119,8 +119,8 @@ InitAdminClient(String url, String user, String password)
 {
   HideConnectionBar();
   
-  DivElement displayArea = querySelector("#displayarea");
- 
+  DivElement displayArea = querySelector("#displayarea");  
+  
   DivElement errorbar = querySelector('#errorbar');
   errorbar.text = "Logging in progress...";
   
@@ -156,8 +156,16 @@ InitUserClient(String url, String user, String password){
   DivElement movebar = querySelector("#movebar");
   DivElement infoarea = querySelector("#infoarea");
   
-  movebar.hidden = false;
+  DivElement bootcontroll1 = querySelector("#bootcontroll1");
+  DivElement bootcontroll2 = querySelector("#bootcontroll2");
+  DivElement bootcontroll3 = querySelector("#bootcontroll3");
   
+  bootcontroll1.hidden = false;
+  bootcontroll2.hidden = false;
+  bootcontroll3.hidden = false;
+      
+  movebar.hidden = false;  
+ 
   commEngine = new ClientCommEngine.fromUser(url, user, password);
   
   Viewer viewer = new Viewer(commEngine);
@@ -170,9 +178,9 @@ InitUserClient(String url, String user, String password){
 
   (querySelector("#buttonUp") as ButtonElement).onClick.listen((a)=>commEngine.moveSpectatorWebSocket(0, -1 , 0));
   
-  (querySelector("#buttonSink") as ButtonElement).onClick.listen((a)=>commEngine.moveSpectatorWebSocket(0, 0 , 1));
+  (querySelector("#buttonRise") as ButtonElement).onClick.listen((a)=>commEngine.moveSpectatorWebSocket(0, 0 , 1));
   
-  (querySelector("#buttonRise") as ButtonElement).onClick.listen((a)=>commEngine.moveSpectatorWebSocket(0, 0 , -1));
+  (querySelector("#buttonSink") as ButtonElement).onClick.listen((a)=>commEngine.moveSpectatorWebSocket(0, 0 , -1));
     
   commEngine.onErrorChange = (data) {
     errorbar.text = data;
@@ -200,11 +208,25 @@ InitUserClient(String url, String user, String password){
     viewer.updateDisplayAreaInfo(infoarea);
   };
   
+  ButtonElement bootEnergy = querySelector("#bootEnergyMedium")..onClick.listen((e) => commEngine.sendEnergyFromBootWebSocket(3));
+  querySelector("#bootEnergyLarge")..onClick.listen((e) => commEngine.sendEnergyFromBootWebSocket(10));
+  querySelector("#bootEnergySmall")..onClick.listen((e) => commEngine.sendEnergyFromBootWebSocket(1));
+  
+  
+  ButtonElement selectedEnergy = querySelector("#selectedEnergyMedium")..onClick.listen((e) => commEngine.getEnergyFromSelectedWebSocket(3));;
+  querySelector("#selectedEnergyLarge")..onClick.listen((e) => commEngine.getEnergyFromSelectedWebSocket(10));;
+  querySelector("#selectedEnergySmall")..onClick.listen((e) => commEngine.getEnergyFromSelectedWebSocket(1));;
+  
+  
   commEngine.onSpectatorChange = (data) {
     viewer.displayOffsetX = data["x"];
     viewer.displayOffsetY = data["y"];
     viewer.displayOffsetZ = data["z"];
     viewer.bootIcon = data["dir"];
+    
+    selectedEnergy.text = data["selectedEnergy"].toString();
+    bootEnergy.text = data["energy"].toString();
+    
     commEngine.onUpdatedCache();
   };
 

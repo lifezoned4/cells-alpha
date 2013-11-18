@@ -105,6 +105,20 @@ class ClientCommEngine {
     ws.send(JSON.encode(jsonMap));
   }
   
+  sendEnergyFromBootWebSocket(int count){
+    Map jsonMap = new Map();
+    jsonMap.putIfAbsent("command", () => "sendEnergyFromBoot");
+    jsonMap.putIfAbsent("data", () => {"count": count});
+    ws.send(JSON.encode(jsonMap));
+  }
+  
+  getEnergyFromSelectedWebSocket(int count){
+  Map jsonMap = new Map();
+  jsonMap.putIfAbsent("command", () => "getEnergyFromSelected");
+  jsonMap.putIfAbsent("data", () => {"count": count});
+  ws.send(JSON.encode(jsonMap));
+}
+  
   static const String emptyChar = "-";
   static const String somethingChar = "X";
   static const String somethingInbetweenChar = "x";

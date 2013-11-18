@@ -5,6 +5,8 @@ import 'package:logging/logging.dart';
 import "package:bignum/bignum.dart";
 import "dart:io";
 import 'dart:convert' show JSON;
+import 'dart:math';
+
 
 import "lib/cells.dart";
 
@@ -31,6 +33,40 @@ class User extends ITickable {
           this.bootSubcription.toFollow.pos.dy = jsonMap["data"]["dy"];
           this.bootSubcription.toFollow.pos.dz = jsonMap["data"]["dz"];
           break;
+        case "getEnergyFromSelected":
+          if(this.bootSubcription.toFollow is Boot){
+            Boot boot = this.bootSubcription.toFollow;
+            if(boot.selected != null){
+             double toGet = (jsonMap["data"]["count"] as int).toDouble();
+             if(boot.selected is Mass){
+               Mass mass = boot.selected;
+               Random rnd = new Random();
+               if(boot.energy.energyCount + toGet <= Energy.maxEnergyInObject)
+               {
+                 double consumed = mass.consume(toGet);
+                 if(mass.size <= 0)
+                   boot.selected = null;                   
+                 boot.energy.incEnergyBy(consumed);                    
+               }
+              }
+            }
+          }
+        break;          
+        case "sendEnergyFromBoot":
+          if(this.bootSubcription.toFollow is Boot){
+            Boot boot = this.bootSubcription.toFollow;
+            if(boot.selected != null){
+             double toSend = boot.energy.decEnergyBy((jsonMap["data"]["count"] as int).toDouble());
+             double left = toSend;             
+             if(boot.selected is Mass){
+               Mass mass = boot.selected;
+               Random rnd = new Random();
+               int tryed = 0;
+               double put = mass.grow(toSend);
+               boot.energy.incEnergyBy(toSend - put);
+             }
+            }
+          }
       }
   }
   
@@ -131,7 +167,14 @@ class MovingAreaViewSubscription extends WorldSubscription {
     jsonMap.putIfAbsent("viewArea",() => jsonViewArea);
     if(toFollow is Boot){
       Boot boot = toFollow;
-      jsonMap.putIfAbsent("bootInfo", () => {"dir": boot.facing.name, "x": toFollow.pos.x - (watchAreaWidth/2).floor(), "y": toFollow.pos.y - (watchAreaHeight/2).floor(), "z": toFollow.pos.z - (watchAreaDepth/2).floor()});
+      int selectedEnergy = 0;
+      if(boot.selected != null)
+        if(boot.selected is Mass)
+        {
+          Mass mass = boot.selected;
+          selectedEnergy = mass.toEnergy().round();
+        }
+        jsonMap.putIfAbsent("bootInfo", () => {"selectedEnergy": selectedEnergy, "energy": boot.energy.energyCount.round(), "dir": boot.facing.name, "x": toFollow.pos.x - (watchAreaWidth/2).floor(), "y": toFollow.pos.y - (watchAreaHeight/2).floor(), "z": toFollow.pos.z - (watchAreaDepth/2).floor()});
     }
     return jsonMap;
   }
