@@ -227,7 +227,7 @@ class RestfulWebSocketAuthAdmin extends  RestfulCommand {
             (ServerCommEngine.Height/2).ceil(), 
             (ServerCommEngine.Depth/2).ceil(), (max(max(ServerCommEngine.Width.toDouble(), 
                                                        ServerCommEngine.Height.toDouble()), 
-                                                       ServerCommEngine.Depth.toDouble())/2).ceil()));
+                                                       ServerCommEngine.Depth.toDouble())~/2 + 1)));
    return tokken.toString();
  }
 }

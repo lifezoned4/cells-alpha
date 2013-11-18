@@ -11,6 +11,8 @@ class Viewer {
   int displayHeight = 0;
   int displayDepth = 0;
   
+  String bootIcon = "NONE";
+  
   ClientCommEngine commEngine;
   
   Viewer(this.commEngine){
@@ -35,13 +37,39 @@ class Viewer {
       Map returner = commEngine.getView(runnerX, runnerY, displayOffsetX, displayOffsetY);
       WorldObjectFacade object = returner["found"];        
       if(object != null && !object.isTooOld()){
-        bt.text = returner["depth"].toString();         
+        if(object.type == "B"){
+          String icon = "X";
+          switch(bootIcon){
+            case "UP":
+              icon = "X";
+            break;
+            case "DOWN":
+              icon = "O";
+            break;
+            case "W":
+              icon = "<";
+            break;
+            case "E":
+              icon =">";
+            break;
+            case "N":
+              icon = "!";
+              break;
+            case "S":
+              icon ="i";
+              break;
+         }
+          bt.text = icon + returner["depth"].toString();          
+        }
+        else {
+          bt.text = (object.isHold ? "~": "") + returner["depth"].toString();         
+        }
         bt.id = "Field" + object.type;
         bt.style.color = "#000000";
         // bt.style.width = bt.style.height = "${40 - returner["depth"]*3}px";
         // bt.style.fontSize = "${18 - returner["depth"]}px";
         ColorFacade bgcolor = object.color;
-        double oldnessScalar = (1-((object.oldness() + 1)/2000));
+        double oldnessScalar = (1-((object.oldness() + 1)/500));
         bt.style.background = "rgb(${((bgcolor.r) * oldnessScalar).round()},${((bgcolor.g) * oldnessScalar).round()}, ${((bgcolor.b) * oldnessScalar).round()})"; 
         bt.onClick.listen((e) => commEngine.selectInfoAbout(object.id));
       }
@@ -176,6 +204,7 @@ InitUserClient(String url, String user, String password){
     viewer.displayOffsetX = data["x"];
     viewer.displayOffsetY = data["y"];
     viewer.displayOffsetZ = data["z"];
+    viewer.bootIcon = data["dir"];
     commEngine.onUpdatedCache();
   };
 

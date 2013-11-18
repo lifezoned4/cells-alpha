@@ -124,8 +124,6 @@ $$.Closure$21 = [P, {"": "Closure;call$2,$name",
   $is_args1: true
 }];
 
-$$.Closure$5 = [B, {"": "Closure;call$5,$name"}];
-
 (function (reflectionData) {
   function map(x){x={x:x};delete x.x;return x}
   if (!init.libraries) init.libraries = [];
@@ -5192,7 +5190,6 @@ InitAdminClient: function(url, user, password) {
   $.commEngine = t1;
   t1 = $.commEngine;
   viewer = B.Viewer$(t1);
-  viewer._choosenNumber = 0;
   t1.onErrorChange = new B.InitAdminClient_closure(errorbar);
   t1.commandWebSocketAuth$2(new B.InitAdminClient_closure0(), "Admin");
   $.commEngine.onUpdatedCache = new B.InitAdminClient_closure1(displayArea, viewer);
@@ -5211,7 +5208,6 @@ InitUserClient: function(url, user, password) {
   t1.keyPair = t1.dsa.fromSecretUserPassword$2(t1.username, password);
   $.commEngine = t1;
   viewer = B.Viewer$($.commEngine);
-  viewer._choosenNumber = 0;
   t1 = H.interceptedTypeCast(document.querySelector("#buttonLeft"), "$isButtonElement");
   t1.toString;
   t2 = C.EventStreamProvider_click._eventType;
@@ -5227,28 +5223,28 @@ InitUserClient: function(url, user, password) {
   t1 = new W._EventStreamSubscription(0, t3._target, t3._eventType, W._wrapZone(new B.InitUserClient_closure0()), t3._useCapture);
   H.setRuntimeTypeInfo(t1, [H.getRuntimeTypeArgument(t3, "_EventStream", 0)]);
   t1._tryResume$0();
-  t1 = H.interceptedTypeCast(document.querySelector("#buttonUp"), "$isButtonElement");
+  t1 = H.interceptedTypeCast(document.querySelector("#buttonDown"), "$isButtonElement");
   t1.toString;
   t1 = new W._ElementEventStreamImpl(t1, t2, false);
   H.setRuntimeTypeInfo(t1, [null]);
   t3 = new W._EventStreamSubscription(0, t1._target, t1._eventType, W._wrapZone(new B.InitUserClient_closure1()), t1._useCapture);
   H.setRuntimeTypeInfo(t3, [H.getRuntimeTypeArgument(t1, "_EventStream", 0)]);
   t3._tryResume$0();
-  t3 = H.interceptedTypeCast(document.querySelector("#buttonDown"), "$isButtonElement");
+  t3 = H.interceptedTypeCast(document.querySelector("#buttonUp"), "$isButtonElement");
   t3.toString;
   t3 = new W._ElementEventStreamImpl(t3, t2, false);
   H.setRuntimeTypeInfo(t3, [null]);
   t1 = new W._EventStreamSubscription(0, t3._target, t3._eventType, W._wrapZone(new B.InitUserClient_closure2()), t3._useCapture);
   H.setRuntimeTypeInfo(t1, [H.getRuntimeTypeArgument(t3, "_EventStream", 0)]);
   t1._tryResume$0();
-  t1 = H.interceptedTypeCast(document.querySelector("#buttonRise"), "$isButtonElement");
+  t1 = H.interceptedTypeCast(document.querySelector("#buttonSink"), "$isButtonElement");
   t1.toString;
   t1 = new W._ElementEventStreamImpl(t1, t2, false);
   H.setRuntimeTypeInfo(t1, [null]);
   t3 = new W._EventStreamSubscription(0, t1._target, t1._eventType, W._wrapZone(new B.InitUserClient_closure3()), t1._useCapture);
   H.setRuntimeTypeInfo(t3, [H.getRuntimeTypeArgument(t1, "_EventStream", 0)]);
   t3._tryResume$0();
-  t3 = H.interceptedTypeCast(document.querySelector("#buttonSink"), "$isButtonElement");
+  t3 = H.interceptedTypeCast(document.querySelector("#buttonRise"), "$isButtonElement");
   t3.toString;
   t2 = new W._ElementEventStreamImpl(t3, t2, false);
   H.setRuntimeTypeInfo(t2, [null]);
@@ -5258,12 +5254,12 @@ InitUserClient: function(url, user, password) {
   t3 = $.commEngine;
   t3.onErrorChange = new B.InitUserClient_closure5(errorbar);
   t3.commandWebSocketAuth$2(new B.InitUserClient_closure6(), "User");
-  viewer.displayWidth = 6;
-  viewer.displayWidth = 6;
-  viewer.displayHeight = 6;
-  viewer.displayHeight = 6;
-  viewer.displayDepth = 6;
-  viewer.displayDepth = 6;
+  viewer.displayWidth = 7;
+  viewer.displayWidth = 7;
+  viewer.displayHeight = 7;
+  viewer.displayHeight = 7;
+  viewer.displayDepth = 7;
+  viewer.displayDepth = 7;
   t3 = $.commEngine;
   t3.onDelayStatusChange = new B.InitUserClient_closure7();
   t3.onUpdatedCache = new B.InitUserClient_closure8(displayArea, infoarea, viewer);
@@ -5292,117 +5288,96 @@ main: function() {
   t3._tryResume$0();
 },
 
-Viewer: {"": "Object;_choosenNumber,displayOffsetX<,displayOffsetY<,displayOffsetZ<,displayWidth<,displayHeight<,displayDepth<,commEngine,views",
+Viewer: {"": "Object;displayOffsetX,displayOffsetY,displayOffsetZ,displayWidth,displayHeight,displayDepth,bootIcon,commEngine",
   updateDisplayArea$1: function(displayArea) {
-    var t1, t2, table, t3, constArun, t4, t5, t6, t7, line, constBrun, t8, t9, cell, bt, t10, t11, t12, t13, returner, object, bgcolor, oldnessScalar, $arguments;
+    var t1, t2, table, runnerY, t3, t4, t5, t6, line, runnerX, t7, t8, cell, bt, returner, object, icon, bgcolor, oldnessScalar, $arguments;
     t1 = J.getInterceptor$x(displayArea);
     t2 = t1.get$children(displayArea);
     t2.clear$0(t2);
     table = document.createElement("table", null);
-    t2 = this.views;
-    t3 = this._choosenNumber;
-    if (t3 < 0 || t3 >= 6)
-      throw H.ioore(t2, t3);
-    t3 = t2[t3];
-    constArun = t3.$index(t3, "VarAOffset").call$1(this);
-    t3 = J.getInterceptor$x(table);
-    t4 = this.commEngine;
+    runnerY = this.displayOffsetY;
+    t2 = J.getInterceptor$x(table);
+    t3 = this.commEngine;
     while (true) {
-      t5 = this._choosenNumber;
-      if (t5 < 0 || t5 >= 6)
-        throw H.ioore(t2, t5);
-      t5 = t2[t5];
-      t5 = t5.$index(t5, "VarAOffset").call$1(this);
-      t6 = this._choosenNumber;
-      if (t6 < 0 || t6 >= 6)
-        throw H.ioore(t2, t6);
-      t6 = t2[t6];
-      t7 = J.getInterceptor$n(constArun);
-      if (!t7.$lt(constArun, J.$add$ns(t5, t6.$index(t6, "iMaxVarA").call$1(this))))
+      t4 = this.displayHeight;
+      t5 = this.displayOffsetY;
+      if (typeof t5 !== "number")
+        throw H.iae(t5);
+      t6 = J.getInterceptor$n(runnerY);
+      if (!t6.$lt(runnerY, t4 + t5))
         break;
       line = document.createElement("tr", null);
       line.id = "FieldLine";
-      t5 = this._choosenNumber;
-      if (t5 < 0 || t5 >= 6)
-        throw H.ioore(t2, t5);
-      t5 = t2[t5];
-      constBrun = t5.$index(t5, "VarBOffset").call$1(this);
-      t5 = J.getInterceptor$x(line);
+      runnerX = this.displayOffsetX;
+      t4 = J.getInterceptor$x(line);
       while (true) {
-        t6 = this._choosenNumber;
-        if (t6 < 0 || t6 >= 6)
-          throw H.ioore(t2, t6);
-        t6 = t2[t6];
-        t6 = t6.$index(t6, "VarBOffset").call$1(this);
-        t8 = this._choosenNumber;
-        if (t8 < 0 || t8 >= 6)
-          throw H.ioore(t2, t8);
-        t8 = t2[t8];
-        t9 = J.getInterceptor$n(constBrun);
-        if (!t9.$lt(constBrun, J.$add$ns(t6, t8.$index(t8, "iMaxVarB").call$1(this))))
+        t5 = this.displayWidth;
+        t7 = this.displayOffsetX;
+        if (typeof t7 !== "number")
+          throw H.iae(t7);
+        t8 = J.getInterceptor$n(runnerX);
+        if (!t8.$lt(runnerX, t5 + t7))
           break;
         cell = document.createElement("td", null);
         cell.id = "FieldSurrounder";
         bt = document.createElement("button", null);
         bt.id = "Field";
-        t6 = this._choosenNumber;
-        if (t6 < 0 || t6 >= 6)
-          throw H.ioore(t2, t6);
-        t6 = t2[t6];
-        t6 = t6.$index(t6, "VarAConstrain");
-        t8 = this._choosenNumber;
-        if (t8 < 0 || t8 >= 6)
-          throw H.ioore(t2, t8);
-        t8 = t2[t8];
-        t8 = t8.$index(t8, "VarBConstrain");
-        t10 = this._choosenNumber;
-        if (t10 < 0 || t10 >= 6)
-          throw H.ioore(t2, t10);
-        t10 = t2[t10];
-        t10 = t10.$index(t10, "runnerFunc");
-        t11 = this._choosenNumber;
-        if (t11 < 0 || t11 >= 6)
-          throw H.ioore(t2, t11);
-        t11 = t2[t11];
-        t11 = t11.$index(t11, "VarIRunnerOffset").call$1(this);
-        t12 = this._choosenNumber;
-        if (t12 < 0 || t12 >= 6)
-          throw H.ioore(t2, t12);
-        t12 = t2[t12];
-        t12 = t12.$index(t12, "iMaxRunner").call$1(this);
-        t13 = this._choosenNumber;
-        if (t13 < 0 || t13 >= 6)
-          throw H.ioore(t2, t13);
-        t13 = t2[t13];
-        returner = t4.getView$8(constArun, t6, constBrun, t8, t10, t11, t12, t13.$index(t13, "RunnerVarConstrain"));
+        returner = t3.getView$4(runnerX, runnerY, this.displayOffsetX, this.displayOffsetY);
         object = returner.$index(returner, "found");
         if (object != null && !object.isTooOld$0()) {
-          bt.textContent = J.toString$0(returner.$index(returner, "depth"));
-          t6 = J.getInterceptor$x(object);
-          bt.id = C.JSString_methods.$add("Field", t6.get$type(object));
+          t5 = J.getInterceptor$x(object);
+          if (J.$eq(t5.get$type(object), "B")) {
+            switch (this.bootIcon) {
+              case "UP":
+                icon = "X";
+                break;
+              case "DOWN":
+                icon = "O";
+                break;
+              case "W":
+                icon = ">";
+                break;
+              case "E":
+                icon = ">";
+                break;
+              case "N":
+                icon = "!";
+                break;
+              case "S":
+                icon = "i";
+                break;
+              default:
+                icon = "X";
+            }
+            bt.textContent = C.JSString_methods.$add(icon, J.toString$0(returner.$index(returner, "depth")));
+          } else {
+            t7 = object.get$isHold() ? "<" : "";
+            bt.textContent = C.JSString_methods.$add(t7, J.toString$0(returner.$index(returner, "depth")));
+          }
+          bt.id = C.JSString_methods.$add("Field", t5.get$type(object));
           J.set$color$x(bt.style, "#000000");
-          bgcolor = t6.get$color(object);
-          oldnessScalar = 1 - (object.oldness$0() + 1) / 2000;
+          bgcolor = t5.get$color(object);
+          oldnessScalar = 1 - (object.oldness$0() + 1) / 500;
           J.set$background$x(bt.style, "rgb(" + J.round$0$n(J.$mul$n(J.get$r$x(bgcolor), oldnessScalar)) + "," + J.round$0$n(J.$mul$n(bgcolor.g, oldnessScalar)) + ", " + J.round$0$n(J.$mul$n(bgcolor.b, oldnessScalar)) + ")");
-          t6 = new W._ElementEventStreamImpl(bt, C.EventStreamProvider_click._eventType, false);
-          t6.$builtinTypeInfo = [null];
-          $arguments = H.substitute(t6.$as_EventStream, H.getRuntimeTypeInfo(t6));
-          t8 = $arguments == null ? null : $arguments[0];
-          t6 = new W._EventStreamSubscription(0, t6._target, t6._eventType, W._wrapZone(new B.Viewer_updateDisplayArea_closure(this, object)), t6._useCapture);
-          t6.$builtinTypeInfo = [t8];
-          t8 = t6._onData;
-          if (t8 != null && t6._pauseCount <= 0)
-            J.addEventListener$3$x(t6._target, t6._eventType, t8, t6._useCapture);
+          t5 = new W._ElementEventStreamImpl(bt, C.EventStreamProvider_click._eventType, false);
+          t5.$builtinTypeInfo = [null];
+          $arguments = H.substitute(t5.$as_EventStream, H.getRuntimeTypeInfo(t5));
+          t7 = $arguments == null ? null : $arguments[0];
+          t5 = new W._EventStreamSubscription(0, t5._target, t5._eventType, W._wrapZone(new B.Viewer_updateDisplayArea_closure(this, object)), t5._useCapture);
+          t5.$builtinTypeInfo = [t7];
+          t7 = t5._onData;
+          if (t7 != null && t5._pauseCount <= 0)
+            J.addEventListener$3$x(t5._target, t5._eventType, t7, t5._useCapture);
         }
-        t6 = J.get$children$x(cell);
-        t6.add$1(t6, bt);
-        t6 = t5.get$children(line);
-        t6.add$1(t6, cell);
-        constBrun = t9.$add(constBrun, 1);
+        t5 = J.get$children$x(cell);
+        t5.add$1(t5, bt);
+        t5 = t4.get$children(line);
+        t5.add$1(t5, cell);
+        runnerX = t8.$add(runnerX, 1);
       }
-      t5 = t3.get$children(table);
-      t5.add$1(t5, line);
-      constArun = t7.$add(constArun, 1);
+      t4 = t2.get$children(table);
+      t4.add$1(t4, line);
+      runnerY = t6.$add(runnerY, 1);
     }
     t1 = t1.get$children(displayArea);
     t1.add$1(t1, table);
@@ -5414,13 +5389,13 @@ Viewer: {"": "Object;_choosenNumber,displayOffsetX<,displayOffsetY<,displayOffse
     t2.clear$0(t2);
     labelX = document.createElement("label", null);
     t2 = this.commEngine;
-    labelX.textContent = "X: " + J.round$0$n(J.$add$ns(this.displayOffsetX, 6)) + " / " + (t2.worldWidth - 1);
+    labelX.textContent = "X: " + J.round$0$n(J.$add$ns(this.displayOffsetX, 7)) + " / " + (t2.worldWidth - 1);
     br1 = document.createElement("br", null);
     labelY = document.createElement("label", null);
-    labelY.textContent = "Y: " + J.round$0$n(J.$add$ns(this.displayOffsetY, 6)) + " / " + (t2.worldHeight - 1);
+    labelY.textContent = "Y: " + J.round$0$n(J.$add$ns(this.displayOffsetY, 7)) + " / " + (t2.worldHeight - 1);
     br2 = document.createElement("br", null);
     labelZ = document.createElement("label", null);
-    labelZ.textContent = "Z: " + J.round$0$n(J.$add$ns(this.displayOffsetZ, 6)) + " / " + (t2.worldDepth - 1);
+    labelZ.textContent = "Z: " + J.round$0$n(J.$add$ns(this.displayOffsetZ, 7)) + " / " + (t2.worldDepth - 1);
     t2 = t1.get$children(displayArea);
     t2.add$1(t2, labelX);
     t2 = t1.get$children(displayArea);
@@ -5439,35 +5414,11 @@ Viewer: {"": "Object;_choosenNumber,displayOffsetX<,displayOffsetY<,displayOffse
     this.displayDepth = t1.worldDepth;
   },
   static: {
-"": "Viewer_xy_1,Viewer_zy_2,Viewer_xz_3,Viewer_xz_4,Viewer_zy_5,Viewer_xy_6,Viewer_watchAreaWidth,Viewer_watchAreaHeight,Viewer_watchAreaDepth",
+"": "Viewer_watchAreaWidth,Viewer_watchAreaHeight,Viewer_watchAreaDepth",
 Viewer$: function(commEngine) {
-  var t1 = new B.Viewer(0, 0, 0, 0, 0, 0, 0, commEngine, [$.get$Viewer_xy_1(), $.get$Viewer_zy_2(), $.get$Viewer_xz_3(), $.get$Viewer_xz_4(), $.get$Viewer_zy_5(), $.get$Viewer_xy_6()]);
+  var t1 = new B.Viewer(0, 0, 0, 0, 0, 0, "NONE", commEngine);
   t1.Viewer$1(commEngine);
   return t1;
-},
-
-Viewer_getHeight: function(viewer) {
-  return viewer.get$displayHeight();
-},
-
-Viewer_getWidth: function(viewer) {
-  return viewer.get$displayWidth();
-},
-
-Viewer_getDepth: function(viewer) {
-  return viewer.get$displayDepth();
-},
-
-Viewer_getOffsetX: function(viewer) {
-  return viewer.get$displayOffsetX();
-},
-
-Viewer_getOffsetY: function(viewer) {
-  return viewer.get$displayOffsetY();
-},
-
-Viewer_getOffsetZ: function(viewer) {
-  return viewer.get$displayOffsetZ();
 }}
 
 },
@@ -5595,6 +5546,7 @@ InitUserClient_closure9: {"": "Closure;viewer_4",
     t1.displayOffsetX = t2.$index(data, "x");
     t1.displayOffsetY = t2.$index(data, "y");
     t1.displayOffsetZ = t2.$index(data, "z");
+    t1.bootIcon = t2.$index(data, "dir");
     $.commEngine.onUpdatedCache$0();
   },
   $is_args1: true
@@ -9447,7 +9399,7 @@ Duration: {"": "Object;_duration<",
     return P.Duration$(0, 0, C.JSNumber_methods.$tdiv(this._duration, quotient), 0, 0, 0);
   },
   $lt: function(_, other) {
-    return this._duration < other.get$_duration();
+    return C.JSNumber_methods.$lt(this._duration, other.get$_duration());
   },
   $gt: function(_, other) {
     return C.JSNumber_methods.$gt(this._duration, other.get$_duration());
@@ -9456,7 +9408,7 @@ Duration: {"": "Object;_duration<",
     return C.JSNumber_methods.$le(this._duration, other.get$_duration());
   },
   $ge: function(_, other) {
-    return this._duration >= other.get$_duration();
+    return C.JSNumber_methods.$ge(this._duration, other.get$_duration());
   },
   $eq: function(_, other) {
     var t1;
@@ -10818,7 +10770,7 @@ FilteredElementList_removeRange_closure: {"": "Closure;",
 ["protocolClient", "package:cellsserver/cellsProtocolClient.dart", , B, {
 ColorFacade: {"": "Object;r*,g?,b?"},
 
-WorldObjectFacade: {"": "Object;color>,type>,utctimestamp?,id",
+WorldObjectFacade: {"": "Object;color>,type>,utctimestamp?,isHold@,id",
   setData$3: function(type, color, id) {
     var t1;
     this.type = type;
@@ -10834,7 +10786,7 @@ WorldObjectFacade: {"": "Object;color>,type>,utctimestamp?,id",
     $.get$WorldObjectFacade_listOfFacades().putIfAbsent$2(id, new B.WorldObjectFacade_setData_closure(this));
   },
   isTooOld$0: function() {
-    return this.oldness$0() > 2000;
+    return this.oldness$0() > 500;
   },
   oldness$0: function() {
     return P.DateTime$_now().toUtc$0().millisecondsSinceEpoch - this.utctimestamp;
@@ -10851,7 +10803,7 @@ WorldObjectFacade_setData_closure: {"": "Closure;this_0",
   }
 },
 
-ClientCommEngine: {"": "Object;ws,onDelayStatusChange,onErrorChange,onChangeRequestedInfo,onUpdatedCache,onSpectatorChange,keyPair,serverURL,username,dsa,clientcache,worldWidth<,worldHeight<,worldDepth<,mode",
+ClientCommEngine: {"": "Object;ws,onDelayStatusChange,onErrorChange,onChangeRequestedInfo,onUpdatedCache,onSpectatorChange,keyPair,serverURL,username,dsa,clientcache,worldWidth,worldHeight,worldDepth,mode",
   onDelayStatusChange$1: function(arg0) {
     return this.onDelayStatusChange.call$1(arg0);
   },
@@ -10882,51 +10834,31 @@ ClientCommEngine: {"": "Object;ws,onDelayStatusChange,onErrorChange,onChangeRequ
     jsonMap.putIfAbsent$2("data", new B.ClientCommEngine_moveSpectatorWebSocket_closure0(dx, dy, dz));
     this.ws.send(C.C_JsonCodec.encode$1(jsonMap));
   },
-  getView$8: function(constA, constAConstrain, constB, constBConstrain, runVar, runnerIOffset, runnerIMax, runnerVarConstrain) {
-    var t1, t2, t3, depth, runnerI, t4, found, runVarContext, facade;
-    t1 = this.clientcache;
-    t2 = J.getInterceptor$n(constA);
-    t3 = J.getInterceptor$n(constB);
-    depth = 0;
-    runnerI = 0;
-    while (true) {
-      t4 = runnerVarConstrain.call$1(this);
-      if (typeof t4 !== "number")
-        throw H.iae(t4);
-      found = null;
-      if (!(runnerI < t4))
-        break;
-      c$0: {
-        if (t2.$lt(constA, 0) || t3.$lt(constB, 0) || t2.$ge(constA, constAConstrain.call$1(this)) || t3.$ge(constB, constBConstrain.call$1(this))) {
-          t1 = new B.ColorFacade(null, null, null);
-          t1.r = 0;
-          t1.g = 0;
-          t1.b = 0;
-          t1 = new B.WorldObjectFacade(t1, "", 0, -1);
-          t2 = new P.DateTime(Date.now(), false);
-          if (t2.date === void 0)
-            t2.date = new Date(t2.millisecondsSinceEpoch);
-          t2.date;
-          t1.utctimestamp = t2.toUtc$0().millisecondsSinceEpoch;
-          t1.type = "S";
-          return H.fillLiteralMap(["found", t1, "depth", 0], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null));
-        }
-        t4 = runnerVarConstrain.call$1(this);
-        if (typeof t4 !== "number")
-          throw H.iae(t4);
-        t4 = runnerI >= t4;
-        if (t4)
-          break c$0;
-        runVarContext = runVar.call$5(runnerI, constA, constB, runnerIOffset, runnerIMax);
-        t4 = J.getInterceptor$asx(runVarContext);
-        facade = J.$index$asx(J.$index$asx(t1.$index(t1, t4.$index(runVarContext, "x")), t4.$index(runVarContext, "y")), t4.$index(runVarContext, "z"));
-        if (facade != null && !facade.isTooOld$0()) {
-          found = facade;
-          break;
-        }
-        ++depth;
+  getView$4: function(constX, constY, offsetX, offsetY) {
+    var t1, t2, t3, t4, t5, t6, depth, runnerDepth, found, facade;
+    for (t1 = this.worldDepth, t2 = this.clientcache, t3 = J.getInterceptor$n(constX), t4 = J.getInterceptor$n(constY), t5 = this.worldWidth, t6 = this.worldHeight, depth = 0, runnerDepth = 0; found = null, runnerDepth < t1; ++runnerDepth) {
+      if (t3.$lt(constX, 0) || t4.$lt(constY, 0) || t3.$ge(constX, t5) || t4.$ge(constY, t6)) {
+        t1 = new B.ColorFacade(null, null, null);
+        t1.r = 0;
+        t1.g = 0;
+        t1.b = 0;
+        t1 = new B.WorldObjectFacade(t1, "", 0, false, -1);
+        t2 = new P.DateTime(Date.now(), false);
+        if (t2.date === void 0)
+          t2.date = new Date(t2.millisecondsSinceEpoch);
+        t2.date;
+        t1.utctimestamp = t2.toUtc$0().millisecondsSinceEpoch;
+        t1.type = "S";
+        return H.fillLiteralMap(["found", t1, "depth", 0], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null));
       }
-      ++runnerI;
+      if (runnerDepth >= t1)
+        continue;
+      facade = J.$index$asx(J.$index$asx(t2.$index(t2, constX), constY), runnerDepth);
+      if (facade != null && !facade.isTooOld$0()) {
+        found = facade;
+        break;
+      }
+      ++depth;
     }
     return H.fillLiteralMap(["found", found, "depth", depth], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null));
   },
@@ -11010,53 +10942,7 @@ ClientCommEngine: {"": "Object;ws,onDelayStatusChange,onErrorChange,onChangeRequ
   },
   static: {
 "": "ClientCommEngine_commandNode,ClientCommEngine_webSocketNode,ClientCommEngine_emptyChar,ClientCommEngine_somethingChar,ClientCommEngine_somethingInbetweenChar,ClientCommEngine_somethingFarChar,ClientCommEngine_somethingFarFarChar,ClientCommEngine_AdminMode,ClientCommEngine_UserMode",
-ClientCommEngine_runVarXY_1: function(runnerI, constA, constB, runnerIOffset, runnerIMax) {
-  return H.fillLiteralMap(["x", constB, "y", constA, "z", runnerI], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null));
-},
-
-ClientCommEngine_runVarZY_2: function(runnerI, constA, constB, runnerIOffset, runnerIMax) {
-  return H.fillLiteralMap(["x", runnerI, "y", constA, "z", constB], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null));
-},
-
-ClientCommEngine_runVarXZ_3: function(runnerI, constA, constB, runnerIOffset, runnerIMax) {
-  return H.fillLiteralMap(["x", constB, "y", runnerI, "z", constA], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null));
-},
-
-ClientCommEngine_runVarXY_6: function(runnerI, constA, constB, runnerIOffset, runnerIMax) {
-  if (typeof runnerIOffset !== "number")
-    throw H.iae(runnerIOffset);
-  if (typeof runnerIMax !== "number")
-    throw H.iae(runnerIMax);
-  if (typeof runnerI !== "number")
-    throw H.iae(runnerI);
-  return H.fillLiteralMap(["x", constB, "y", constA, "z", 2 * runnerIOffset + runnerIMax - 1 - runnerI], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null));
-},
-
-ClientCommEngine_runVarZY_5: function(runnerI, constA, constB, runnerIOffset, runnerIMax) {
-  return H.fillLiteralMap(["x", runnerI, "y", constA, "z", constB], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null));
-},
-
-ClientCommEngine_runVarZX_4: function(runnerI, constA, constB, runnerIOffset, runnerIMax) {
-  if (typeof runnerIOffset !== "number")
-    throw H.iae(runnerIOffset);
-  if (typeof runnerIMax !== "number")
-    throw H.iae(runnerIMax);
-  if (typeof runnerI !== "number")
-    throw H.iae(runnerI);
-  return H.fillLiteralMap(["x", constA, "y", 2 * runnerIOffset + runnerIMax - 1 - runnerI, "z", constB], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null));
-},
-
-ClientCommEngine_getWidth: function(comm) {
-  return comm.get$worldWidth();
-},
-
-ClientCommEngine_getHeight: function(comm) {
-  return comm.get$worldHeight();
-},
-
-ClientCommEngine_getDepth: function(comm) {
-  return comm.get$worldDepth();
-}}
+}
 
 },
 
@@ -11119,7 +11005,7 @@ ClientCommEngine_initWebSocket__closure3: {"": "Closure;",
     t1.r = 0;
     t1.g = 0;
     t1.b = 0;
-    t1 = new B.WorldObjectFacade(t1, "", 0, -1);
+    t1 = new B.WorldObjectFacade(t1, "", 0, false, -1);
     t1.utctimestamp = P.DateTime$_now().toUtc$0().millisecondsSinceEpoch;
     return t1;
   }
@@ -11139,7 +11025,7 @@ ClientCommEngine_moveSpectatorWebSocket_closure0: {"": "Closure;dx_0,dy_1,dz_2",
 
 ClientCommEngine__dealWithWebSocketMsg_closure: {"": "Closure;this_0",
   call$2: function(command, value) {
-    var jsonMap, t1;
+    var jsonMap, jsonMap0, t1;
     switch (command) {
       case "ticksLeft":
         t1 = this.this_0;
@@ -11154,8 +11040,9 @@ ClientCommEngine__dealWithWebSocketMsg_closure: {"": "Closure;this_0",
         J.forEach$1$ax(jsonMap, new B.ClientCommEngine__dealWithWebSocketMsg__closure0(t1));
         t1.onUpdatedCache$0();
         break;
-      case "spectatorPos":
-        this.this_0.onSpectatorChange$1(value);
+      case "bootInfo":
+        jsonMap0 = value;
+        this.this_0.onSpectatorChange$1(jsonMap0);
         break;
       case "error":
         this.this_0.onErrorChange$1(value);
@@ -11187,6 +11074,8 @@ ClientCommEngine__dealWithWebSocketMsg__closure0: {"": "Closure;this_2",
     color.set$b(J.$index$asx(J.$index$asx(J.$index$asx(vmap, "object"), "color"), "b"));
     toWorkOn.setData$3(J.$index$asx(J.$index$asx(vmap, "object"), "type"), color, J.$index$asx(J.$index$asx(vmap, "object"), "id"));
     toWorkOn.set$utctimestamp(P.DateTime$_now().toUtc$0().millisecondsSinceEpoch);
+    t1 = J.$eq(J.$index$asx(J.$index$asx(vmap, "object"), "hold"), 1) && true;
+    toWorkOn.set$isHold(t1);
   },
   $is_args2: true
 },
@@ -11286,12 +11175,6 @@ init.globalFunctions.Primitives__throwFormatException$closure = H.Primitives__th
 init.globalFunctions.toStringWrapper$closure = H.toStringWrapper$closure = new H.Closure$0(H.toStringWrapper, "toStringWrapper$closure");
 init.globalFunctions.invokeClosure$closure = H.invokeClosure$closure = new H.Closure$7(H.invokeClosure, "invokeClosure$closure");
 init.globalFunctions.isAssignable$closure = H.isAssignable$closure = new H.Closure$2(H.isAssignable, "isAssignable$closure");
-init.globalFunctions.Viewer_getHeight$closure = B.Viewer_getHeight$closure = new H.Closure$1(B.Viewer_getHeight, "Viewer_getHeight$closure");
-init.globalFunctions.Viewer_getWidth$closure = B.Viewer_getWidth$closure = new H.Closure$1(B.Viewer_getWidth, "Viewer_getWidth$closure");
-init.globalFunctions.Viewer_getDepth$closure = B.Viewer_getDepth$closure = new H.Closure$1(B.Viewer_getDepth, "Viewer_getDepth$closure");
-init.globalFunctions.Viewer_getOffsetX$closure = B.Viewer_getOffsetX$closure = new H.Closure$1(B.Viewer_getOffsetX, "Viewer_getOffsetX$closure");
-init.globalFunctions.Viewer_getOffsetY$closure = B.Viewer_getOffsetY$closure = new H.Closure$1(B.Viewer_getOffsetY, "Viewer_getOffsetY$closure");
-init.globalFunctions.Viewer_getOffsetZ$closure = B.Viewer_getOffsetZ$closure = new H.Closure$1(B.Viewer_getOffsetZ, "Viewer_getOffsetZ$closure");
 init.globalFunctions.main$closure = B.main$closure = new H.Closure$0(B.main, "main$closure");
 init.globalFunctions._asyncRunCallback$closure = P._asyncRunCallback$closure = new H.Closure$0(P._asyncRunCallback, "_asyncRunCallback$closure");
 init.globalFunctions._nullDataHandler$closure = P._nullDataHandler$closure = new H.Closure$1(P._nullDataHandler, "_nullDataHandler$closure");
@@ -11302,15 +11185,6 @@ init.globalFunctions._defaultHashCode$closure = P._defaultHashCode$closure = new
 init.globalFunctions._defaultToEncodable$closure = P._defaultToEncodable$closure = new H.Closure$1(P._defaultToEncodable, "_defaultToEncodable$closure");
 init.globalFunctions.identical$closure = P.identical$closure = new H.Closure$2(P.identical, "identical$closure");
 init.globalFunctions.identityHashCode$closure = P.identityHashCode$closure = new H.Closure$1(P.identityHashCode, "identityHashCode$closure");
-init.globalFunctions.ClientCommEngine_runVarXY_1$closure = B.ClientCommEngine_runVarXY_1$closure = new B.Closure$5(B.ClientCommEngine_runVarXY_1, "ClientCommEngine_runVarXY_1$closure");
-init.globalFunctions.ClientCommEngine_runVarZY_2$closure = B.ClientCommEngine_runVarZY_2$closure = new B.Closure$5(B.ClientCommEngine_runVarZY_2, "ClientCommEngine_runVarZY_2$closure");
-init.globalFunctions.ClientCommEngine_runVarXZ_3$closure = B.ClientCommEngine_runVarXZ_3$closure = new B.Closure$5(B.ClientCommEngine_runVarXZ_3, "ClientCommEngine_runVarXZ_3$closure");
-init.globalFunctions.ClientCommEngine_runVarXY_6$closure = B.ClientCommEngine_runVarXY_6$closure = new B.Closure$5(B.ClientCommEngine_runVarXY_6, "ClientCommEngine_runVarXY_6$closure");
-init.globalFunctions.ClientCommEngine_runVarZY_5$closure = B.ClientCommEngine_runVarZY_5$closure = new B.Closure$5(B.ClientCommEngine_runVarZY_5, "ClientCommEngine_runVarZY_5$closure");
-init.globalFunctions.ClientCommEngine_runVarZX_4$closure = B.ClientCommEngine_runVarZX_4$closure = new B.Closure$5(B.ClientCommEngine_runVarZX_4, "ClientCommEngine_runVarZX_4$closure");
-init.globalFunctions.ClientCommEngine_getWidth$closure = B.ClientCommEngine_getWidth$closure = new H.Closure$1(B.ClientCommEngine_getWidth, "ClientCommEngine_getWidth$closure");
-init.globalFunctions.ClientCommEngine_getHeight$closure = B.ClientCommEngine_getHeight$closure = new H.Closure$1(B.ClientCommEngine_getHeight, "ClientCommEngine_getHeight$closure");
-init.globalFunctions.ClientCommEngine_getDepth$closure = B.ClientCommEngine_getDepth$closure = new H.Closure$1(B.ClientCommEngine_getDepth, "ClientCommEngine_getDepth$closure");
 // Runtime type support
 W.Node.$isObject = true;
 J.JSInt.$isint = true;
@@ -11325,7 +11199,6 @@ J.JSArray0.$isList = true;
 J.JSArray0.$isObject = true;
 W.Element.$isObject = true;
 W.MouseEvent.$isObject = true;
-P.Map.$isMap = true;
 P.Map.$isObject = true;
 B.WorldObjectFacade.$isObject = true;
 W.ProgressEvent.$isObject = true;
@@ -11343,10 +11216,6 @@ P.Function.$isFunction = true;
 P.Function.$isObject = true;
 J.JSBool.$isbool = true;
 J.JSBool.$isObject = true;
-B.Viewer.$isViewer = true;
-B.Viewer.$isObject = true;
-B.ClientCommEngine.$isClientCommEngine = true;
-B.ClientCommEngine.$isObject = true;
 P._EventSink.$is_EventSink = true;
 P._EventSink.$isObject = true;
 P.Future.$isFuture = true;
@@ -11837,24 +11706,6 @@ Isolate.$lazy($, "undefinedPropertyPattern", "TypeErrorDecoder_undefinedProperty
 });
 Isolate.$lazy($, "undefinedLiteralPropertyPattern", "TypeErrorDecoder_undefinedLiteralPropertyPattern", "get$TypeErrorDecoder_undefinedLiteralPropertyPattern", function() {
   return H.TypeErrorDecoder_extractPattern(H.TypeErrorDecoder_provokePropertyErrorOnUndefined());
-});
-Isolate.$lazy($, "xy_1", "Viewer_xy_1", "get$Viewer_xy_1", function() {
-  return H.fillLiteralMap(["Name", "XY_1", "iMaxVarA", B.Viewer_getHeight$closure, "iMaxVarB", B.Viewer_getWidth$closure, "VarAOffset", B.Viewer_getOffsetY$closure, "VarBOffset", B.Viewer_getOffsetX$closure, "VarAConstrain", B.ClientCommEngine_getHeight$closure, "VarBConstrain", B.ClientCommEngine_getWidth$closure, "VarIRunnerOffset", B.Viewer_getOffsetZ$closure, "RunnerVarConstrain", B.ClientCommEngine_getDepth$closure, "iMaxRunner", B.Viewer_getDepth$closure, "runnerFunc", B.ClientCommEngine_runVarXY_1$closure, "left", "ZY_5", "right", "ZY_2", "up", "XZ_3", "down", "XZ_4"], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null));
-});
-Isolate.$lazy($, "zy_2", "Viewer_zy_2", "get$Viewer_zy_2", function() {
-  return H.fillLiteralMap(["Name", "ZY_2", "iMaxVarA", B.Viewer_getHeight$closure, "iMaxVarB", B.Viewer_getDepth$closure, "VarAOffset", B.Viewer_getOffsetY$closure, "VarBOffset", B.Viewer_getOffsetZ$closure, "VarAConstrain", B.ClientCommEngine_getHeight$closure, "VarBConstrain", B.ClientCommEngine_getDepth$closure, "VarIRunnerOffset", B.Viewer_getOffsetX$closure, "RunnerVarConstrain", B.ClientCommEngine_getWidth$closure, "iMaxRunner", B.Viewer_getWidth$closure, "runnerFunc", B.ClientCommEngine_runVarZY_2$closure, "left", "XY_1", "right", "XY_6", "up", "XZ_3", "down", "XZ_4"], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null));
-});
-Isolate.$lazy($, "xz_3", "Viewer_xz_3", "get$Viewer_xz_3", function() {
-  return H.fillLiteralMap(["Name", "XZ_3", "iMaxVarA", B.Viewer_getDepth$closure, "iMaxVarB", B.Viewer_getWidth$closure, "VarAOffset", B.Viewer_getOffsetZ$closure, "VarBOffset", B.Viewer_getOffsetX$closure, "VarAConstrain", B.ClientCommEngine_getDepth$closure, "VarBConstrain", B.ClientCommEngine_getWidth$closure, "VarIRunnerOffset", B.Viewer_getOffsetY$closure, "RunnerVarConstrain", B.ClientCommEngine_getHeight$closure, "iMaxRunner", B.Viewer_getHeight$closure, "runnerFunc", B.ClientCommEngine_runVarXZ_3$closure, "left", "ZY_2", "right", "ZY_5", "up", "XY_6", "down", "XY_1"], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null));
-});
-Isolate.$lazy($, "xz_4", "Viewer_xz_4", "get$Viewer_xz_4", function() {
-  return H.fillLiteralMap(["Name", "XZ_4", "iMaxVarA", B.Viewer_getWidth$closure, "iMaxVarB", B.Viewer_getDepth$closure, "VarAOffset", B.Viewer_getOffsetX$closure, "VarBOffset", B.Viewer_getOffsetZ$closure, "VarAConstrain", B.ClientCommEngine_getWidth$closure, "VarBConstrain", B.ClientCommEngine_getDepth$closure, "VarIRunnerOffset", B.Viewer_getOffsetY$closure, "RunnerVarConstrain", B.ClientCommEngine_getHeight$closure, "iMaxRunner", B.Viewer_getHeight$closure, "runnerFunc", B.ClientCommEngine_runVarZX_4$closure, "left", "ZY_5", "right", "ZY_2", "up", "XY_1", "down", "XY_6"], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null));
-});
-Isolate.$lazy($, "zy_5", "Viewer_zy_5", "get$Viewer_zy_5", function() {
-  return H.fillLiteralMap(["Name", "ZY_5", "iMaxVarA", B.Viewer_getHeight$closure, "iMaxVarB", B.Viewer_getDepth$closure, "VarAOffset", B.Viewer_getOffsetY$closure, "VarBOffset", B.Viewer_getOffsetZ$closure, "VarAConstrain", B.ClientCommEngine_getHeight$closure, "VarBConstrain", B.ClientCommEngine_getDepth$closure, "VarIRunnerOffset", B.Viewer_getOffsetX$closure, "RunnerVarConstrain", B.ClientCommEngine_getWidth$closure, "iMaxRunner", B.Viewer_getWidth$closure, "runnerFunc", B.ClientCommEngine_runVarZY_5$closure, "left", "XY_6", "right", "XY_1", "up", "XZ_3", "down", "XZ_4"], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null));
-});
-Isolate.$lazy($, "xy_6", "Viewer_xy_6", "get$Viewer_xy_6", function() {
-  return H.fillLiteralMap(["Name", "XY_6", "iMaxVarA", B.Viewer_getHeight$closure, "iMaxVarB", B.Viewer_getWidth$closure, "VarAOffset", B.Viewer_getOffsetY$closure, "VarBOffset", B.Viewer_getOffsetX$closure, "VarAConstrain", B.ClientCommEngine_getHeight$closure, "VarBConstrain", B.ClientCommEngine_getWidth$closure, "VarIRunnerOffset", B.Viewer_getOffsetZ$closure, "RunnerVarConstrain", B.ClientCommEngine_getDepth$closure, "iMaxRunner", B.Viewer_getDepth$closure, "runnerFunc", B.ClientCommEngine_runVarXY_6$closure, "left", "ZY_2", "right", "ZY_5", "up", "XZ_4", "down", "XZ_3"], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null));
 });
 Isolate.$lazy($, "_toStringList", "IterableMixinWorkaround__toStringList", "get$IterableMixinWorkaround__toStringList", function() {
   return P.List_List(null, null);
@@ -15515,16 +15366,15 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   toByteArray_closure.prototype = $desc;
-  function Viewer(_choosenNumber, displayOffsetX, displayOffsetY, displayOffsetZ, displayWidth, displayHeight, displayDepth, commEngine, views) {
-    this._choosenNumber = _choosenNumber;
+  function Viewer(displayOffsetX, displayOffsetY, displayOffsetZ, displayWidth, displayHeight, displayDepth, bootIcon, commEngine) {
     this.displayOffsetX = displayOffsetX;
     this.displayOffsetY = displayOffsetY;
     this.displayOffsetZ = displayOffsetZ;
     this.displayWidth = displayWidth;
     this.displayHeight = displayHeight;
     this.displayDepth = displayDepth;
+    this.bootIcon = bootIcon;
     this.commEngine = commEngine;
-    this.views = views;
   }
   Viewer.builtin$cls = "Viewer";
   if (!"name" in Viewer)
@@ -15533,24 +15383,6 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   Viewer.prototype = $desc;
-  Viewer.prototype.get$displayOffsetX = function() {
-    return this.displayOffsetX;
-  };
-  Viewer.prototype.get$displayOffsetY = function() {
-    return this.displayOffsetY;
-  };
-  Viewer.prototype.get$displayOffsetZ = function() {
-    return this.displayOffsetZ;
-  };
-  Viewer.prototype.get$displayWidth = function() {
-    return this.displayWidth;
-  };
-  Viewer.prototype.get$displayHeight = function() {
-    return this.displayHeight;
-  };
-  Viewer.prototype.get$displayDepth = function() {
-    return this.displayDepth;
-  };
   function Viewer_updateDisplayArea_closure(this_0, object_1) {
     this.this_0 = this_0;
     this.object_1 = object_1;
@@ -17660,10 +17492,11 @@ function dart_precompiled($collectedClasses) {
   ColorFacade.prototype.set$b = function(v) {
     return this.b = v;
   };
-  function WorldObjectFacade(color, type, utctimestamp, id) {
+  function WorldObjectFacade(color, type, utctimestamp, isHold, id) {
     this.color = color;
     this.type = type;
     this.utctimestamp = utctimestamp;
+    this.isHold = isHold;
     this.id = id;
   }
   WorldObjectFacade.builtin$cls = "WorldObjectFacade";
@@ -17681,6 +17514,12 @@ function dart_precompiled($collectedClasses) {
   };
   WorldObjectFacade.prototype.set$utctimestamp = function(v) {
     return this.utctimestamp = v;
+  };
+  WorldObjectFacade.prototype.get$isHold = function() {
+    return this.isHold;
+  };
+  WorldObjectFacade.prototype.set$isHold = function(v) {
+    return this.isHold = v;
   };
   function WorldObjectFacade_setData_closure(this_0) {
     this.this_0 = this_0;
@@ -17716,15 +17555,6 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   ClientCommEngine.prototype = $desc;
-  ClientCommEngine.prototype.get$worldWidth = function() {
-    return this.worldWidth;
-  };
-  ClientCommEngine.prototype.get$worldHeight = function() {
-    return this.worldHeight;
-  };
-  ClientCommEngine.prototype.get$worldDepth = function() {
-    return this.worldDepth;
-  };
   function ClientCommEngine_initWebSocket_closure(this_0, tokken_1, webSocket_2) {
     this.this_0 = this_0;
     this.tokken_1 = tokken_1;
@@ -17998,14 +17828,5 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   Closure$21.prototype = $desc;
-  function Closure$5(call$5, $name) {
-    this.call$5 = call$5;
-    this.$name = $name;
-  }
-  Closure$5.builtin$cls = "Closure$5";
-  $desc = $collectedClasses.Closure$5;
-  if ($desc instanceof Array)
-    $desc = $desc[1];
-  Closure$5.prototype = $desc;
-  return [HtmlElement, AnchorElement, AnimationEvent, AreaElement, AudioElement, AutocompleteErrorEvent, BRElement, BaseElement, BeforeLoadEvent, BeforeUnloadEvent, Blob, BodyElement, ButtonElement, CDataSection, CanvasElement, CharacterData, CloseEvent, Comment, CompositionEvent, ContentElement, CssFontFaceLoadEvent, CssStyleDeclaration, CustomEvent, DListElement, DataListElement, DetailsElement, DeviceMotionEvent, DeviceOrientationEvent, DialogElement, DivElement, Document, DocumentFragment, DocumentType, DomError, DomException, Element, EmbedElement, ErrorEvent, Event, EventTarget, FieldSetElement, File, FileError, FocusEvent, FormElement, HRElement, HashChangeEvent, HeadElement, HeadingElement, HtmlCollection, HtmlDocument, HtmlFormControlsCollection, HtmlHtmlElement, HtmlOptionsCollection, HttpRequest, HttpRequestEventTarget, IFrameElement, ImageElement, InputElement, KeyboardEvent, KeygenElement, LIElement, LabelElement, LegendElement, LinkElement, MapElement, MediaElement, MediaError, MediaKeyError, MediaKeyEvent, MediaKeyMessageEvent, MediaKeyNeededEvent, MediaStream, MediaStreamEvent, MediaStreamTrackEvent, MenuElement, MessageEvent, MetaElement, MeterElement, MidiConnectionEvent, MidiMessageEvent, ModElement, MouseEvent, Navigator, NavigatorUserMediaError, Node, NodeList, OListElement, ObjectElement, OptGroupElement, OptionElement, OutputElement, OverflowEvent, PageTransitionEvent, ParagraphElement, ParamElement, PopStateEvent, PositionError, PreElement, ProcessingInstruction, ProgressElement, ProgressEvent, QuoteElement, ResourceProgressEvent, RtcDataChannelEvent, RtcDtmfToneChangeEvent, RtcIceCandidateEvent, ScriptElement, SecurityPolicyViolationEvent, SelectElement, ShadowElement, ShadowRoot, SourceElement, SpanElement, SpeechInputEvent, SpeechRecognitionError, SpeechRecognitionEvent, SpeechSynthesisEvent, StorageEvent, StyleElement, TableCaptionElement, TableCellElement, TableColElement, TableElement, TableRowElement, TableSectionElement, TemplateElement, Text, TextAreaElement, TextEvent, TitleElement, TouchEvent, TrackElement, TrackEvent, TransitionEvent, UIEvent, UListElement, UnknownElement, VideoElement, WebSocket, WheelEvent, Window, _Attr, _Entity, _HTMLAppletElement, _HTMLBaseFontElement, _HTMLDirectoryElement, _HTMLFontElement, _HTMLFrameElement, _HTMLFrameSetElement, _HTMLMarqueeElement, _MutationEvent, _Notation, _XMLHttpRequestProgressEvent, VersionChangeEvent, AElement, AltGlyphElement, AnimateElement, AnimateMotionElement, AnimateTransformElement, AnimatedEnumeration, AnimatedLength, AnimatedNumberList, AnimationElement, CircleElement, ClipPathElement, DefsElement, DescElement, EllipseElement, FEBlendElement, FEColorMatrixElement, FEComponentTransferElement, FECompositeElement, FEConvolveMatrixElement, FEDiffuseLightingElement, FEDisplacementMapElement, FEDistantLightElement, FEFloodElement, FEFuncAElement, FEFuncBElement, FEFuncGElement, FEFuncRElement, FEGaussianBlurElement, FEImageElement, FEMergeElement, FEMergeNodeElement, FEMorphologyElement, FEOffsetElement, FEPointLightElement, FESpecularLightingElement, FESpotLightElement, FETileElement, FETurbulenceElement, FilterElement, ForeignObjectElement, GElement, GraphicsElement, ImageElement0, LineElement, LinearGradientElement, MarkerElement, MaskElement, MetadataElement, PathElement, PatternElement, PolygonElement, PolylineElement, RadialGradientElement, RectElement, ScriptElement0, SetElement, StopElement, StyleElement0, SvgDocument, SvgElement, SvgSvgElement, SwitchElement, SymbolElement, TSpanElement, TextContentElement, TextElement, TextPathElement, TextPositioningElement, TitleElement0, UseElement, ViewElement, ZoomEvent, _GradientElement, _SVGAltGlyphDefElement, _SVGAltGlyphItemElement, _SVGAnimateColorElement, _SVGComponentTransferFunctionElement, _SVGCursorElement, _SVGFEDropShadowElement, _SVGFontElement, _SVGFontFaceElement, _SVGFontFaceFormatElement, _SVGFontFaceNameElement, _SVGFontFaceSrcElement, _SVGFontFaceUriElement, _SVGGlyphElement, _SVGGlyphRefElement, _SVGHKernElement, _SVGMPathElement, _SVGMissingGlyphElement, _SVGVKernElement, AudioProcessingEvent, OfflineAudioCompletionEvent, ContextEvent, SqlError, ByteBuffer, TypedData, ByteData, Float32List, Float64List, Int16List, Int32List, Int8List, Uint16List, Uint32List, Uint8ClampedList, Uint8List, JS_CONST, Interceptor, JSBool, JSNull, JavaScriptObject, PlainJavaScriptObject, UnknownJavaScriptObject, JSArray0, JSMutableArray, JSFixedArray, JSExtendableArray, JSNumber, JSInt, JSDouble, JSString, startRootIsolate_closure, startRootIsolate_closure0, _Manager, _IsolateContext, _EventLoop, _EventLoop__runHelper_next, _IsolateEvent, _MainManagerStub, IsolateNatives__processWorkerMessage_closure, _BaseSendPort, _NativeJsSendPort, _NativeJsSendPort_send_closure, _NativeJsSendPort_send__closure, _WorkerSendPort, _WorkerSendPort_send_closure, ReceivePortImpl, BoundClosure$i0, _waitForPendingPorts_closure, _PendingSendPortFinder, _JsSerializer, _JsCopier, _JsDeserializer, _JsVisitedMap, _MessageTraverserVisitedMap, _MessageTraverser, BoundClosure$1, _Copier, _Copier_visitMap_closure, _Serializer, _Deserializer, TimerImpl, TimerImpl_internalCallback, TimerImpl_internalCallback0, TypeErrorDecoder, NullError, JsNoSuchMethodError, UnknownJsTypeError, unwrapException_saveStackTrace, _StackTrace, invokeClosure_closure, invokeClosure_closure0, invokeClosure_closure1, invokeClosure_closure2, invokeClosure_closure3, Closure, BoundClosure, CastErrorImplementation, TypeImpl, initHooks_closure, initHooks_closure0, initHooks_closure1, Classic, Montgomery, Barrett, JSArray, BigInteger, BoundClosure$6, BoundClosure$2, toByteArray_closure, Viewer, Viewer_updateDisplayArea_closure, InitAdminClient_closure, InitAdminClient_closure0, InitAdminClient__closure, InitAdminClient_closure1, InitUserClient_closure, InitUserClient_closure0, InitUserClient_closure1, InitUserClient_closure2, InitUserClient_closure3, InitUserClient_closure4, InitUserClient_closure5, InitUserClient_closure6, InitUserClient__closure, InitUserClient_closure7, InitUserClient_closure8, InitUserClient_closure9, main_closure, main_closure0, _HashBase, SHA256, ListIterator, MappedIterable, EfficientLengthMappedIterable, MappedIterator, WhereIterable, WhereIterator, FixedLengthListMixin, _AsyncError, Future, Future_wait_handleError, Future_wait_closure, _Completer, _AsyncCompleter, _Future, BoundClosure$20, _Future__addListener_closure, _Future__chainFutures_closure, _Future__chainFutures_closure0, _Future__asyncComplete_closure, _Future__asyncCompleteError_closure, _Future__propagateToListeners_closure, _Future__propagateToListeners_closure0, _Future__propagateToListeners__closure, _Future__propagateToListeners__closure0, Stream, Stream_forEach_closure, Stream_forEach__closure, Stream_forEach__closure0, Stream_forEach_closure0, Stream_length_closure, Stream_length_closure0, StreamSubscription, _StreamController, _StreamController__subscribe_closure, _StreamController__recordCancel_complete, _SyncStreamControllerDispatch, _AsyncStreamControllerDispatch, _AsyncStreamController, _StreamController__AsyncStreamControllerDispatch, _SyncStreamController, _StreamController__SyncStreamControllerDispatch, _ControllerStream, _ControllerSubscription, BoundClosure$0, _EventSink, _BufferingStreamSubscription, _BufferingStreamSubscription__sendDone_sendDone, _StreamImpl, _DelayedEvent, _DelayedData, _DelayedDone, _PendingEvents, _PendingEvents_schedule_closure, _StreamImplEvents, _cancelAndError_closure, _cancelAndErrorClosure_closure, _BaseZone, _BaseZone_bindCallback_closure, _BaseZone_bindCallback_closure0, _BaseZone_bindUnaryCallback_closure, _BaseZone_bindUnaryCallback_closure0, _rootHandleUncaughtError_closure, _rootHandleUncaughtError__closure, _RootZone, _HashMap, _HashMap_values_closure, HashMapKeyIterable, HashMapKeyIterator, _LinkedHashMap, _LinkedHashMap_values_closure, LinkedHashMapCell, LinkedHashMapKeyIterable, LinkedHashMapKeyIterator, _HashSet, _IdentityHashSet, HashSetIterator, _HashSetBase, IterableBase, ListBase, ListMixin, Maps_mapToString_closure, ListQueue, _ListQueueIterator, _convertJsonToDart_closure, _convertJsonToDart_walk, Codec, Converter, Encoding, JsonUnsupportedObjectError, JsonCyclicError, JsonCodec, JsonEncoder, JsonDecoder, _JsonStringifier, _JsonStringifier_stringifyJsonValue_closure, Utf8Codec, Utf8Encoder, _Utf8Encoder, NoSuchMethodError_toString_closure, DateTime, DateTime_toString_fourDigits, DateTime_toString_threeDigits, DateTime_toString_twoDigits, Duration, Duration_toString_sixDigits, Duration_toString_twoDigits, Error, NullThrownError, ArgumentError, RangeError, UnsupportedError, UnimplementedError, StateError, ConcurrentModificationError, StackOverflowError, CyclicInitializationError, _ExceptionImplementation, FormatException, IntegerDivisionByZeroException, Expando, Function, Iterator, Map, Null, Object, StackTrace, StringBuffer, Symbol, Interceptor_CssStyleDeclarationBase, CssStyleDeclarationBase, _ChildrenElementList, Interceptor_ListMixin, Interceptor_ListMixin_ImmutableListMixin, _ChildNodeListLazy, Interceptor_ListMixin0, Interceptor_ListMixin_ImmutableListMixin0, EventStreamProvider, _EventStream, _ElementEventStreamImpl, _EventStreamSubscription, ImmutableListMixin, FixedSizeListIterator, ReceivePort, TypedData_ListMixin, TypedData_ListMixin_FixedLengthListMixin, TypedData_ListMixin0, TypedData_ListMixin_FixedLengthListMixin0, TypedData_ListMixin1, TypedData_ListMixin_FixedLengthListMixin1, TypedData_ListMixin2, TypedData_ListMixin_FixedLengthListMixin2, TypedData_ListMixin3, TypedData_ListMixin_FixedLengthListMixin3, TypedData_ListMixin4, TypedData_ListMixin_FixedLengthListMixin4, TypedData_ListMixin5, TypedData_ListMixin_FixedLengthListMixin5, TypedData_ListMixin6, TypedData_ListMixin_FixedLengthListMixin6, TypedData_ListMixin7, TypedData_ListMixin_FixedLengthListMixin7, Int64List, Uint64List, Dsa, DsaParameters, DsaSignature, DsaKeyPair, convertNativeToDart_AcceptStructuredClone_findSlot, convertNativeToDart_AcceptStructuredClone_readSlot, convertNativeToDart_AcceptStructuredClone_writeSlot, convertNativeToDart_AcceptStructuredClone_walk, FilteredElementList, FilteredElementList__filtered_closure, FilteredElementList_removeRange_closure, ColorFacade, WorldObjectFacade, WorldObjectFacade_setData_closure, ClientCommEngine, ClientCommEngine_initWebSocket_closure, ClientCommEngine_initWebSocket__closure, ClientCommEngine_initWebSocket__closure0, ClientCommEngine_initWebSocket__closure1, ClientCommEngine_initWebSocket__closure2, ClientCommEngine_initWebSocket__closure3, ClientCommEngine_moveSpectatorWebSocket_closure, ClientCommEngine_moveSpectatorWebSocket_closure0, ClientCommEngine__dealWithWebSocketMsg_closure, ClientCommEngine__dealWithWebSocketMsg__closure, ClientCommEngine__dealWithWebSocketMsg__closure0, ClientCommEngine_selectInfoAbout_closure, ClientCommEngine_commandSelectInfoAbout_closure, ClientCommEngine_commandSelectInfoAbout_closure0, ClientCommEngine_commandSelectInfoAbout_closure1, ClientCommEngine_commandWebSocketAuth_closure, ClientCommEngine_commandWebSocketAuth_closure0, ClientCommEngine__sign_closure, ClientCommEngine__sign_closure0, ClientCommEngine__sign_closure1, ClientCommEngine__sign_closure2, ClientCommEngine__sign_closure3, ClientCommEngine__send_closure, Closure$2, Closure$1, Closure$0, Closure$7, Closure$21, Closure$5];
+  return [HtmlElement, AnchorElement, AnimationEvent, AreaElement, AudioElement, AutocompleteErrorEvent, BRElement, BaseElement, BeforeLoadEvent, BeforeUnloadEvent, Blob, BodyElement, ButtonElement, CDataSection, CanvasElement, CharacterData, CloseEvent, Comment, CompositionEvent, ContentElement, CssFontFaceLoadEvent, CssStyleDeclaration, CustomEvent, DListElement, DataListElement, DetailsElement, DeviceMotionEvent, DeviceOrientationEvent, DialogElement, DivElement, Document, DocumentFragment, DocumentType, DomError, DomException, Element, EmbedElement, ErrorEvent, Event, EventTarget, FieldSetElement, File, FileError, FocusEvent, FormElement, HRElement, HashChangeEvent, HeadElement, HeadingElement, HtmlCollection, HtmlDocument, HtmlFormControlsCollection, HtmlHtmlElement, HtmlOptionsCollection, HttpRequest, HttpRequestEventTarget, IFrameElement, ImageElement, InputElement, KeyboardEvent, KeygenElement, LIElement, LabelElement, LegendElement, LinkElement, MapElement, MediaElement, MediaError, MediaKeyError, MediaKeyEvent, MediaKeyMessageEvent, MediaKeyNeededEvent, MediaStream, MediaStreamEvent, MediaStreamTrackEvent, MenuElement, MessageEvent, MetaElement, MeterElement, MidiConnectionEvent, MidiMessageEvent, ModElement, MouseEvent, Navigator, NavigatorUserMediaError, Node, NodeList, OListElement, ObjectElement, OptGroupElement, OptionElement, OutputElement, OverflowEvent, PageTransitionEvent, ParagraphElement, ParamElement, PopStateEvent, PositionError, PreElement, ProcessingInstruction, ProgressElement, ProgressEvent, QuoteElement, ResourceProgressEvent, RtcDataChannelEvent, RtcDtmfToneChangeEvent, RtcIceCandidateEvent, ScriptElement, SecurityPolicyViolationEvent, SelectElement, ShadowElement, ShadowRoot, SourceElement, SpanElement, SpeechInputEvent, SpeechRecognitionError, SpeechRecognitionEvent, SpeechSynthesisEvent, StorageEvent, StyleElement, TableCaptionElement, TableCellElement, TableColElement, TableElement, TableRowElement, TableSectionElement, TemplateElement, Text, TextAreaElement, TextEvent, TitleElement, TouchEvent, TrackElement, TrackEvent, TransitionEvent, UIEvent, UListElement, UnknownElement, VideoElement, WebSocket, WheelEvent, Window, _Attr, _Entity, _HTMLAppletElement, _HTMLBaseFontElement, _HTMLDirectoryElement, _HTMLFontElement, _HTMLFrameElement, _HTMLFrameSetElement, _HTMLMarqueeElement, _MutationEvent, _Notation, _XMLHttpRequestProgressEvent, VersionChangeEvent, AElement, AltGlyphElement, AnimateElement, AnimateMotionElement, AnimateTransformElement, AnimatedEnumeration, AnimatedLength, AnimatedNumberList, AnimationElement, CircleElement, ClipPathElement, DefsElement, DescElement, EllipseElement, FEBlendElement, FEColorMatrixElement, FEComponentTransferElement, FECompositeElement, FEConvolveMatrixElement, FEDiffuseLightingElement, FEDisplacementMapElement, FEDistantLightElement, FEFloodElement, FEFuncAElement, FEFuncBElement, FEFuncGElement, FEFuncRElement, FEGaussianBlurElement, FEImageElement, FEMergeElement, FEMergeNodeElement, FEMorphologyElement, FEOffsetElement, FEPointLightElement, FESpecularLightingElement, FESpotLightElement, FETileElement, FETurbulenceElement, FilterElement, ForeignObjectElement, GElement, GraphicsElement, ImageElement0, LineElement, LinearGradientElement, MarkerElement, MaskElement, MetadataElement, PathElement, PatternElement, PolygonElement, PolylineElement, RadialGradientElement, RectElement, ScriptElement0, SetElement, StopElement, StyleElement0, SvgDocument, SvgElement, SvgSvgElement, SwitchElement, SymbolElement, TSpanElement, TextContentElement, TextElement, TextPathElement, TextPositioningElement, TitleElement0, UseElement, ViewElement, ZoomEvent, _GradientElement, _SVGAltGlyphDefElement, _SVGAltGlyphItemElement, _SVGAnimateColorElement, _SVGComponentTransferFunctionElement, _SVGCursorElement, _SVGFEDropShadowElement, _SVGFontElement, _SVGFontFaceElement, _SVGFontFaceFormatElement, _SVGFontFaceNameElement, _SVGFontFaceSrcElement, _SVGFontFaceUriElement, _SVGGlyphElement, _SVGGlyphRefElement, _SVGHKernElement, _SVGMPathElement, _SVGMissingGlyphElement, _SVGVKernElement, AudioProcessingEvent, OfflineAudioCompletionEvent, ContextEvent, SqlError, ByteBuffer, TypedData, ByteData, Float32List, Float64List, Int16List, Int32List, Int8List, Uint16List, Uint32List, Uint8ClampedList, Uint8List, JS_CONST, Interceptor, JSBool, JSNull, JavaScriptObject, PlainJavaScriptObject, UnknownJavaScriptObject, JSArray0, JSMutableArray, JSFixedArray, JSExtendableArray, JSNumber, JSInt, JSDouble, JSString, startRootIsolate_closure, startRootIsolate_closure0, _Manager, _IsolateContext, _EventLoop, _EventLoop__runHelper_next, _IsolateEvent, _MainManagerStub, IsolateNatives__processWorkerMessage_closure, _BaseSendPort, _NativeJsSendPort, _NativeJsSendPort_send_closure, _NativeJsSendPort_send__closure, _WorkerSendPort, _WorkerSendPort_send_closure, ReceivePortImpl, BoundClosure$i0, _waitForPendingPorts_closure, _PendingSendPortFinder, _JsSerializer, _JsCopier, _JsDeserializer, _JsVisitedMap, _MessageTraverserVisitedMap, _MessageTraverser, BoundClosure$1, _Copier, _Copier_visitMap_closure, _Serializer, _Deserializer, TimerImpl, TimerImpl_internalCallback, TimerImpl_internalCallback0, TypeErrorDecoder, NullError, JsNoSuchMethodError, UnknownJsTypeError, unwrapException_saveStackTrace, _StackTrace, invokeClosure_closure, invokeClosure_closure0, invokeClosure_closure1, invokeClosure_closure2, invokeClosure_closure3, Closure, BoundClosure, CastErrorImplementation, TypeImpl, initHooks_closure, initHooks_closure0, initHooks_closure1, Classic, Montgomery, Barrett, JSArray, BigInteger, BoundClosure$6, BoundClosure$2, toByteArray_closure, Viewer, Viewer_updateDisplayArea_closure, InitAdminClient_closure, InitAdminClient_closure0, InitAdminClient__closure, InitAdminClient_closure1, InitUserClient_closure, InitUserClient_closure0, InitUserClient_closure1, InitUserClient_closure2, InitUserClient_closure3, InitUserClient_closure4, InitUserClient_closure5, InitUserClient_closure6, InitUserClient__closure, InitUserClient_closure7, InitUserClient_closure8, InitUserClient_closure9, main_closure, main_closure0, _HashBase, SHA256, ListIterator, MappedIterable, EfficientLengthMappedIterable, MappedIterator, WhereIterable, WhereIterator, FixedLengthListMixin, _AsyncError, Future, Future_wait_handleError, Future_wait_closure, _Completer, _AsyncCompleter, _Future, BoundClosure$20, _Future__addListener_closure, _Future__chainFutures_closure, _Future__chainFutures_closure0, _Future__asyncComplete_closure, _Future__asyncCompleteError_closure, _Future__propagateToListeners_closure, _Future__propagateToListeners_closure0, _Future__propagateToListeners__closure, _Future__propagateToListeners__closure0, Stream, Stream_forEach_closure, Stream_forEach__closure, Stream_forEach__closure0, Stream_forEach_closure0, Stream_length_closure, Stream_length_closure0, StreamSubscription, _StreamController, _StreamController__subscribe_closure, _StreamController__recordCancel_complete, _SyncStreamControllerDispatch, _AsyncStreamControllerDispatch, _AsyncStreamController, _StreamController__AsyncStreamControllerDispatch, _SyncStreamController, _StreamController__SyncStreamControllerDispatch, _ControllerStream, _ControllerSubscription, BoundClosure$0, _EventSink, _BufferingStreamSubscription, _BufferingStreamSubscription__sendDone_sendDone, _StreamImpl, _DelayedEvent, _DelayedData, _DelayedDone, _PendingEvents, _PendingEvents_schedule_closure, _StreamImplEvents, _cancelAndError_closure, _cancelAndErrorClosure_closure, _BaseZone, _BaseZone_bindCallback_closure, _BaseZone_bindCallback_closure0, _BaseZone_bindUnaryCallback_closure, _BaseZone_bindUnaryCallback_closure0, _rootHandleUncaughtError_closure, _rootHandleUncaughtError__closure, _RootZone, _HashMap, _HashMap_values_closure, HashMapKeyIterable, HashMapKeyIterator, _LinkedHashMap, _LinkedHashMap_values_closure, LinkedHashMapCell, LinkedHashMapKeyIterable, LinkedHashMapKeyIterator, _HashSet, _IdentityHashSet, HashSetIterator, _HashSetBase, IterableBase, ListBase, ListMixin, Maps_mapToString_closure, ListQueue, _ListQueueIterator, _convertJsonToDart_closure, _convertJsonToDart_walk, Codec, Converter, Encoding, JsonUnsupportedObjectError, JsonCyclicError, JsonCodec, JsonEncoder, JsonDecoder, _JsonStringifier, _JsonStringifier_stringifyJsonValue_closure, Utf8Codec, Utf8Encoder, _Utf8Encoder, NoSuchMethodError_toString_closure, DateTime, DateTime_toString_fourDigits, DateTime_toString_threeDigits, DateTime_toString_twoDigits, Duration, Duration_toString_sixDigits, Duration_toString_twoDigits, Error, NullThrownError, ArgumentError, RangeError, UnsupportedError, UnimplementedError, StateError, ConcurrentModificationError, StackOverflowError, CyclicInitializationError, _ExceptionImplementation, FormatException, IntegerDivisionByZeroException, Expando, Function, Iterator, Map, Null, Object, StackTrace, StringBuffer, Symbol, Interceptor_CssStyleDeclarationBase, CssStyleDeclarationBase, _ChildrenElementList, Interceptor_ListMixin, Interceptor_ListMixin_ImmutableListMixin, _ChildNodeListLazy, Interceptor_ListMixin0, Interceptor_ListMixin_ImmutableListMixin0, EventStreamProvider, _EventStream, _ElementEventStreamImpl, _EventStreamSubscription, ImmutableListMixin, FixedSizeListIterator, ReceivePort, TypedData_ListMixin, TypedData_ListMixin_FixedLengthListMixin, TypedData_ListMixin0, TypedData_ListMixin_FixedLengthListMixin0, TypedData_ListMixin1, TypedData_ListMixin_FixedLengthListMixin1, TypedData_ListMixin2, TypedData_ListMixin_FixedLengthListMixin2, TypedData_ListMixin3, TypedData_ListMixin_FixedLengthListMixin3, TypedData_ListMixin4, TypedData_ListMixin_FixedLengthListMixin4, TypedData_ListMixin5, TypedData_ListMixin_FixedLengthListMixin5, TypedData_ListMixin6, TypedData_ListMixin_FixedLengthListMixin6, TypedData_ListMixin7, TypedData_ListMixin_FixedLengthListMixin7, Int64List, Uint64List, Dsa, DsaParameters, DsaSignature, DsaKeyPair, convertNativeToDart_AcceptStructuredClone_findSlot, convertNativeToDart_AcceptStructuredClone_readSlot, convertNativeToDart_AcceptStructuredClone_writeSlot, convertNativeToDart_AcceptStructuredClone_walk, FilteredElementList, FilteredElementList__filtered_closure, FilteredElementList_removeRange_closure, ColorFacade, WorldObjectFacade, WorldObjectFacade_setData_closure, ClientCommEngine, ClientCommEngine_initWebSocket_closure, ClientCommEngine_initWebSocket__closure, ClientCommEngine_initWebSocket__closure0, ClientCommEngine_initWebSocket__closure1, ClientCommEngine_initWebSocket__closure2, ClientCommEngine_initWebSocket__closure3, ClientCommEngine_moveSpectatorWebSocket_closure, ClientCommEngine_moveSpectatorWebSocket_closure0, ClientCommEngine__dealWithWebSocketMsg_closure, ClientCommEngine__dealWithWebSocketMsg__closure, ClientCommEngine__dealWithWebSocketMsg__closure0, ClientCommEngine_selectInfoAbout_closure, ClientCommEngine_commandSelectInfoAbout_closure, ClientCommEngine_commandSelectInfoAbout_closure0, ClientCommEngine_commandSelectInfoAbout_closure1, ClientCommEngine_commandWebSocketAuth_closure, ClientCommEngine_commandWebSocketAuth_closure0, ClientCommEngine__sign_closure, ClientCommEngine__sign_closure0, ClientCommEngine__sign_closure1, ClientCommEngine__sign_closure2, ClientCommEngine__sign_closure3, ClientCommEngine__send_closure, Closure$2, Closure$1, Closure$0, Closure$7, Closure$21];
 }

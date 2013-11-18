@@ -6,28 +6,44 @@ import 'package:logging/logging.dart';
 Logger _logger = new Logger("greenCode");
 
 class Direction {
-  static Direction N = new Direction._(0,-1,0,0);
-  static Direction E = new Direction._(1,0,0,1);
-  static Direction S = new Direction._(0,1,0,2);
-  static Direction W = new Direction._(-1,0,0,3);
-  static Direction UP = new Direction._(0,0,-1,4);
-  static Direction DOWN = new Direction._(0,0,1,5);
-  static Direction NONE = new Direction._(0,0,0,6);
+  static Direction N = new Direction._(0,-1,0,0, "N");
+  static Direction E = new Direction._(1,0,0,1, "E");
+  static Direction S = new Direction._(0,1,0,2, "S");
+  static Direction W = new Direction._(-1,0,0,3, "W");
+  static Direction UP = new Direction._(0,0,-1,4, "UP");
+  static Direction DOWN = new Direction._(0,0,1,5, "DOWN");
+  static Direction NONE = new Direction._(0,0,0,6, "NONE");
   
   static get values => [N,E,S,W,UP,DOWN,NONE];
 
+  bool isThis(int x, int y, int z){
+    return dirX == x && dirY == y && dirZ == z;
+  }
+  
+  static Direction getThis(int x, int y, int z){
+    List<Direction> valuesList = new List.from(values);
+    Iterable<Direction> it =valuesList.where((dir) => dir.isThis(x, y, z));
+    if(it.length == 1)
+      return it.first;
+    else
+      return null;
+  }
+  
   int value;
   int dirX;
   int dirY;
   int dirZ;
-
+  String name;
+  
+  
   Direction() {
    dirX = 0;
    dirY = 0;
    dirZ = 0;
+   name = "NONE";
   }
   
-  Direction._(this.dirX, this.dirY ,this.dirZ, this.value);
+  Direction._(this.dirX, this.dirY ,this.dirZ, this.value, this.name);
 }
 
 class GreenCodeContext {    

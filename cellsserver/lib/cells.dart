@@ -121,6 +121,8 @@ class WorldObject {
   // TODO should be filled by persister with same values for same world!
   static int idseed = 0;
   int id = idseed++;
+  
+  bool isHold = false;
     
   Position pos;
   Color _color;
@@ -203,6 +205,10 @@ class Cell extends WorldObject {
 }
 
 class Mass extends WorldObject{
+
+  static int wabbleTicksMax = 30;
+  int wabbleTicks = 0;
+  
   Energy energyR;
   Energy energyG;
   Energy energyB;
@@ -222,6 +228,10 @@ class Mass extends WorldObject{
 
 class Boot extends WorldObject {
   String user;
+  WorldObject selected;
+  
+  Direction facing = Direction.E;
+  
   Boot(this.user) : super(new Color(128,128,128)){
     type = "B";
   }
@@ -239,14 +249,14 @@ class World extends ITickable {
   int depth;
   
   World(this.width, this.height, this.depth){
-    for(int i = 0; i < 400; i++){
+    for(int i = 0; i < 100; i++){
       Random rnd = new Random();
       Mass object = new Mass(new Color(rnd.nextInt(255), rnd.nextInt(255), rnd.nextInt(255)));
       Position newObjectPosition = new Position(this, rnd.nextInt(width), rnd.nextInt(height), rnd.nextInt(depth));
       newObjectPosition.putOn(object);
       positions.add(newObjectPosition);
     }
-    
+    /*
     for(int i = 0; i < 200; i++){
       Random rnd = new Random();
       Color toSet;
@@ -267,7 +277,7 @@ class World extends ITickable {
       Position newObjectPosition = new Position(this, rnd.nextInt(width), rnd.nextInt(height), rnd.nextInt(depth));
       newObjectPosition.putOn(object);
       positions.add(newObjectPosition);
-    }
+    } */
   }
     
   newOutputMass(Position pos, Color createColor)
@@ -504,8 +514,26 @@ class World extends ITickable {
  }
   
   tryMakeMoves(Position pos){
-    positions.remove(pos);
+    if(pos.object.isHold)
+      return;
     
+    if(pos.object is Boot && pos.dx + pos.dy + pos.dz != 0){
+      Boot boot = pos.object;
+      if(!boot.facing.isThis(pos.dx, pos.dy, pos.dz))
+      {
+        boot.facing = Direction.getThis(pos.dx, pos.dy, pos.dz);
+        if(boot.selected != null)
+        {
+          (pos.object as Boot).selected.isHold = false;
+          (pos.object as Boot).selected = null;
+        }
+        pos.clearMove();
+        return;
+      }
+    }
+    
+    positions.remove(pos);
+       
     if(pos.object is Cell)
     {
       Cell cell = pos.object;
@@ -519,18 +547,29 @@ class World extends ITickable {
     }
     
     if(pos.object is Mass)
-    {
+    {    
       Random rnd = new Random();
       Mass energy = pos.object;
-      pos.dx = rnd.nextInt(3) - 1;
-      pos.dy = rnd.nextInt(3) - 1;
-      pos.dz = rnd.nextInt(3) - 1;
-    }
+      energy.wabbleTicks++;
+      if(energy.wabbleTicks > Mass.wabbleTicksMax)
+      {  
+        energy.wabbleTicks = 0;
+        pos.dx = rnd.nextInt(3) - 1;
+        pos.dy = rnd.nextInt(3) - 1;
+        pos.dz = rnd.nextInt(3) - 1;
+      } else
+           pos.dx = pos.dy = pos.dz = 0;      
+     }
     
     pos.move();   
    
     if(positions.contains(pos)){
-      pos.moveBack();
+      if(pos.object is Boot){
+        WorldObject toSelect = positions.where((colider) => colider.x == pos.x && colider.y == pos.y && colider.z == pos.z).first.object;
+        (pos.object as Boot).selected = toSelect;
+        toSelect.isHold = true;
+      }
+      pos.moveBack();      
     }
     positions.add(pos);
     pos.clearMove();  

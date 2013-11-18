@@ -22,6 +22,8 @@ class WorldObjectFacade {
   String type = "";
   int utctimestamp = 0;
 
+  bool isHold = false;
+  
   int id = -1;
   
   WorldObjectFacade.Empty(){
@@ -182,13 +184,14 @@ class ClientCommEngine {
               color.b = vmap["object"]["color"]["b"];
               toWorkOn.setData(vmap["object"]["type"], color, vmap["object"]["id"]);             
               toWorkOn.utctimestamp = new DateTime.now().toUtc().millisecondsSinceEpoch;
+              toWorkOn.isHold = vmap["object"]["hold"] == 1 ? true : false;
             });
             onUpdatedCache();
-            break;
-          case "spectatorPos":
-            Map jsonMap  = value;
-            onSpectatorChange(value);
-            break;
+            break;            
+          case "bootInfo":
+            Map jsonMap = value;
+            onSpectatorChange(jsonMap);
+          break;
           case "error":
             onErrorChange(value);
             break;
