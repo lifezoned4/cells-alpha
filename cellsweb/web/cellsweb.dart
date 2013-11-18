@@ -69,7 +69,7 @@ class Viewer {
         // bt.style.width = bt.style.height = "${40 - returner["depth"]*3}px";
         // bt.style.fontSize = "${18 - returner["depth"]}px";
         ColorFacade bgcolor = object.color;
-        double oldnessScalar = (1-((object.oldness() + 1)/500));
+        double oldnessScalar = (1-((object.oldness() + 1)/2000));
         bt.style.background = "rgb(${((bgcolor.r) * oldnessScalar).round()},${((bgcolor.g) * oldnessScalar).round()}, ${((bgcolor.b) * oldnessScalar).round()})"; 
         bt.onClick.listen((e) => commEngine.selectInfoAbout(object.id));
       }
@@ -208,11 +208,14 @@ InitUserClient(String url, String user, String password){
     viewer.updateDisplayAreaInfo(infoarea);
   };
   
+  querySelector("#buttonREDspawn")..onClick.listen((e) => commEngine.spawnMassWebSocket("RED"));
+  querySelector("#buttonGREENspawn")..onClick.listen((e) => commEngine.spawnMassWebSocket("GREEN"));
+  querySelector("#buttonBLUEspawn")..onClick.listen((e) => commEngine.spawnMassWebSocket("BLUE"));
+  
   ButtonElement bootEnergy = querySelector("#bootEnergyMedium")..onClick.listen((e) => commEngine.sendEnergyFromBootWebSocket(3));
   querySelector("#bootEnergyLarge")..onClick.listen((e) => commEngine.sendEnergyFromBootWebSocket(10));
   querySelector("#bootEnergySmall")..onClick.listen((e) => commEngine.sendEnergyFromBootWebSocket(1));
-  
-  
+    
   ButtonElement selectedEnergy = querySelector("#selectedEnergyMedium")..onClick.listen((e) => commEngine.getEnergyFromSelectedWebSocket(3));;
   querySelector("#selectedEnergyLarge")..onClick.listen((e) => commEngine.getEnergyFromSelectedWebSocket(10));;
   querySelector("#selectedEnergySmall")..onClick.listen((e) => commEngine.getEnergyFromSelectedWebSocket(1));;

@@ -12,6 +12,7 @@ import 'package:crypto/crypto.dart';
 import 'lib/cryptolib/dsa.dart';
 import 'lib/cryptolib/bytes.dart';
 import 'lib/cells.dart';
+import 'cellsPersist.dart';
 
 import 'cellsCore.dart';
 import 'cellsAuth.dart';
@@ -29,14 +30,23 @@ class ServerCommEngine {
   
   AuthEngine authEngine = new AuthEngine();
   
-  World world = new World(Width, Height, Depth);
   
+  World world;
   ServerCommEngine(){
     RegRestfulCommand(new RestfulWebSocketAuthUser(this));
     RegRestfulCommand(new RestfulWebSocketAuthAdmin(this));
     RegRestfulCommand(new RestfulMoveSpectator(this));
     RegRestfulCommand(new RestfulSelectInfoAbout(this));
     // authEngine.addAuth(restfulCommands[RestfulWebSocketAuth.commandNameInfo], new AllAccess());
+
+    try {
+      world = FilePersistContext.loadWorld();
+    }
+    catch(ex, stacktrace){
+       _logger.warning("File Loading Failed");
+       _logger.warning("Error was: ", ex, stacktrace);
+    } 
+    
     world.start();
   }
   

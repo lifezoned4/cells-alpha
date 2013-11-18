@@ -44,7 +44,7 @@ class WorldObjectFacade {
    }
   
   bool isTooOld(){
-    return oldness() > 500;
+    return oldness() > 2000;
   }
   
   int oldness(){
@@ -97,6 +97,13 @@ class ClientCommEngine {
     });    
   }
   
+  
+  spawnMassWebSocket(String color){
+    Map jsonMap = new Map();
+    jsonMap.putIfAbsent("command", () => "spawnMass");
+    jsonMap.putIfAbsent("data", () => {"color": color});
+    ws.send(JSON.encode(jsonMap));
+  }
   
   moveSpectatorWebSocket(int dx, int dy, int dz){
     Map jsonMap = new Map();

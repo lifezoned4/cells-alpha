@@ -33,6 +33,38 @@ class User extends ITickable {
           this.bootSubcription.toFollow.pos.dy = jsonMap["data"]["dy"];
           this.bootSubcription.toFollow.pos.dz = jsonMap["data"]["dz"];
           break;
+          
+        case "spawnMass":
+          Color color;
+          switch(jsonMap["data"]["color"]){
+            case "RED":
+              color = Color.Red;
+              break;
+            case "GREEN":
+              color = Color.Green;
+              break;
+            case "BLUE":
+              color = Color.Blue;
+          }
+          Boot boot = this.bootSubcription.toFollow;
+          if(boot.pos.isIn.positions.where((pos) => pos.x == boot.pos.x + boot.facing.dirX &&
+              pos.y == boot.pos.y + boot.facing.dirY &&
+              pos.z == boot.pos.z + boot.facing.dirZ).length == 0 &&
+              boot.energy.energyCount > 50 && color != null){
+          Position newPos;
+          try {
+          newPos = new Position(boot.pos.isIn, 
+               boot.pos.x + boot.facing.dirX 
+              ,boot.pos.y + boot.facing.dirY
+              ,boot.pos.z + boot.facing.dirZ);
+          } on Exception catch(ex, stacktrace) {
+              _logger.warning("Added on an invalide field", ex, stacktrace);
+              return;
+          }
+          boot.energy.decEnergyBy(50.0);
+          newPos.putOn(new Mass(color, pow(50*3/(4*PI),1/3)));
+          }
+          break;
         case "getEnergyFromSelected":
           if(this.bootSubcription.toFollow is Boot){
             Boot boot = this.bootSubcription.toFollow;
