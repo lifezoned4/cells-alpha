@@ -1,3 +1,0 @@
-{"x":7,"y":14,"z":2,"worldObject":{"energy":10000.0,"color":{"r":254,"g":0,"b":0}},"type":"M","mass":{"size":7.552042881318965}}
-{"x":6,"y":13,"z":0,"worldObject":{"energy":10000.0,"color":{"r":0,"g":254,"b":0}},"type":"M","mass":{"size":5.602059852303121}}
-{"x":6,"y":12,"z":0,"worldObject":{"energy":9540.0,"color":{"r":128,"g":128,"b":128}},"type":"B","boot":{"user":"test"}}

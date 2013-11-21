@@ -105,6 +105,12 @@ class ClientCommEngine {
     ws.send(JSON.encode(jsonMap));
   }
   
+  bitMassWebSocket(){
+    Map jsonMap = new Map();
+    jsonMap.putIfAbsent("command", () => "bitMass");
+    ws.send(JSON.encode(jsonMap));
+  }
+  
   moveSpectatorWebSocket(int dx, int dy, int dz){
     Map jsonMap = new Map();
     jsonMap.putIfAbsent("command", () => "moveSpectator");

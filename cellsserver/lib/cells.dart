@@ -17,17 +17,19 @@ abstract class ITickable {
   tick();
 }
 
-class Color {
-  static Color Red = new Color(254,0,0);
-  static Color Green = new Color(0,254,0);
-  static Color Blue = new Color(0,0,254);
+class Color extends MassObject {
+  static Color Red = new Color(254,0,0, "r");
+  static Color Green = new Color(0,254,0,"g");
+  static Color Blue = new Color(0,0,254, "b");
   
-  Color Copy() => new Color(r, g, b);
+  Color Copy() => new Color(r, g, b, name);
   
   int r;
   int g;
   int b;  
-  Color(this.r, this.g, this.b);
+  Color(this.r, this.g, this.b, String name){
+    super.name = name;
+  }
 }
 
 class Energy {  
@@ -276,15 +278,42 @@ class Mass extends WorldObject{
   }
 }
 
+class MassObject {
+  String name;
+}
+
+class EmptyObject extends MassObject {
+  String name = "-";
+}
+
 
 class Boot extends WorldObject {
   String user;
   WorldObject selected;
   
+  List<MassObject> band = new List<MassObject>();
+  int bandPos = 3;
+  
   Direction facing = Direction.E;
   
-  Boot(this.user) : super(new Color(128,128,128)){
+  Boot(this.user) : super(new Color(128,128,128,"gr")){
     type = "B";
+    for(int i = 0; i <= 6; i++)
+    band.add(new EmptyObject());
+  }
+  
+  bandToString(){
+    String returner = "";
+    band.forEach((object) => returner += object.name + ";");
+    return returner;
+  }
+  
+  insertBit(Color color){
+    if(band.elementAt(bandPos) is EmptyObject)
+    {
+      band.removeAt(3);
+      band.insert(3,color);
+    } 
   }
 }
 

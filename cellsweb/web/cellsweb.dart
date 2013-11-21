@@ -220,6 +220,7 @@ InitUserClient(String url, String user, String password){
   querySelector("#selectedEnergyLarge")..onClick.listen((e) => commEngine.getEnergyFromSelectedWebSocket(10));;
   querySelector("#selectedEnergySmall")..onClick.listen((e) => commEngine.getEnergyFromSelectedWebSocket(1));;
   
+ querySelector("#bitMass")..onClick.listen((e) => commEngine.bitMassWebSocket());
   
   commEngine.onSpectatorChange = (data) {
     viewer.displayOffsetX = data["x"];
@@ -229,6 +230,22 @@ InitUserClient(String url, String user, String password){
     
     selectedEnergy.text = data["selectedEnergy"].toString();
     bootEnergy.text = data["energy"].toString();
+    
+    RegExp regExp = new RegExp("(.*?);");
+    List<String> band = new List<String>();
+    regExp.allMatches(data["activeBand"]).forEach((match) => band.add(match.group(1).trim()));
+    
+    band = band.getRange(data["activeBandPos"] -3, data["activeBandPos"] + 4).toList();
+    
+    querySelector("#facedDisplay1").text = band.elementAt(0);
+    querySelector("#facedDisplay2").text = band.elementAt(1);
+    querySelector("#facedDisplay3").text = band.elementAt(2);
+    
+    querySelector("#facedDisplayCenter").text = band.elementAt(3);
+    
+    querySelector("#facedDisplay4").text = band.elementAt(4);
+    querySelector("#facedDisplay5").text = band.elementAt(5);
+    querySelector("#facedDisplay6").text = band.elementAt(6);
     
     commEngine.onUpdatedCache();
   };

@@ -23,12 +23,12 @@ class FilePersistContext {
         case "M":
           toPlace = new Mass(new Color(jsonMap["worldObject"]["color"]["r"],
                                        jsonMap["worldObject"]["color"]["g"], 
-                                       jsonMap["worldObject"]["color"]["b"]), jsonMap["mass"]["size"]);
+                                       jsonMap["worldObject"]["color"]["b"], jsonMap["worldObject"]["color"]["name"]), jsonMap["mass"]["size"]);
           break;
         case "C":
           toPlace = new Cell.withCode(new Color(jsonMap["worldObject"]["color"]["r"],
                                        jsonMap["worldObject"]["color"]["g"], 
-                                       jsonMap["worldObject"]["color"]["b"]), jsonMap["cell"]["code"]);
+                                       jsonMap["worldObject"]["color"]["b"], jsonMap["worldObject"]["color"]["name"]), jsonMap["cell"]["code"]);
           (toPlace as Cell).body.size = jsonMap["cell"]["body"];
           (toPlace as Cell).outputBuffer = jsonMap["cell"]["outputBuffer"];
           (toPlace as Cell).livingBleed = jsonMap["cell"]["livingBleed"];          
@@ -53,7 +53,8 @@ class FilePersistContext {
                       "worldObject": {"energy": pos.object.energy.energyCount, 
                                       "color": {"r": pos.object.getColor().r, 
                                            "g": pos.object.getColor().g,
-                                           "b": pos.object.getColor().b}}};
+                                           "b": pos.object.getColor().b,
+                                           "name": pos.object.getColor().name}}};
        if(pos.object is Cell){
          Cell cell = pos.object;
          jsonMap.putIfAbsent("type", () => "C");

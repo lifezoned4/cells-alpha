@@ -83,7 +83,28 @@ class User extends ITickable {
               }
             }
           }
-        break;          
+        break;
+        case "bitMass":
+          if(this.bootSubcription.toFollow is Boot){
+            Boot boot = this.bootSubcription.toFollow;
+            if(boot.selected != null){
+              if(boot.selected is Mass){
+                Mass mass = boot.selected;
+                if(mass.toEnergy() >= 10){
+                  mass.consume(10.0);
+                  boot.insertBit(mass.getColor());
+                }
+              }
+              else if (boot.selected is Cell){
+                Cell cell = boot.selected;
+                if(cell.body.toEnergy() >= 10){
+                  cell.body.consume(10.0);
+                  boot.insertBit(cell.getColor());
+                }
+              }
+            }
+          }
+          break;
         case "sendEnergyFromBoot":
           if(this.bootSubcription.toFollow is Boot){
             Boot boot = this.bootSubcription.toFollow;
@@ -206,7 +227,7 @@ class MovingAreaViewSubscription extends WorldSubscription {
           Mass mass = boot.selected;
           selectedEnergy = mass.toEnergy().round();
         }
-        jsonMap.putIfAbsent("bootInfo", () => {"selectedEnergy": selectedEnergy, "energy": boot.energy.energyCount.round(), "dir": boot.facing.name, "x": toFollow.pos.x - (watchAreaWidth/2).floor(), "y": toFollow.pos.y - (watchAreaHeight/2).floor(), "z": toFollow.pos.z - (watchAreaDepth/2).floor()});
+        jsonMap.putIfAbsent("bootInfo", () => {"activeBandPos": boot.bandPos, "activeBand": boot.bandToString(), "selectedEnergy": selectedEnergy, "energy": boot.energy.energyCount.round(), "dir": boot.facing.name, "x": toFollow.pos.x - (watchAreaWidth/2).floor(), "y": toFollow.pos.y - (watchAreaHeight/2).floor(), "z": toFollow.pos.z - (watchAreaDepth/2).floor()});
     }
     return jsonMap;
   }
