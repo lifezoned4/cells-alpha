@@ -156,13 +156,11 @@ InitUserClient(String url, String user, String password){
   DivElement movebar = querySelector("#movebar");
   DivElement infoarea = querySelector("#infoarea");
   
-  DivElement bootcontroll1 = querySelector("#bootcontroll1");
-  DivElement bootcontroll2 = querySelector("#bootcontroll2");
-  DivElement bootcontroll3 = querySelector("#bootcontroll3");
+  DivElement bootcontroll1 = querySelector("#bootcontroll");
+  DivElement bootcontrollSpwan = querySelector("#bootcontrollSpwan");
   
   bootcontroll1.hidden = false;
-  bootcontroll2.hidden = false;
-  bootcontroll3.hidden = false;
+  bootcontrollSpwan.hidden = false;
       
   movebar.hidden = false;  
  
@@ -216,11 +214,20 @@ InitUserClient(String url, String user, String password){
   querySelector("#bootEnergyLarge")..onClick.listen((e) => commEngine.sendEnergyFromBootWebSocket(10));
   querySelector("#bootEnergySmall")..onClick.listen((e) => commEngine.sendEnergyFromBootWebSocket(1));
     
-  ButtonElement selectedEnergy = querySelector("#selectedEnergyMedium")..onClick.listen((e) => commEngine.getEnergyFromSelectedWebSocket(3));;
-  querySelector("#selectedEnergyLarge")..onClick.listen((e) => commEngine.getEnergyFromSelectedWebSocket(10));;
-  querySelector("#selectedEnergySmall")..onClick.listen((e) => commEngine.getEnergyFromSelectedWebSocket(1));;
+  ButtonElement selectedEnergy = querySelector("#selectedEnergyMedium")..onClick.listen((e) => commEngine.getEnergyFromSelectedWebSocket(3));
+  querySelector("#selectedEnergyLarge")..onClick.listen((e) => commEngine.getEnergyFromSelectedWebSocket(10));
+  querySelector("#selectedEnergySmall")..onClick.listen((e) => commEngine.getEnergyFromSelectedWebSocket(1));
   
- querySelector("#bitMass")..onClick.listen((e) => commEngine.bitMassWebSocket());
+  TextAreaElement greenCode = querySelector("#greenCode");
+  
+  
+  bool dirty = false;
+  querySelector("#live")..onClick.listen((e) {
+    dirty = false;
+    commEngine.liveSelectedWebSocket(greenCode.value);
+  });
+  (querySelector("#greenCode") as TextAreaElement).onInput.listen((e) => dirty = true);
+  
   
   commEngine.onSpectatorChange = (data) {
     viewer.displayOffsetX = data["x"];
@@ -230,22 +237,9 @@ InitUserClient(String url, String user, String password){
     
     selectedEnergy.text = data["selectedEnergy"].toString();
     bootEnergy.text = data["energy"].toString();
-    
-    RegExp regExp = new RegExp("(.*?);");
-    List<String> band = new List<String>();
-    regExp.allMatches(data["activeBand"]).forEach((match) => band.add(match.group(1).trim()));
-    
-    band = band.getRange(data["activeBandPos"] -3, data["activeBandPos"] + 4).toList();
-    
-    querySelector("#facedDisplay1").text = band.elementAt(0);
-    querySelector("#facedDisplay2").text = band.elementAt(1);
-    querySelector("#facedDisplay3").text = band.elementAt(2);
-    
-    querySelector("#facedDisplayCenter").text = band.elementAt(3);
-    
-    querySelector("#facedDisplay4").text = band.elementAt(4);
-    querySelector("#facedDisplay5").text = band.elementAt(5);
-    querySelector("#facedDisplay6").text = band.elementAt(6);
+
+    if(!dirty)
+      greenCode.value = data["greenCode"];
     
     commEngine.onUpdatedCache();
   };

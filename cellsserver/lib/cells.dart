@@ -30,6 +30,10 @@ class Color extends MassObject {
   Color(this.r, this.g, this.b, String name){
     super.name = name;
   }
+  
+  bool ThisIs(Color color){
+    return color.r == r && color.g == g && color.b == b;
+  }
 }
 
 class Energy {  
@@ -197,7 +201,7 @@ class Cell extends WorldObject {
      // consumeEnergy(greenCodeContext.copyCost/100);
     double nextSize = pow(body.size + 1,3)*4/3*PI - pow(body.size, 3)*4/3*PI;
     if(energy.energyCount >= nextSize){
-      energy.energyCount - nextSize;
+      energy.energyCount-=nextSize;
       body.size++;
     }
     livingBleed++;
@@ -291,35 +295,16 @@ class Boot extends WorldObject {
   String user;
   WorldObject selected;
   
-  List<MassObject> band = new List<MassObject>();
-  int bandPos = 3;
-  
   Direction facing = Direction.E;
   
   Boot(this.user) : super(new Color(128,128,128,"gr")){
     type = "B";
-    for(int i = 0; i <= 6; i++)
-    band.add(new EmptyObject());
-  }
-  
-  bandToString(){
-    String returner = "";
-    band.forEach((object) => returner += object.name + ";");
-    return returner;
-  }
-  
-  insertBit(Color color){
-    if(band.elementAt(bandPos) is EmptyObject)
-    {
-      band.removeAt(3);
-      band.insert(3,color);
-    } 
   }
 }
 
 class World extends ITickable {
   List<User> users = new List<User>();
-  int delay = 25;
+  int delay = 500;
   int timeToSave = 0;
   Timer timer;
   int ticksTillStart = 0; 
@@ -573,9 +558,9 @@ class World extends ITickable {
           if(foundings.length == 1){
             if(foundings.first.object is Mass){
               Mass toConsume = foundings.first.object;
-              if(cell.getColor().b == Color.Blue.b && toConsume.getColor().r == Color.Red.r ||
-                  cell.getColor().r == Color.Red.r && toConsume.getColor().g == Color.Green.g ||
-                  cell.getColor().g == Color.Green.g && toConsume.getColor().b == Color.Blue.b)
+              if(cell.getColor().ThisIs(Color.Blue) && toConsume.getColor().ThisIs(Color.Red) ||
+                  cell.getColor().ThisIs(Color.Red) && toConsume.getColor().ThisIs(Color.Green) ||
+                  cell.getColor().ThisIs(Color.Green) && toConsume.getColor().ThisIs(Color.Blue))
               {
                 double eaten = toConsume.consume(hunger);
                 double left = hunger - cell.energy.incEnergyBy(eaten);
@@ -587,9 +572,9 @@ class World extends ITickable {
             }
             else if (foundings.first.object is Cell){
               Cell toConsume = foundings.first.object;
-              if(cell.getColor().b == Color.Blue.b && toConsume.getColor().r == Color.Red.r ||
-                  cell.getColor().r == Color.Red.r && toConsume.getColor().g == Color.Green.g ||
-                  cell.getColor().g == Color.Green.g && toConsume.getColor().b == Color.Blue.b)
+              if(cell.getColor().ThisIs(Color.Blue) && toConsume.getColor().ThisIs(Color.Red) ||
+                  cell.getColor().ThisIs(Color.Red) && toConsume.getColor().ThisIs(Color.Green) ||
+                  cell.getColor().ThisIs(Color.Green) && toConsume.getColor().ThisIs(Color.Blue))
               {
                 double eaten = toConsume.body.consume(hunger);
                 hunger -= eaten;

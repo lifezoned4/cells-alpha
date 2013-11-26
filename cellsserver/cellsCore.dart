@@ -7,7 +7,7 @@ import "dart:io";
 import 'dart:convert' show JSON;
 import 'dart:math';
 
-
+import "lib/greenCode.dart";
 import "lib/cells.dart";
 
 final _logger = new Logger("cellsCore");
@@ -65,6 +65,26 @@ class User extends ITickable {
           newPos.putOn(new Mass(color, pow(50*3/(4*PI),1/3)));
           }
           break;
+          
+        case "liveSelected":
+          if(this.bootSubcription.toFollow is Boot){
+            Boot boot = this.bootSubcription.toFollow;
+            if(boot.selected != null){
+              if(boot.selected is Mass){
+                Mass mass = boot.selected;
+                String greenCode = jsonMap["data"];
+                if(GreenCodeContext.syntaxCheckNames(greenCode) == "Okay")
+                {
+                  Cell cell = new Cell.withCode(mass.getColor(), greenCode);
+                  cell.body = mass;
+                  mass.pos.putOn(cell);
+                  boot.selected = cell;
+                  cell.isHold = true;
+                }             
+              }
+            }
+          }
+          break;
         case "getEnergyFromSelected":
           if(this.bootSubcription.toFollow is Boot){
             Boot boot = this.bootSubcription.toFollow;
@@ -84,27 +104,6 @@ class User extends ITickable {
             }
           }
         break;
-        case "bitMass":
-          if(this.bootSubcription.toFollow is Boot){
-            Boot boot = this.bootSubcription.toFollow;
-            if(boot.selected != null){
-              if(boot.selected is Mass){
-                Mass mass = boot.selected;
-                if(mass.toEnergy() >= 10){
-                  mass.consume(10.0);
-                  boot.insertBit(mass.getColor());
-                }
-              }
-              else if (boot.selected is Cell){
-                Cell cell = boot.selected;
-                if(cell.body.toEnergy() >= 10){
-                  cell.body.consume(10.0);
-                  boot.insertBit(cell.getColor());
-                }
-              }
-            }
-          }
-          break;
         case "sendEnergyFromBoot":
           if(this.bootSubcription.toFollow is Boot){
             Boot boot = this.bootSubcription.toFollow;
@@ -221,13 +220,18 @@ class MovingAreaViewSubscription extends WorldSubscription {
     if(toFollow is Boot){
       Boot boot = toFollow;
       int selectedEnergy = 0;
+      String greenCode = "";
       if(boot.selected != null)
         if(boot.selected is Mass)
         {
           Mass mass = boot.selected;
           selectedEnergy = mass.toEnergy().round();
+        } else if (boot.selected is Cell){
+          Cell cell = boot.selected;
+          selectedEnergy = cell.energy.energyCount.round();
+          greenCode =  cell.greenCodeContext.codeToStringNames();
         }
-        jsonMap.putIfAbsent("bootInfo", () => {"activeBandPos": boot.bandPos, "activeBand": boot.bandToString(), "selectedEnergy": selectedEnergy, "energy": boot.energy.energyCount.round(), "dir": boot.facing.name, "x": toFollow.pos.x - (watchAreaWidth/2).floor(), "y": toFollow.pos.y - (watchAreaHeight/2).floor(), "z": toFollow.pos.z - (watchAreaDepth/2).floor()});
+        jsonMap.putIfAbsent("bootInfo", () => {"greenCode": greenCode, "selectedEnergy": selectedEnergy, "energy": boot.energy.energyCount.round(), "dir": boot.facing.name, "x": toFollow.pos.x - (watchAreaWidth/2).floor(), "y": toFollow.pos.y - (watchAreaHeight/2).floor(), "z": toFollow.pos.z - (watchAreaDepth/2).floor()});
     }
     return jsonMap;
   }

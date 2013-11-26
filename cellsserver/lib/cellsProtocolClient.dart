@@ -105,9 +105,10 @@ class ClientCommEngine {
     ws.send(JSON.encode(jsonMap));
   }
   
-  bitMassWebSocket(){
+  liveSelectedWebSocket(String greenCode){
     Map jsonMap = new Map();
-    jsonMap.putIfAbsent("command", () => "bitMass");
+    jsonMap.putIfAbsent("command", () => "liveSelected");
+    jsonMap.putIfAbsent("data",() => greenCode);
     ws.send(JSON.encode(jsonMap));
   }
   

@@ -1,0 +1,6 @@
+{"x":3,"y":2,"z":1,"worldObject":{"energy":9740.0,"color":{"r":128,"g":128,"b":128,"name":"gr"}},"type":"B","boot":{"user":"test"}}
+{"x":5,"y":0,"z":1,"worldObject":{"energy":126.47247562119193,"color":{"r":0,"g":254,"b":0,"name":"g"}},"type":"C","cell":{"body":13.285390748670416,"code":"move;","outputBuffer":1.0628312598936334,"livingBleed":38}}
+{"x":0,"y":2,"z":1,"worldObject":{"energy":170.0629400522301,"color":{"r":0,"g":254,"b":0,"name":"g"}},"type":"C","cell":{"body":13.285390748670416,"code":"move;inc;","outputBuffer":57.672978624628605,"livingBleed":28}}
+{"x":6,"y":3,"z":1,"worldObject":{"energy":1.6380324341620276,"color":{"r":0,"g":0,"b":254,"name":"b"}},"type":"C","cell":{"body":13.367780601921257,"code":"eat;","outputBuffer":52.12401016691634,"livingBleed":7}}
+{"x":5,"y":0,"z":2,"worldObject":{"energy":10000.0,"color":{"r":254,"g":0,"b":0,"name":"r"}},"type":"M","mass":{"size":2.881336105319088}}
+{"x":7,"y":4,"z":2,"worldObject":{"energy":10000.0,"color":{"r":0,"g":254,"b":0,"name":"g"}},"type":"M","mass":{"size":2.880360281401897}}
