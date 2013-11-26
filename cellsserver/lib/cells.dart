@@ -17,18 +17,20 @@ abstract class ITickable {
   tick();
 }
 
-class Color extends MassObject {
+class Color {
   static Color Red = new Color(254,0,0, "r");
   static Color Green = new Color(0,254,0,"g");
   static Color Blue = new Color(0,0,254, "b");
   
   Color Copy() => new Color(r, g, b, name);
   
+  String name;
+  
   int r;
   int g;
   int b;  
   Color(this.r, this.g, this.b, String name){
-    super.name = name;
+    this.name = name;
   }
   
   bool ThisIs(Color color){
@@ -43,8 +45,10 @@ class Energy {
   
   Energy(this.energyCount);
   
+  
+  // returns how much energy really incremented
   double incEnergyBy(double inc){
-    if(energyCount + inc > maxEnergyInObject){      
+    if(energyCount + inc >= maxEnergyInObject){      
       double buffEnergyCount = energyCount + inc - maxEnergyInObject;
       energyCount = maxEnergyInObject;
       return inc - buffEnergyCount;
@@ -54,7 +58,7 @@ class Energy {
   }
   
   double decEnergyBy(double dec){
-    if(energyCount < dec){
+    if(energyCount <= dec){
       double buffEnergyCount = energyCount;
       energyCount = 0.0;
       return buffEnergyCount;
@@ -420,17 +424,17 @@ class World extends ITickable {
   
   
   makeGreenCodeCalc(){
-   positions.forEach((pos){ if (pos.object is Cell)
+   positions.forEach((pos){ if (pos.object is Cell && !pos.object.isHold)
                               (pos.object as Cell).greenCodeContext.doGreenCode();    
                         });
   }
     
-  makeMovesAndEatsAndKill(){ 
+  makeMovesAndEatsAndKill(){
    Set<Position> dealWith = positions.toSet();
   
    dealWith.forEach((pos) => tryMakeMoves(pos));
 
-   dealWith.forEach((pos){ if(pos.object is Cell) 
+   dealWith.forEach((pos){ if(pos.object is Cell && !pos.object.isHold) 
                               {
                                   Cell cell = pos.object;
                                   cell.makeConsumptions();
@@ -475,7 +479,7 @@ class World extends ITickable {
  static const int MassMerge = 75;
   
   tryIfInject(Position pos){
-    if(!(pos.object is Cell))
+    if(!(pos.object is Cell) || pos.object.isHold)
       return;
     Cell cell = pos.object;
     if(!cell.greenCodeContext.inject)

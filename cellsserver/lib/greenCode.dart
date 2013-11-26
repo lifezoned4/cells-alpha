@@ -84,6 +84,8 @@ class GreenCodeContext {
   static String syntaxCheckNames(String codeString){
       RegExp regExp = new RegExp("(.*?);",multiLine: true);
       regExp.allMatches(codeString).forEach((e){
+        if( e.group(1).trim() == "<IP>"  || e.group(1).trim() == "<RH>" ||  e.group(1).trim() == "<WH>"  ||  e.group(1).trim() == "<FH>")
+          return;
         GreenCode toAdd = GreenCode.factoriesName(e.group(1).trim());
         if(toAdd == null)
           throw new Exception("Unknown GreenCode Name: ${e.group(1)}");
@@ -93,8 +95,30 @@ class GreenCodeContext {
   
   GreenCodeContext.byNames(String codeString){
     RegExp regExp = new RegExp("(.*?);",multiLine: true);
-    regExp.allMatches(codeString).forEach((e){
-      GreenCode toAdd = GreenCode.factoriesName(e.group(1).trim());
+    int i = 0;
+    regExp.allMatches(codeString).forEach((e){      
+      String codeToken = e.group(1).trim();
+      if (codeToken == "<RH>")
+      {
+        ReadHead = i;
+        return;
+      }
+      else if(codeToken == "<FH>"){
+        FaceHead = i;
+        return;
+      }
+      else if(codeToken == "<WH>")
+      {
+        WriteHead = i;
+        return;
+      }
+      else if(codeToken == "<IP>")
+      {
+        IP = i;
+        return;
+      }
+      GreenCode toAdd = GreenCode.factoriesName(codeToken);
+      i++;
       if(toAdd != null)
         code.add(toAdd);
       else
@@ -128,9 +152,27 @@ class GreenCodeContext {
   
   String codeToStringNames(){
     String returner = "";
+    int i = 0;
     code.forEach((element){
-      returner+=element.name + ";";
+      if(i == ReadHead)
+        returner += "<RH>;" + "\n";
+      if(i == FaceHead)
+        returner += "<FH>;" + "\n";
+      if(i == WriteHead)
+        returner += "<WH>;" + "\n"; 
+      if(i == IP)
+        returner += "<IP>;" + "\n";
+      returner+=element.name + ";\n";
+      i++;
     });
+    if(i == ReadHead)
+      returner += "<RH>;" + "\n";
+    if(i == FaceHead)
+      returner += "<FH>;" + "\n";
+    if(i == WriteHead)
+      returner += "<WH>;" + "\n";      
+    if(i == IP)
+      returner += "<IP>;" + "\n";
     return returner;
   }
   
