@@ -128,7 +128,7 @@ class Position {
 }
 
 class WorldObject {
-  static const double startEnergy = 10000.0;
+  static const double startEnergy = 1000.0;
   
   // TODO should be filled by persister with same values for same world!
   static int idseed = 0;
@@ -202,7 +202,7 @@ class Cell extends WorldObject {
   }
 
   void makeConsumptions(){
-     // consumeEnergy(greenCodeContext.copyCost/100);
+    consumeEnergy(greenCodeContext.copyCost.toDouble());
     double nextSize = pow(body.size + 1,3)*4/3*PI - pow(body.size, 3)*4/3*PI;
     if(energy.energyCount >= nextSize){
       energy.energyCount-=nextSize;
@@ -484,9 +484,44 @@ class World extends ITickable {
     Cell cell = pos.object;
     if(!cell.greenCodeContext.inject)
       return;
-    if(cell.greenCodeContext.injectTo != Direction.NONE)
+    if(!cell.greenCodeContext.injectTo.isThis(0, 0, 0))
     {
+      Position found = null;
+      Iterable founder = positions.where((posSearch) => posSearch.x == pos.x + cell.greenCodeContext.injectTo.dirX &&
+                                                        posSearch.y == pos.y + cell.greenCodeContext.injectTo.dirY &&
+                                                        posSearch.z == pos.z + cell.greenCodeContext.injectTo.dirZ);
+      if(founder.length == 1){
+        found = founder.first;
+      }
       
+      if(found != null){
+       if(found.object is Mass){
+         Mass mass = found.object;
+         Cell newCell = new Cell.withCode(mass.getColor(), 
+             cell.greenCodeContext.codeToStringNamesRange(cell.greenCodeContext.FaceHead, 
+                                                          cell.greenCodeContext.WriteHead));
+         newCell.body = mass;
+         mass.pos.putOn(newCell);
+       }        
+      }
+      else {
+        if(cell.energy.energyCount < Cell.startEnergy)
+          return;
+        Cell newCell = new Cell.withCode(cell.getColor(), 
+            cell.greenCodeContext.codeToStringNamesRange(cell.greenCodeContext.FaceHead, 
+                                                         cell.greenCodeContext.WriteHead));
+        Position newPos;
+        try {
+          newPos = new Position(this, 
+              pos.x + cell.greenCodeContext.injectTo.dirX,
+              pos.y + cell.greenCodeContext.injectTo.dirY, 
+              pos.z + cell.greenCodeContext.injectTo.dirZ);
+          } on Exception catch (e){}
+        if(newPos != null){
+          newPos.putOn(newCell);
+          cell.energy.decEnergyBy(Cell.startEnergy);
+        }
+      }
     }
   }
    

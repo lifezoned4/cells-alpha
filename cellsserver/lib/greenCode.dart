@@ -151,9 +151,15 @@ class GreenCodeContext {
   }
   
   String codeToStringNames(){
+    return codeToStringNamesRange(0, code.length);
+  }
+  
+  String codeToStringNamesRange(int from, int to){
     String returner = "";
     int i = 0;
     code.forEach((element){
+      if(i < from || i > to)
+        return;
       if(i == ReadHead)
         returner += "<RH>;" + "\n";
       if(i == FaceHead)
@@ -397,7 +403,7 @@ class GreenCodeCopy extends GreenCode {
 
 class GreenCodeInject extends GreenCode {    
   GreenCodeInject(){
-      name = "Inj";
+      name = "inject";
       hexCode = "09";
   } 
     
