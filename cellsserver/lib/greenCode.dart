@@ -150,34 +150,45 @@ class GreenCodeContext {
     }
   }
   
-  String codeToStringNames(){
-    return codeToStringNamesRange(0, code.length);
+  int removeCodeFromTo(int from, int to){
+    while(to != from){
+      code.removeAt(from);
+      from--;
+      if(from < to)
+        to--;
+      if(from == 0)
+        from = code.length;
+    }
   }
   
-  String codeToStringNamesRange(int from, int to){
+  String codeToStringNames(){
+    return codeToStringNamesRange(0, code.length, true);
+  }
+  
+  String codeToStringNamesRange(int from, int to, bool withHeads){
     String returner = "";
     int i = 0;
     code.forEach((element){
       if(i < from || i > to)
         return;
-      if(i == ReadHead)
+      if(i == ReadHead && withHeads)
         returner += "<RH>;" + "\n";
-      if(i == FaceHead)
+      if(i == FaceHead && withHeads)
         returner += "<FH>;" + "\n";
-      if(i == WriteHead)
+      if(i == WriteHead && withHeads)
         returner += "<WH>;" + "\n"; 
-      if(i == IP)
+      if(i == IP && withHeads)
         returner += "<IP>;" + "\n";
       returner+=element.name + ";\n";
       i++;
     });
-    if(i == ReadHead)
+    if(i == ReadHead && withHeads)
       returner += "<RH>;" + "\n";
-    if(i == FaceHead)
+    if(i == FaceHead && withHeads)
       returner += "<FH>;" + "\n";
-    if(i == WriteHead)
+    if(i == WriteHead && withHeads)
       returner += "<WH>;" + "\n";      
-    if(i == IP)
+    if(i == IP && withHeads)
       returner += "<IP>;" + "\n";
     return returner;
   }
@@ -382,11 +393,9 @@ class GreenCodeCopy extends GreenCode {
     int iCounter = 0;
     while(iCounter < costCounter)
     {         
-         momReadHead++;
-         momReadHead %= context.code.length;
-         Random rnd = new Random();
          GreenCode toWrite;
          // Mutationsfaktor
+         Random rnd = new Random();         
          if(rnd.nextInt(100) == 17)
          {
            toWrite = GreenCode.factories[rnd.nextInt(GreenCode.factories.length)];
@@ -396,6 +405,8 @@ class GreenCodeCopy extends GreenCode {
          context.code.insert(context.WriteHead, toWrite);
          context.WriteHead++;
          iCounter++;;
+         momReadHead++;
+         momReadHead %= context.code.length;
     }
     context.copyCost+=costCounter;
   }

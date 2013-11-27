@@ -62,7 +62,9 @@ class User extends ITickable {
               return;
           }
           boot.energy.decEnergyBy(50.0);
-          newPos.putOn(new Mass(color, pow(50*3/(4*PI),1/3)));
+          Mass newMass = new Mass(color);
+          newMass.energy.energyCount = 50.0;
+          newPos.putOn(newMass);
           }
           break;
           
@@ -76,7 +78,7 @@ class User extends ITickable {
                 if(GreenCodeContext.syntaxCheckNames(greenCode) == "Okay")
                 {
                   Cell cell = new Cell.withCode(mass.getColor(), greenCode);
-                  cell.body = mass;
+                  cell.energy.energyCount = mass.energy.energyCount;
                   mass.pos.putOn(cell);
                   boot.selected = cell;
                   cell.isHold = true;
@@ -95,8 +97,8 @@ class User extends ITickable {
                Random rnd = new Random();
                if(boot.energy.energyCount + toGet <= Energy.maxEnergyInObject)
                {
-                 double consumed = mass.consume(toGet);
-                 if(mass.size <= 0)
+                 double consumed = mass.energy.decEnergyBy(toGet);
+                 if(mass.energy.energyCount <= 0)
                    boot.selected = null;                   
                  boot.energy.incEnergyBy(consumed);                    
                }
@@ -114,7 +116,7 @@ class User extends ITickable {
                Mass mass = boot.selected;
                Random rnd = new Random();
                int tryed = 0;
-               double put = mass.grow(toSend);
+               double put = mass.energy.incEnergyBy(toSend);
                boot.energy.incEnergyBy(toSend - put);
              }
             }
@@ -225,7 +227,7 @@ class MovingAreaViewSubscription extends WorldSubscription {
         if(boot.selected is Mass)
         {
           Mass mass = boot.selected;
-          selectedEnergy = mass.toEnergy().round();
+          selectedEnergy = mass.energy.energyCount.round();
         } else if (boot.selected is Cell){
           Cell cell = boot.selected;
           selectedEnergy = cell.energy.energyCount.round();

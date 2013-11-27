@@ -39,7 +39,7 @@ class Color {
 }
 
 class Energy {  
-  static const double maxEnergyInObject = 50000.0;
+  static double maxEnergyInObject = pow(2,32).toDouble();
   double energyCount;
   Color color;
   
@@ -153,13 +153,10 @@ class Cell extends WorldObject {
   GreenCodeContext greenCodeContext = null;
    
   int livingBleed = 0;
-  
-  Mass body;
-  
+    
   Cell(Color toSet) : super(toSet){
     
-    type = "C";
-    body = new Mass(toSet, pow(WorldObject.startEnergy * 3/(4*PI), 1/3));
+    type = "C"; 
     
     if(toSet.r == Color.Green.r && toSet.g == Color.Green.g && toSet.b == Color.Green.b)
     {
@@ -202,16 +199,11 @@ class Cell extends WorldObject {
   }
 
   void makeConsumptions(){
-    consumeEnergy(greenCodeContext.copyCost.toDouble());
-    double nextSize = pow(body.size + 1,3)*4/3*PI - pow(body.size, 3)*4/3*PI;
-    if(energy.energyCount >= nextSize){
-      energy.energyCount-=nextSize;
-      body.size++;
-    }
+    consumeEnergy(greenCodeContext.copyCost.toDouble());   
     livingBleed++;
     if(livingBleed > 50){
       livingBleed = 0;
-      consumeEnergy(body.size / 50 > 1 ? body.size / 50  : 1.0);
+      consumeEnergy(pow(energy.energyCount,1/8));
     }
     greenCodeContext.copyCost = 0;
 
@@ -236,7 +228,7 @@ class Cell extends WorldObject {
     if(tries >= 10 && !placed)
       return;
     }
-    double massoutput = pow(3* outputBuffer / (4*PI),1/3);
+    double massoutput = outputBuffer;
     pos.isIn.newOutputMass(toPlaceOn ,outputColor, massoutput);
   }
   
@@ -246,54 +238,10 @@ class Cell extends WorldObject {
 }
 
 class Mass extends WorldObject{
-
-  double size;
-  
-  static double maxSize = pow(Energy.maxEnergyInObject*(3.0/(4.0*PI)),1/3);
-  
-  double toEnergy(){
-    return pow(size, 3.0)*(4.0/3.0)*PI;
-  }
-  
-  double consume(double hunger){
-    double left = pow(size,3)*4/3*PI - hunger;
-    if(left <= 0)
-    {
-      size = 0.0;
-      return hunger + left;
-    }
-    else  {
-      size = pow(left*3/(4*PI), 1/3);
-      return hunger;
-    }
-  }
-  
-  double grow(double toGrow){
-    double growen = pow(3/(4*PI)*((pow(size, 3)*4/3*PI) + toGrow), 1/3);
-    if(growen > Mass.maxSize){
-      double left = pow(growen,3)*4*PI/3 - pow(Mass.maxSize,3)*4 * PI /3;
-      size = Mass.maxSize;
-      return toGrow - left;
-    }
-    else {
-      size = growen;
-      return toGrow;
-    }      
-  }
-  
-  Mass(Color color, this.size) : super(color){
+  Mass(Color color) : super(color){
     type = "M";
   }
 }
-
-class MassObject {
-  String name;
-}
-
-class EmptyObject extends MassObject {
-  String name = "-";
-}
-
 
 class Boot extends WorldObject {
   String user;
@@ -366,7 +314,8 @@ class World extends ITickable {
     
   newOutputMass(Position pos, Color createColor, double size)
   {
-     Mass mass = new Mass(createColor, size);
+     Mass mass = new Mass(createColor);
+     mass.energy.energyCount = size;
      pos.putOn(mass);
   }
   
@@ -449,27 +398,15 @@ class World extends ITickable {
    dealWith.forEach((pos){
       if(pos.object is Mass){
         Mass mass = pos.object;
-        if(mass.toEnergy() <= 0.0)
+        if(mass.energy.energyCount <= 0.0)
           dead.add(pos);
       } else if(pos.object is Cell){
         Cell cell = pos.object;
-        if(cell.energy.energyCount == 0){
-          if(cell.body.size > 0){
-            double refund = pow(cell.body.size,3)*PI*4/3 - pow(cell.body.size - 1, 3)*PI*4/3;
-            cell.body.size--;
-            if(cell.body.size <= 0){
+        if(cell.energy.energyCount <= 0){
               cell.die();
               dead.add(pos);
-            }
-            else
-              cell.energy.incEnergyBy(refund);                       
-          }
-          else {
-            cell.die();
-            dead.add(pos);
           }
         }
-      }
       });
    
    positions.removeAll(dead);
@@ -499,8 +436,9 @@ class World extends ITickable {
          Mass mass = found.object;
          Cell newCell = new Cell.withCode(mass.getColor(), 
              cell.greenCodeContext.codeToStringNamesRange(cell.greenCodeContext.FaceHead, 
-                                                          cell.greenCodeContext.WriteHead));
-         newCell.body = mass;
+                                                          cell.greenCodeContext.WriteHead, false));
+         cell.greenCodeContext.removeCodeFromTo(cell.greenCodeContext.FaceHead,  cell.greenCodeContext.WriteHead);
+         newCell.energy.energyCount = mass.energy.energyCount;
          mass.pos.putOn(newCell);
        }        
       }
@@ -509,7 +447,9 @@ class World extends ITickable {
           return;
         Cell newCell = new Cell.withCode(cell.getColor(), 
             cell.greenCodeContext.codeToStringNamesRange(cell.greenCodeContext.FaceHead, 
-                                                         cell.greenCodeContext.WriteHead));
+                                                         cell.greenCodeContext.WriteHead, false));
+            
+            cell.greenCodeContext.removeCodeFromTo(cell.greenCodeContext.FaceHead,  cell.greenCodeContext.WriteHead);
         Position newPos;
         try {
           newPos = new Position(this, 
@@ -569,9 +509,8 @@ class World extends ITickable {
               _logger.warning("Autsch");
             if(toConsume.getColor().r == mass.getColor().r && toConsume.getColor().g == mass.getColor().g && toConsume.getColor().b == mass.getColor().b)
             { 
-              mass.size = pow(3/(4*PI)*(pow(mass.size,3)*4*PI/3 +  pow(toConsume.size,3)*4*PI/3), 1/3);       
-              toConsume.size = 0.0;
-            // _logger.info("MERGING MASS");
+              mass.energy.energyCount+= toConsume.energy.energyCount;
+              toConsume.energy.energyCount = 0.0;
             }
           }
         }
@@ -583,7 +522,7 @@ class World extends ITickable {
         bool hasEaten = false;
         if(cell.energy.energyCount == 0)
           return;
-        double hunger = cell.body.size*5;
+        double hunger = pow(cell.energy.energyCount, 1/8);
         double startHunger = hunger;
         while(picks.length > 0 || !hasEaten)
         {
@@ -601,10 +540,10 @@ class World extends ITickable {
                   cell.getColor().ThisIs(Color.Red) && toConsume.getColor().ThisIs(Color.Green) ||
                   cell.getColor().ThisIs(Color.Green) && toConsume.getColor().ThisIs(Color.Blue))
               {
-                double eaten = toConsume.consume(hunger);
+                double eaten = toConsume.energy.decEnergyBy(hunger);
                 double left = hunger - cell.energy.incEnergyBy(eaten);
                 hunger -= eaten;            
-                toConsume.grow(left);
+                toConsume.energy.incEnergyBy(left);
               }
               if(hunger == 0)
                 hasEaten = true;
@@ -615,10 +554,10 @@ class World extends ITickable {
                   cell.getColor().ThisIs(Color.Red) && toConsume.getColor().ThisIs(Color.Green) ||
                   cell.getColor().ThisIs(Color.Green) && toConsume.getColor().ThisIs(Color.Blue))
               {
-                double eaten = toConsume.body.consume(hunger);
+                double eaten = toConsume.energy.decEnergyBy(hunger);
                 hunger -= eaten;
                 double left = cell.energy.incEnergyBy(eaten);
-                toConsume.body.grow(left);
+                toConsume.energy.incEnergyBy(left);
                 if(hunger == 0)
                   hasEaten = true;
               }
@@ -661,7 +600,7 @@ class World extends ITickable {
       Cell cell = pos.object;
       if(0 != (cell.greenCodeContext.nextMove.dirX + cell.greenCodeContext.nextMove.dirY + cell.greenCodeContext.nextMove.dirZ).abs());
       {         
-        cell.consumeEnergy(cell.body.size / 50);
+        cell.consumeEnergy(cell.energy.energyCount / 50);
       }
       pos.dx = cell.greenCodeContext.nextMove.dirX;
       pos.dy = cell.greenCodeContext.nextMove.dirY;
