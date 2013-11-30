@@ -20,12 +20,24 @@ class User extends ITickable {
   int ticksLeft = 0;
   MovingAreaViewSubscription bootSubcription;
   
+  WorldObject selected;
+    
   User(this.username, this.pubKey, this.lastSendTokken);
   
   dealWithWebSocket(String message, WebSocket conn){
       print(message);
       Map jsonMap = JSON.decode(message);
       switch(jsonMap["command"]){
+        case "adminSelection":
+          int id = jsonMap["data"]["id"];
+          var iterator =  subscriptions.first.world.positions.where((e) => e.object.id == id);
+          if(iterator.length != 1)
+          {
+            _logger.warning("Error on this id: $id! Count $iterator.legnth");
+          } else {
+            selected = iterator.first.object;
+          }          
+          break;
         case "moveSpectator":
           if (jsonMap["data"]["dx"].abs() + jsonMap["data"]["dy"].abs() + jsonMap["data"]["dz"].abs() > 1)
             return;
@@ -67,7 +79,9 @@ class User extends ITickable {
           newPos.putOn(newMass);
           }
           break;
-          
+        case "demoMode":
+          subscriptions.first.world.demoMode();
+          break;          
         case "liveSelected":
           if(this.bootSubcription.toFollow is Boot){
             Boot boot = this.bootSubcription.toFollow;
@@ -83,6 +97,19 @@ class User extends ITickable {
                   boot.selected = cell;
                   cell.isHold = true;
                 }             
+              } else if(boot.selected is Cell) {
+                Cell cell = boot.selected;
+                String greenCode = jsonMap["data"];
+                if(GreenCodeContext.syntaxCheckNames(greenCode) == "Okay")
+                {
+                  Cell newCell = new Cell.withCode(cell.getColor(), greenCode);
+                  newCell.energy.energyCount = cell.energy.energyCount;
+                  newCell.greenCodeContext.registers = cell.greenCodeContext.registers;
+                  newCell.greenCodeContext.stack = cell.greenCodeContext.stack;
+                  cell.pos.putOn(newCell);
+                  boot.selected = newCell;
+                  newCell.isHold = true;
+                }
               }
             }
           }
@@ -121,6 +148,7 @@ class User extends ITickable {
              }
             }
           }
+         break;
       }
   }
   
@@ -128,7 +156,12 @@ class User extends ITickable {
     Map jsonMap = new Map();
     jsonMap.putIfAbsent("username", () => username);
     Map jsonMapData = new Map();
-    subscriptions.forEach((sub) => jsonMapData.addAll(sub.getStateAsMap()));
+    subscriptions.forEach((sub) => jsonMapData.addAll(sub.getStateAsMap()));   
+    // _logger.info(selected);
+    if(selected is Cell && selected.energy.energyCount >= 0){
+      // _logger.info("Send adminInfo");
+      jsonMapData.putIfAbsent("adminSelection", () => (selected as Cell).greenCodeContext.codeToStringNames());
+    } else   jsonMapData.putIfAbsent("adminSelection", () => "");
     jsonMap.putIfAbsent("data", () => jsonMapData);
     return JSON.encode(jsonMap);
   }

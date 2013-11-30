@@ -120,6 +120,9 @@ InitAdminClient(String url, String user, String password)
   HideConnectionBar();
   
   DivElement displayArea = querySelector("#displayarea");  
+  DivElement admincontroll = querySelector("#admincontroll");
+  
+  admincontroll.hidden = false;
   
   DivElement errorbar = querySelector('#errorbar');
   errorbar.text = "Logging in progress...";
@@ -138,7 +141,18 @@ InitAdminClient(String url, String user, String password)
            if(parsedTokken != 0)
             commEngine.initWebSocket(parsedTokken);
       }, ClientCommEngine.AdminMode
-      );
+  );
+  
+  commEngine.onChangeRequestedInfo = (data) {};
+  
+  
+  querySelector("#demoMode")..onClick.listen((e) => commEngine.demoMode());
+  
+  TextAreaElement textarea = querySelector("#greenCodeAdmin");
+  commEngine.onAdminSelectionInfo = (data) {
+    // print("BEFORE WRITE");
+    textarea.value = data.toString();
+  };
   
   commEngine.onUpdatedCache = () {
     viewer.updateDisplayArea(displayArea);

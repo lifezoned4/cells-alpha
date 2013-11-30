@@ -160,6 +160,7 @@ class RestfulSelectInfoAbout extends RestfulCommand {
   String dealWithCommand(Map<String, dynamic> jsonMap, AuthContext context){    
     super.dealWithCommand(jsonMap, context);
     int id = jsonMap["data"]["id"];
+    int tokken = jsonMap["data"]["tokken"];
     
     var iterator =  engine.world.positions.where((e) => e.object.id == id);
     if(iterator.length != 1)
@@ -175,6 +176,15 @@ class RestfulSelectInfoAbout extends RestfulCommand {
       if(object is Cell){
         Cell cell = object;
         returner.putIfAbsent("code", () => cell.greenCodeContext.codeToStringNames());
+      }
+      if(engine.world.users.where((user) => (user.lastSendTokken == tokken) && user.bootSubcription == null).isNotEmpty){
+        _logger.info("Selecting object ${id}");
+        if(object is Cell){
+          if(engine.world.users.where((user) => user.lastSendTokken == tokken && user.bootSubcription == null).length > 1)
+            _logger.info("BAD THINGS HAPPENED");
+          _logger.info("IS CELL");
+          engine.world.users.where((user) => user.lastSendTokken == tokken && user.bootSubcription == null).first.selected = object;      
+        }
       }
       return JSON.encode(returner);
       }

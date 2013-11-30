@@ -62,12 +62,15 @@ class ClientCommEngine {
   Function onChangeRequestedInfo;
   Function onUpdatedCache;
   Function onSpectatorChange;
+  Function onAdminSelectionInfo;
   
   DsaKeyPair keyPair;
   String serverURL;
   String username;
   Dsa dsa = new Dsa(); 
-   
+  int tokken; 
+  
+  
   ClientCommEngine.fromUser(this.serverURL, this.username, String password){
     keyPair = dsa.fromSecretUserPassword(username, password); 
   }
@@ -97,6 +100,20 @@ class ClientCommEngine {
     });    
   }
   
+  retrieveInfoForObject(int id){
+    Map jsonMap = new Map();
+    jsonMap.putIfAbsent("command", () => "adminSelection");
+    jsonMap.putIfAbsent("data", () => {"id": id});
+    ws.send(JSON.encode(jsonMap));
+  }
+  
+  
+  demoMode(){
+    Map jsonMap = new Map();
+    jsonMap.putIfAbsent("command", () => "demoMode");
+    jsonMap.putIfAbsent("data", () => "demo");
+    ws.send(JSON.encode(jsonMap));
+  }
   
   spawnMassWebSocket(String color){
     Map jsonMap = new Map();
@@ -195,11 +212,16 @@ class ClientCommEngine {
               onDelayStatusChange(value);
             if(value == 0){
               commandWebSocketAuth((tokken){
+                this.tokken = int.parse(tokken);
                 onErrorChange("New tokken: $tokken");
                 initWebSocket(int.parse(tokken)); 
               }, mode);
             }
-          break;            
+          break;     
+          case "adminSelection":
+            // print("Getting selection data");
+            onAdminSelectionInfo(value);
+          break;
           case "viewArea":
             // clearCache();
             Map jsonMap  = value;         
@@ -245,7 +267,7 @@ class ClientCommEngine {
   
   selectInfoAbout(int id){
     print(id);
-    commandSelectInfoAbout(id, (value) => onChangeRequestedInfo(value));
+    retrieveInfoForObject(id);
   }
   
   commandSelectInfoAbout(int id, Function callback){
@@ -254,7 +276,7 @@ class ClientCommEngine {
       Map jsonMap = new Map();
       jsonMap.putIfAbsent("command", () => command);
       jsonMap.putIfAbsent("utc", () => new DateTime.now().toUtc().millisecondsSinceEpoch);
-      jsonMap.putIfAbsent("data", () => {"id": id});
+      jsonMap.putIfAbsent("data", () => {"id": id, "tokken": tokken});
       String msg = JSON.encode(jsonMap);
       
       msg = _sign(msg);

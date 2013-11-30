@@ -49,6 +49,12 @@ class Direction {
 class GreenCodeContext {    
   List<GreenCode> code = new List<GreenCode>();
   
+  modulateHeads(){
+    ReadHead %=  code.length;
+    WriteHead %= code.length;
+    FaceHead %= code.length;
+  }
+  
   int FaceHead = 0;
   int WriteHead = 0;
   int ReadHead = 0;
@@ -91,6 +97,20 @@ class GreenCodeContext {
           throw new Exception("Unknown GreenCode Name: ${e.group(1)}");
       });
       return "Okay";
+  }
+  
+  static List<GreenCode> stringToCode(String input){
+    RegExp regExp = new RegExp("(.*?);",multiLine: true);
+    List<GreenCode> returner = new List<GreenCode>();
+    regExp.allMatches(input).forEach((e){
+      if( e.group(1).trim() == "<IP>"  || e.group(1).trim() == "<RH>" ||  e.group(1).trim() == "<WH>"  ||  e.group(1).trim() == "<FH>")
+        return;
+      GreenCode toAdd = GreenCode.factoriesName(e.group(1).trim());
+      if(toAdd == null)
+        throw new Exception("Unknown GreenCode Name: ${e.group(1)}");
+      returner.add(toAdd);
+    });
+    return returner;
   }
   
   GreenCodeContext.byNames(String codeString){
@@ -151,13 +171,13 @@ class GreenCodeContext {
   }
   
   int removeCodeFromTo(int from, int to){
-    while(to != from){
+    while(to != from && code.length != 0){
       code.removeAt(from);
       from--;
       if(from < to)
         to--;
-      if(from == 0)
-        from = code.length;
+      if(from <= 0)
+        from = code.length - 1;
     }
   }
   
@@ -384,8 +404,8 @@ class GreenCodeCopy extends GreenCode {
       hexCode = "C9";
   } 
     
-  doOn(GreenCodeContext context){
-    
+  doOn(GreenCodeContext context){    
+    context.modulateHeads();
     int momReadHead = context.ReadHead;
     int costCounter = context.FaceHead - context.ReadHead;
     if(costCounter < 0)
@@ -404,11 +424,14 @@ class GreenCodeCopy extends GreenCode {
            toWrite = context.code[momReadHead];
          context.code.insert(context.WriteHead, toWrite);
          context.WriteHead++;
+         if(context.WriteHead < context.IP)
+           context.IP++;   
          iCounter++;;
          momReadHead++;
          momReadHead %= context.code.length;
     }
     context.copyCost+=costCounter;
+    context.modulateHeads();
   }
 }
 
@@ -640,12 +663,12 @@ class GreenCodeInc extends GreenCode {
       if(context.code[context.getAddresse(context.IP + 1)] is GreenCodeNop){
         if(context.code[context.getAddresse(context.IP + 1)] is GreenCodeNopA)
         {
-          context.FaceHead = context.getAddresse(context.FaceHead+ context.registers["BX"]);
+          context.FaceHead = context.getAddresse(context.FaceHead+ context.registers["BX"]) % context.code.length;
         }  
         else if(context.code[context.getAddresse(context.IP + 1)] is GreenCodeNopB)
-          context.WriteHead = context.getAddresse(context.WriteHead+ context.registers["BX"]);
+          context.WriteHead = context.getAddresse(context.WriteHead+ context.registers["BX"]) % context.code.length;
         else if(context.code[context.getAddresse(context.IP + 1)] is GreenCodeNopC)
-          context.ReadHead = context.getAddresse(context.ReadHead+ context.registers["BX"]);
+          context.ReadHead = context.getAddresse(context.ReadHead+ context.registers["BX"]) % context.code.length;
         }
       else
       {

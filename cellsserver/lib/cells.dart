@@ -128,7 +128,7 @@ class Position {
 }
 
 class WorldObject {
-  static const double startEnergy = 1000.0;
+  static const double startEnergy = 100.0;
   
   // TODO should be filled by persister with same values for same world!
   static int idseed = 0;
@@ -199,7 +199,7 @@ class Cell extends WorldObject {
   }
 
   void makeConsumptions(){
-    consumeEnergy(greenCodeContext.copyCost.toDouble());   
+    consumeEnergy(greenCodeContext.copyCost.toDouble() / 100);   
     livingBleed++;
     if(livingBleed > 50){
       livingBleed = 0;
@@ -256,7 +256,7 @@ class Boot extends WorldObject {
 
 class World extends ITickable {
   List<User> users = new List<User>();
-  int delay = 500;
+  int delay = 100;
   int timeToSave = 0;
   Timer timer;
   int ticksTillStart = 0; 
@@ -267,7 +267,7 @@ class World extends ITickable {
   int depth;
   
   World(this.width, this.height, this.depth){
-    /* for(int i = 0; i < 100; i++){
+    /* for(int i = 0; i < 200; i++){
       Random rnd = new Random();
       Color choosenColor;
       switch(rnd.nextInt(3)){
@@ -282,13 +282,14 @@ class World extends ITickable {
           break;
       }
       
-      Mass object = new Mass(choosenColor, rnd.nextDouble()*5);
+      Mass object = new Mass(choosenColor);
+      object.energy.energyCount = rnd.nextDouble()*WorldObject.startEnergy;
       Position newObjectPosition = new Position(this, rnd.nextInt(width), rnd.nextInt(height), rnd.nextInt(depth));
       newObjectPosition.putOn(object);
       positions.add(newObjectPosition);
-    }
+    } */
     
-    for(int i = 0; i < 50; i++){
+    /*for(int i = 0; i < 100; i++){
       Random rnd = new Random();
       Color toSet;
       switch(rnd.nextInt(3)){
@@ -307,9 +308,9 @@ class World extends ITickable {
       Cell object = new Cell.withCode(toSet, "RANDOM");
       Position newObjectPosition = new Position(this, rnd.nextInt(width), rnd.nextInt(height), rnd.nextInt(depth));
       newObjectPosition.putOn(object);
+      object.energy.energyCount =  rnd.nextDouble()*WorldObject.startEnergy*1000;
       positions.add(newObjectPosition); 
-    } 
-    */
+    }*/
   }
     
   newOutputMass(Position pos, Color createColor, double size)
@@ -387,6 +388,7 @@ class World extends ITickable {
                               {
                                   Cell cell = pos.object;
                                   cell.makeConsumptions();
+                                  tryIfInject(pos);
                               } 
    });
    
@@ -410,7 +412,45 @@ class World extends ITickable {
       });
    
    positions.removeAll(dead);
-   _logger.info("positions = ${positions.length}");
+   double totalEnergyGreen = 0.0;
+   double totalEnergyRed = 0.0;
+   double totalEnergyBlue = 0.0;
+   positions.forEach((pos)  {
+    if(pos.object.getColor().ThisIs(Color.Green))
+      totalEnergyGreen+=pos.object.energy.energyCount;
+    else if(pos.object.getColor().ThisIs(Color.Red))
+      totalEnergyRed+=pos.object.energy.energyCount;
+    else if (pos.object.getColor().ThisIs(Color.Blue))
+      totalEnergyBlue+=pos.object.energy.energyCount;     
+   });
+   
+    // _logger.info("positions = ${positions.length} red = ${totalEnergyRed} green = ${totalEnergyGreen} blue = ${totalEnergyBlue}");
+    // _logger.info("total = ${totalEnergyGreen + totalEnergyBlue + totalEnergyRed}");
+  }
+  
+  demoMode(){
+    for(int i = 0; i < 100; i++){
+      Random rnd = new Random();
+      Color toSet;
+      switch(rnd.nextInt(3)){
+        case 0:
+          toSet = Color.Red;
+          break;
+        case 1:
+          toSet = Color.Green;
+          break;
+        case 2:
+          toSet = Color.Blue;
+          break;
+        default:
+          toSet = Color.Red;
+      }
+      Cell object = new Cell.withCode(toSet, "RANDOM");
+      Position newObjectPosition = new Position(this, rnd.nextInt(width), rnd.nextInt(height), rnd.nextInt(depth));
+      newObjectPosition.putOn(object);
+      object.energy.energyCount =  rnd.nextDouble()*WorldObject.startEnergy*1000;
+      positions.add(newObjectPosition); 
+    }
   }
   
  static const int MassMerge = 75;
@@ -435,31 +475,43 @@ class World extends ITickable {
        if(found.object is Mass){
          Mass mass = found.object;
          Cell newCell = new Cell.withCode(mass.getColor(), 
-             cell.greenCodeContext.codeToStringNamesRange(cell.greenCodeContext.FaceHead, 
-                                                          cell.greenCodeContext.WriteHead, false));
-         cell.greenCodeContext.removeCodeFromTo(cell.greenCodeContext.FaceHead,  cell.greenCodeContext.WriteHead);
+             cell.greenCodeContext.codeToStringNamesRange(cell.greenCodeContext.ReadHead, 
+                                                          cell.greenCodeContext.FaceHead, false));
+         cell.greenCodeContext.removeCodeFromTo(cell.greenCodeContext.ReadHead,  cell.greenCodeContext.FaceHead);
+         cell.greenCodeContext.modulateHeads();
          newCell.energy.energyCount = mass.energy.energyCount;
+         _logger.info("MASS IS NOW CELL");
          mass.pos.putOn(newCell);
-       }        
+       } else if (found.object is Cell){
+         Cell toInjectIn = found.object;
+         toInjectIn.greenCodeContext.code.insertAll(toInjectIn.greenCodeContext.WriteHead, 
+             GreenCodeContext.stringToCode(
+                 cell.greenCodeContext.codeToStringNamesRange(cell.greenCodeContext.ReadHead, 
+                                                              cell.greenCodeContext.FaceHead, false)));
+         cell.greenCodeContext.removeCodeFromTo(cell.greenCodeContext.ReadHead,  cell.greenCodeContext.FaceHead);
+         cell.greenCodeContext.modulateHeads(); 
+       }
       }
       else {
-        if(cell.energy.energyCount < Cell.startEnergy)
+        if(cell.energy.energyCount < WorldObject.startEnergy)
           return;
-        Cell newCell = new Cell.withCode(cell.getColor(), 
-            cell.greenCodeContext.codeToStringNamesRange(cell.greenCodeContext.FaceHead, 
-                                                         cell.greenCodeContext.WriteHead, false));
-            
-            cell.greenCodeContext.removeCodeFromTo(cell.greenCodeContext.FaceHead,  cell.greenCodeContext.WriteHead);
+        String extractedCode =   cell.greenCodeContext.codeToStringNamesRange(cell.greenCodeContext.ReadHead, 
+            cell.greenCodeContext.FaceHead, false);
+        _logger.info(extractedCode);
+        Cell newCell = new Cell.withCode(cell.getColor(), extractedCode);
         Position newPos;
         try {
           newPos = new Position(this, 
-              pos.x + cell.greenCodeContext.injectTo.dirX,
-              pos.y + cell.greenCodeContext.injectTo.dirY, 
-              pos.z + cell.greenCodeContext.injectTo.dirZ);
+              cell.pos.x + cell.greenCodeContext.injectTo.dirX,
+              cell.pos.y + cell.greenCodeContext.injectTo.dirY, 
+              cell.pos.z + cell.greenCodeContext.injectTo.dirZ);
           } on Exception catch (e){}
         if(newPos != null){
+          cell.greenCodeContext.removeCodeFromTo(cell.greenCodeContext.ReadHead,  cell.greenCodeContext.FaceHead);
+          cell.greenCodeContext.modulateHeads();
           newPos.putOn(newCell);
-          cell.energy.decEnergyBy(Cell.startEnergy);
+          _logger.info("NEW CELL IS BORN");
+          cell.energy.decEnergyBy(WorldObject.startEnergy);
         }
       }
     }
@@ -522,7 +574,7 @@ class World extends ITickable {
         bool hasEaten = false;
         if(cell.energy.energyCount == 0)
           return;
-        double hunger = pow(cell.energy.energyCount, 1/8);
+        double hunger = pow(cell.energy.energyCount, 1/8)* WorldObject.startEnergy;
         double startHunger = hunger;
         while(picks.length > 0 || !hasEaten)
         {
@@ -600,7 +652,7 @@ class World extends ITickable {
       Cell cell = pos.object;
       if(0 != (cell.greenCodeContext.nextMove.dirX + cell.greenCodeContext.nextMove.dirY + cell.greenCodeContext.nextMove.dirZ).abs());
       {         
-        cell.consumeEnergy(cell.energy.energyCount / 50);
+        cell.consumeEnergy(1.0);
       }
       pos.dx = cell.greenCodeContext.nextMove.dirX;
       pos.dy = cell.greenCodeContext.nextMove.dirY;
