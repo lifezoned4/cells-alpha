@@ -4,7 +4,7 @@ packages:
   analyzer:
     description: analyzer
     source: hosted
-    version: "0.10.2"
+    version: "0.10.5"
   args:
     description: args
     source: hosted
@@ -19,10 +19,14 @@ packages:
     version: "0.9.0"
   cellsserver:
     description:
-      path: "/home/ms/workspaceCellsPrototype/cellsweb/../cellsserver"
+      path: "D:\\Coding\\projects\\workspaceCellsPrototype\\cellsweb\\../cellsserver"
       relative: true
     source: path
     version: "0.0.0"
+  collection:
+    description: collection
+    source: hosted
+    version: "0.9.0"
   crypto:
     description: crypto
     source: hosted
@@ -30,11 +34,11 @@ packages:
   intl:
     description: intl
     source: hosted
-    version: "0.9.0"
+    version: "0.9.1"
   logging:
     description: logging
     source: hosted
-    version: "0.9.0"
+    version: "0.9.1+1"
   logging_handlers:
     description: logging_handlers
     source: hosted
@@ -42,8 +46,8 @@ packages:
   path:
     description: path
     source: hosted
-    version: "0.9.0"
+    version: "1.0.0"
   unmodifiable_collection:
     description: unmodifiable_collection
     source: hosted
-    version: "0.9.0"
+    version: "0.9.2"
