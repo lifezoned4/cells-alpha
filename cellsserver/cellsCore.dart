@@ -13,6 +13,7 @@ import "lib/cells.dart";
 final _logger = new Logger("cellsCore");
 
 class User extends ITickable {
+  bool isAdmin = false;
   WebSocket socketAct;
   BigInteger pubKey;
   String username;  
@@ -89,7 +90,7 @@ class User extends ITickable {
               if(boot.selected is Mass){
                 Mass mass = boot.selected;
                 String greenCode = jsonMap["data"];
-                if(GreenCodeContext.syntaxCheckNames(greenCode) == "Okay")
+                if(!new GreenCodeContext.byNames(greenCode).assemblerError)
                 {
                   Cell cell = new Cell.withCode(mass.getColor(), greenCode);
                   cell.energy.energyCount = mass.energy.energyCount;
@@ -100,12 +101,11 @@ class User extends ITickable {
               } else if(boot.selected is Cell) {
                 Cell cell = boot.selected;
                 String greenCode = jsonMap["data"];
-                if(GreenCodeContext.syntaxCheckNames(greenCode) == "Okay")
+                if(!new GreenCodeContext.byNames(greenCode).assemblerError)
                 {
                   Cell newCell = new Cell.withCode(cell.getColor(), greenCode);
                   newCell.energy.energyCount = cell.energy.energyCount;
                   newCell.greenCodeContext.registers = cell.greenCodeContext.registers;
-                  newCell.greenCodeContext.stack = cell.greenCodeContext.stack;
                   cell.pos.putOn(newCell);
                   boot.selected = newCell;
                   newCell.isHold = true;
@@ -158,10 +158,10 @@ class User extends ITickable {
     Map jsonMapData = new Map();
     subscriptions.forEach((sub) => jsonMapData.addAll(sub.getStateAsMap()));   
     // _logger.info(selected);
-    if(selected is Cell && selected.energy.energyCount >= 0){
+    if(selected is Cell && selected.energy.energyCount > 0){
       // _logger.info("Send adminInfo");
-      jsonMapData.putIfAbsent("adminSelection", () => (selected as Cell).greenCodeContext.codeToStringNames());
-    } else   jsonMapData.putIfAbsent("adminSelection", () => "");
+      jsonMapData.putIfAbsent("adminSelection", () => {"code": (selected as Cell).greenCodeContext.codeToStringNamesWithHeads(), "registers": (selected as Cell).greenCodeContext.registersToString()});
+    } else  jsonMapData.putIfAbsent("adminSelection", () => {"code": "", "registers": JSON.encode({})});
     jsonMap.putIfAbsent("data", () => jsonMapData);
     return JSON.encode(jsonMap);
   }

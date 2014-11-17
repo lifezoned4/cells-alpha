@@ -15,21 +15,21 @@ class ColorFacade {
   int b;
 }
 
-class WorldObjectFacade {  
+class WorldObjectFacade {
   static Map<int, WorldObjectFacade> listOfFacades = new Map<int, WorldObjectFacade>();
-  
+
   ColorFacade color = new ColorFacade()..r = 0..g = 0..b = 0;
   String type = "";
   int utctimestamp = 0;
 
   bool isHold = false;
-  
+
   int id = -1;
-  
+
   WorldObjectFacade.Empty(){
-   utctimestamp = new DateTime.now().toUtc().millisecondsSinceEpoch; 
+   utctimestamp = new DateTime.now().toUtc().millisecondsSinceEpoch;
   }
-  
+
   setData(String type, color, id){
     this.type = type;
     this.color = color;
@@ -42,20 +42,20 @@ class WorldObjectFacade {
     }
       listOfFacades.putIfAbsent(id, () => this);
    }
-  
+
   bool isTooOld(){
     return oldness() > 2000;
   }
-  
+
   int oldness(){
     return (new DateTime.now().toUtc().millisecondsSinceEpoch) - utctimestamp;
   }
 }
 
-class ClientCommEngine {  
+class ClientCommEngine {
   static const String commandNode = "/commands";
   static const String webSocketNode = "/ws";
-      
+
   WebSocket ws;
   Function onDelayStatusChange;
   Function onErrorChange;
@@ -63,25 +63,25 @@ class ClientCommEngine {
   Function onUpdatedCache;
   Function onSpectatorChange;
   Function onAdminSelectionInfo;
-  
+
   DsaKeyPair keyPair;
   String serverURL;
   String username;
-  Dsa dsa = new Dsa(); 
-  int tokken; 
-  
-  
+  Dsa dsa = new Dsa();
+  int tokken;
+
+
   ClientCommEngine.fromUser(this.serverURL, this.username, String password){
-    keyPair = dsa.fromSecretUserPassword(username, password); 
+    keyPair = dsa.fromSecretUserPassword(username, password);
   }
-  
+
   ClientCommEngine.fromKeyPair(this.serverURL, DsaKeyPair this.keyPair){
     throw new Exception("Not implemented!");
   }
-  
+
   initWebSocket(int tokken){
     var webSocket = new WebSocket("ws://" + serverURL + webSocketNode);
-    webSocket.onOpen.listen((e) {   
+    webSocket.onOpen.listen((e) {
       Map jsonMap = new Map();
       jsonMap.putIfAbsent("command", () => "tokken");
       jsonMap.putIfAbsent("data", () => tokken);
@@ -91,113 +91,113 @@ class ClientCommEngine {
         for(int y = 0; y < worldHeight; y++) {
           clientcache[x].putIfAbsent(y, () => new Map<int, WorldObjectFacade>());
           for(int z = 0; z < worldDepth; z++) {
-            clientcache[x][y].putIfAbsent(z, () => new WorldObjectFacade.Empty());          
+            clientcache[x][y].putIfAbsent(z, () => new WorldObjectFacade.Empty());
           }
         }
       }
       ws = webSocket;
-      ws.onMessage.listen(_dealWithWebSocketMsg);      
-    });    
+      ws.onMessage.listen(_dealWithWebSocketMsg);
+    });
   }
-  
+
   retrieveInfoForObject(int id){
     Map jsonMap = new Map();
     jsonMap.putIfAbsent("command", () => "adminSelection");
     jsonMap.putIfAbsent("data", () => {"id": id});
     ws.send(JSON.encode(jsonMap));
   }
-  
-  
+
+
   demoMode(){
     Map jsonMap = new Map();
     jsonMap.putIfAbsent("command", () => "demoMode");
     jsonMap.putIfAbsent("data", () => "demo");
     ws.send(JSON.encode(jsonMap));
   }
-  
+
   spawnMassWebSocket(String color){
     Map jsonMap = new Map();
     jsonMap.putIfAbsent("command", () => "spawnMass");
     jsonMap.putIfAbsent("data", () => {"color": color});
     ws.send(JSON.encode(jsonMap));
   }
-  
+
   liveSelectedWebSocket(String greenCode){
     Map jsonMap = new Map();
     jsonMap.putIfAbsent("command", () => "liveSelected");
     jsonMap.putIfAbsent("data",() => greenCode);
     ws.send(JSON.encode(jsonMap));
   }
-  
+
   moveSpectatorWebSocket(int dx, int dy, int dz){
     Map jsonMap = new Map();
     jsonMap.putIfAbsent("command", () => "moveSpectator");
     jsonMap.putIfAbsent("data", () => {"dx": dx, "dy": dy, "dz": dz});
     ws.send(JSON.encode(jsonMap));
   }
-  
+
   sendEnergyFromBootWebSocket(int count){
     Map jsonMap = new Map();
     jsonMap.putIfAbsent("command", () => "sendEnergyFromBoot");
     jsonMap.putIfAbsent("data", () => {"count": count});
     ws.send(JSON.encode(jsonMap));
   }
-  
+
   getEnergyFromSelectedWebSocket(int count){
   Map jsonMap = new Map();
   jsonMap.putIfAbsent("command", () => "getEnergyFromSelected");
   jsonMap.putIfAbsent("data", () => {"count": count});
   ws.send(JSON.encode(jsonMap));
 }
-  
+
   static const String emptyChar = "-";
   static const String somethingChar = "X";
   static const String somethingInbetweenChar = "x";
   static const String somethingFarChar = "^";
   static const String somethingFarFarChar = ".";
-  
+
   clearCache(){
     for(int x = 0; x < worldWidth; x++)
       for(int y = 0; y < worldHeight; y++)
         for(int z = 0; z < worldDepth; z++){
-          clientcache[x][y][z].type = emptyChar;         
-          clientcache[x][y][z].type = "#FFFFFF";      
+          clientcache[x][y][z].type = emptyChar;
+          clientcache[x][y][z].type = "#FFFFFF";
         }
   }
-  
- 
+
+
   Map getView(int constX,  int constY, int offsetX, int offsetY) {
     int depth = 0;
     WorldObjectFacade found = null;
     for(int runnerDepth = 0; runnerDepth < worldDepth; runnerDepth++)
-    { 
-      // TODO typeSafe runVarContext 
+    {
+      // TODO typeSafe runVarContext
       if(constX < 0 || constY < 0 ||
-          constX >= worldWidth|| 
+          constX >= worldWidth||
           constY >= worldHeight)
         return {"found": new WorldObjectFacade.Empty()..type="S", "depth": 0};
       if(runnerDepth < 0 || runnerDepth >= worldDepth)
         continue;
       WorldObjectFacade facade = clientcache[constX][constY][runnerDepth];
       if(facade != null && !facade.isTooOld())
-      { 
-        found = facade; 
+      {
+        found = facade;
         break;
       }
-      depth++;   
+      depth++;
     }
     return {"found": found, "depth": depth};
   }
-  
+
   Map<int, Map<int, Map<int, WorldObjectFacade>>> clientcache = new Map<int, Map<int, Map<int, WorldObjectFacade>>>();
   int worldWidth = 30;
   int worldHeight = 16;
-  int worldDepth = 3;
-  
+  int worldDepth = 1;
+
   int clientMaxWidth() => worldWidth;
   int clientMaxHeight() => worldHeight;
   int clientMaxDepth() => worldDepth;
-  
+
   _dealWithWebSocketMsg(MessageEvent msg){
     try {
       Map jsonMap = JSON.decode(msg.data);
@@ -214,17 +214,17 @@ class ClientCommEngine {
               commandWebSocketAuth((tokken){
                 this.tokken = int.parse(tokken);
                 onErrorChange("New tokken: $tokken");
-                initWebSocket(int.parse(tokken)); 
+                initWebSocket(int.parse(tokken));
               }, mode);
             }
-          break;     
+          break;
           case "adminSelection":
             // print("Getting selection data");
             onAdminSelectionInfo(value);
           break;
           case "viewArea":
             // clearCache();
-            Map jsonMap  = value;         
+            Map jsonMap  = value;
             jsonMap.forEach((k,v) {
               Map vmap = v;
               WorldObjectFacade toWorkOn =  clientcache[vmap["x"]][vmap["y"]][vmap["z"]];
@@ -232,12 +232,12 @@ class ClientCommEngine {
               color.r = vmap["object"]["color"]["r"];
               color.g = vmap["object"]["color"]["g"];
               color.b = vmap["object"]["color"]["b"];
-              toWorkOn.setData(vmap["object"]["type"], color, vmap["object"]["id"]);             
+              toWorkOn.setData(vmap["object"]["type"], color, vmap["object"]["id"]);
               toWorkOn.utctimestamp = new DateTime.now().toUtc().millisecondsSinceEpoch;
               toWorkOn.isHold = vmap["object"]["hold"] == 1 ? true : false;
             });
             onUpdatedCache();
-            break;            
+            break;
           case "bootInfo":
             Map jsonMap = value;
             onSpectatorChange(jsonMap);
@@ -251,25 +251,25 @@ class ClientCommEngine {
       print(ex);
     }
   }
-  
+
   commandMoveSpectator(int dx, int dy, int dz, callback){
     String command = "MoveSpectator";
     Map jsonMap = new Map();
-    
+
     jsonMap.putIfAbsent("command", () => command);
     jsonMap.putIfAbsent("utc", () => new DateTime.now().toUtc().millisecondsSinceEpoch);
     jsonMap.putIfAbsent("data",() => {"dx": dx, "dy": dy, "dz": dz});
     String msg = JSON.encode(jsonMap);
-    
+
     msg = _sign(msg);
-    _send(msg, callback); 
+    _send(msg, callback);
   }
-  
+
   selectInfoAbout(int id){
     print(id);
     retrieveInfoForObject(id);
   }
-  
+
   commandSelectInfoAbout(int id, Function callback){
     try {
       String command = "SelectInfoAbout";
@@ -278,50 +278,50 @@ class ClientCommEngine {
       jsonMap.putIfAbsent("utc", () => new DateTime.now().toUtc().millisecondsSinceEpoch);
       jsonMap.putIfAbsent("data", () => {"id": id, "tokken": tokken});
       String msg = JSON.encode(jsonMap);
-      
+
       msg = _sign(msg);
       _send(msg, callback);
     } catch(ex) {
       onErrorChange("Getting Info for $id failed");
-    }    
+    }
   }
-  
+
   static const String AdminMode = "Admin";
   static const String UserMode = "User";
-  
+
   String mode;
-  
+
   commandWebSocketAuth(Function callback, String mode){
     try {
       String command = "WebSocketAuth" + mode;
       this.mode = mode;
       Map jsonMap = new Map();
-      
+
       jsonMap.putIfAbsent("command", () => command);
       jsonMap.putIfAbsent("utc", () => new DateTime.now().toUtc().millisecondsSinceEpoch);
       String msg = JSON.encode(jsonMap);
-      
+
       msg = _sign(msg);
       _send(msg, callback);
     } catch(ex) {
       onErrorChange("Connection failed");
     }
   }
-  
+
   String _sign(String json) {
     DsaSignature signature = dsa.sign(base64Decode(CryptoUtils.bytesToBase64(UTF8.encode(json))), keyPair.privateKey);
     Map jsonMapWithSign = new Map<String, dynamic>();
     jsonMapWithSign.putIfAbsent("username", () => username);
-    jsonMapWithSign.putIfAbsent("pubKey", () => keyPair.publicKey.toString(16));    
+    jsonMapWithSign.putIfAbsent("pubKey", () => keyPair.publicKey.toString(16));
     jsonMapWithSign.putIfAbsent("msg", () => json);
     jsonMapWithSign.putIfAbsent("signR", () => signature.r.toString(16));
     jsonMapWithSign.putIfAbsent("signS", () => signature.s.toString(16));
     return JSON.encode(jsonMapWithSign);
   }
-  
+
   Future<String> _send(String msg, Function callback) {
     HttpRequest request = new HttpRequest(); // create a new XHR
-    
+
     // add an event handler that is called when the request finishes
     request.onReadyStateChange.listen((_) {
       if (request.readyState == HttpRequest.DONE &&
@@ -333,7 +333,7 @@ class ClientCommEngine {
 
     // POST the data to the server
     request.open("POST", "http://" + serverURL + commandNode, async: false);
-    
+
     request.send(msg); // perform the async POST
-  }  
+  }
 }

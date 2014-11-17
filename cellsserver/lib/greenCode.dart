@@ -2,678 +2,526 @@ library greenCode;
 
 import 'dart:math';
 import 'package:logging/logging.dart';
+import 'cells.dart';
+import 'dart:convert';
 
 Logger _logger = new Logger("greenCode");
 
 class Direction {
-  static Direction N = new Direction._(0,-1,0,0, "N");
-  static Direction E = new Direction._(1,0,0,1, "E");
-  static Direction S = new Direction._(0,1,0,2, "S");
-  static Direction W = new Direction._(-1,0,0,3, "W");
-  static Direction UP = new Direction._(0,0,-1,4, "UP");
-  static Direction DOWN = new Direction._(0,0,1,5, "DOWN");
-  static Direction NONE = new Direction._(0,0,0,6, "NONE");
-  
-  static get values => [N,E,S,W,UP,DOWN,NONE];
+  static Direction N = new Direction._(0, -1, 0, 0, "N");
+  static Direction E = new Direction._(1, 0, 0, 1, "E");
+  static Direction S = new Direction._(0, 1, 0, 2, "S");
+  static Direction W = new Direction._(-1, 0, 0, 3, "W");
+  static Direction UP = new Direction._(0, 0, -1, 4, "UP");
+  static Direction DOWN = new Direction._(0, 0, 1, 5, "DOWN");
+  static Direction NONE = new Direction._(0, 0, 0, 6, "NONE");
 
-  bool isThis(int x, int y, int z){
+  static get values => [N, E, S, W, UP, DOWN, NONE];
+
+  bool isThis(int x, int y, int z) {
     return dirX == x && dirY == y && dirZ == z;
   }
-  
-  static Direction getThis(int x, int y, int z){
+
+  static Direction getThis(int x, int y, int z) {
     List<Direction> valuesList = new List.from(values);
-    Iterable<Direction> it =valuesList.where((dir) => dir.isThis(x, y, z));
-    if(it.length == 1)
-      return it.first;
-    else
-      return null;
+    Iterable<Direction> it = valuesList.where((dir) => dir.isThis(x, y, z));
+    if (it.length == 1) return it.first; else return null;
   }
-  
+
   int value;
   int dirX;
   int dirY;
   int dirZ;
   String name;
-  
-  
+
+
   Direction() {
-   dirX = 0;
-   dirY = 0;
-   dirZ = 0;
-   name = "NONE";
+    dirX = 0;
+    dirY = 0;
+    dirZ = 0;
+    name = "NONE";
   }
-  
-  Direction._(this.dirX, this.dirY ,this.dirZ, this.value, this.name);
+
+  Direction._(this.dirX, this.dirY, this.dirZ, this.value, this.name);
 }
 
-class GreenCodeContext {    
-  List<GreenCode> code = new List<GreenCode>();
+
+class GreenCodeContext {
   
-  modulateHeads(){
-    ReadHead %=  code.length;
-    WriteHead %= code.length;
-    FaceHead %= code.length;
+  static const int MaxNumber = 4092;
+  static const int OperationsPerCycle = 1;
+  
+  static const RegALU = 0;
+  static const RegIP = 1;
+  static const RegReadHead = 2;
+  static const RegWriteHead = 3; 
+  static const RegClock = 4;
+  static const RegCodeLen = 5;
+  static const RegEatingCount = 6;
+  static const RegInject = 7;
+  static const RegMove = 8;  
+  
+  static const RegColorOWN = 9;
+  static const RegEnergyOWN = 10;
+  static const RegColorDOWN = 11;
+  static const RegColorN = 12;
+  static const RegColorE = 13;
+  static const RegColorS = 14;
+  static const RegColorW = 15;
+  static const RegColorUP = 16;
+
+  static const RegEnergyDOWN = 17;
+  static const RegEnergyN = 18;
+  static const RegEnergyE = 19;
+  static const RegEnergyS = 20;
+  static const RegEnergyW = 21;
+  static const RegEnergyUP = 22;
+  
+  List<GreenCode> code = new List<GreenCode>();
+
+  bool assemblerError = false;
+
+  Map<int, int> registers = new Map<int, int>();
+
+  String registersToString(){
+    Map<String, int> map = new Map<String, int>();
+    registers.forEach((key, value) => map.putIfAbsent(key.toString(), () => value));
+    return JSON.encode(map);
   }
   
-  int FaceHead = 0;
-  int WriteHead = 0;
-  int ReadHead = 0;
-  int IP = 0;
+  Direction nextMove(){
+    return DirectionByRegister(registers[RegMove]);    
+  }
+  
+  Direction injectTo(){
+    return DirectionByRegister(registers[RegInject]);
+  }
+
+  Direction DirectionByRegister(reg) {    
+    switch(reg % 7)
+    { 
+      case 1:
+        return Direction.DOWN;
+      case 2:
+        return Direction.N;
+      case 3:
+        return Direction.E;
+      case 4:
+        return Direction.S;        
+      case 6:
+        return Direction.W;        
+      case 7:
+        return Direction.UP;      
+      default:
+        return Direction.NONE;
+    }
+  }
+  
+  int registersCount() {
+    return 31;
+  }
+  
   int copyCost = 0;
   
-  
-  List<int> stack = new List<int>();
-  
-  Direction nextMove = Direction.NONE;
-  Direction injectTo = Direction.NONE;
-  Direction eatOn = Direction.NONE;
-  bool eat = false;
-  bool inject = false;
-  
-  Map<String, int> registers = {"AX": 0, "BX" : 0, "CX":0};
-    
-  
-  int getFaceHead(){
-    return FaceHead % code.length;
-  }
-  int getAddresse(int addresse){
-    if(code.length == 0)
-      return 0;
-    else
-      return addresse % code.length;
+  operation(){
+    code.elementAt(registers[RegIP] % (code.length)).onContextCall(this);
+    registers[RegIP] = (registers[RegIP] + 1) % code.length; 
   }
   
-  selfCopy(){
-    
-  }
-  
-  static String syntaxCheckNames(String codeString){
-      RegExp regExp = new RegExp("(.*?);",multiLine: true);
-      regExp.allMatches(codeString).forEach((e){
-        if( e.group(1).trim() == "<IP>"  || e.group(1).trim() == "<RH>" ||  e.group(1).trim() == "<WH>"  ||  e.group(1).trim() == "<FH>")
-          return;
-        GreenCode toAdd = GreenCode.factoriesName(e.group(1).trim());
-        if(toAdd == null)
-          throw new Exception("Unknown GreenCode Name: ${e.group(1)}");
-      });
-      return "Okay";
-  }
-  
-  static List<GreenCode> stringToCode(String input){
-    RegExp regExp = new RegExp("(.*?);",multiLine: true);
-    List<GreenCode> returner = new List<GreenCode>();
-    regExp.allMatches(input).forEach((e){
-      if( e.group(1).trim() == "<IP>"  || e.group(1).trim() == "<RH>" ||  e.group(1).trim() == "<WH>"  ||  e.group(1).trim() == "<FH>")
-        return;
-      GreenCode toAdd = GreenCode.factoriesName(e.group(1).trim());
-      if(toAdd == null)
-        throw new Exception("Unknown GreenCode Name: ${e.group(1)}");
-      returner.add(toAdd);
-    });
-    return returner;
-  }
-  
-  GreenCodeContext.byNames(String codeString){
-    RegExp regExp = new RegExp("(.*?);",multiLine: true);
-    int i = 0;
-    regExp.allMatches(codeString).forEach((e){      
-      String codeToken = e.group(1).trim();
-      if (codeToken == "<RH>")
-      {
-        ReadHead = i;
-        return;
+  preTick(World world, Position me, int x, int y, int z){
+    registers[RegClock]+=1;
+    registers[RegEatingCount] = 0;
+    registers[RegInject] = 0;
+    registers[RegMove] = 0; 
+    registers[RegColorOWN] = ColorIndexAtPos(me);
+    registers[RegEnergyOWN] = me.object.energy.energyCount.floor();
+
+    var poses = world.getObjectsForCube(x, y, z, 2);
+    poses.forEach((pos) {
+       Direction dir = Direction.getThis(me.x - pos.x, me.y - pos.y, me.z - pos.z);
+       if(dir == Direction.DOWN ){
+         registers[RegEnergyDOWN] = EnergyAtPos(pos);
+         registers[RegColorDOWN] = ColorIndexAtPos(pos);
+       }
+       if(dir == Direction.N ){
+                registers[RegEnergyN] = EnergyAtPos(pos);
+                registers[RegColorN] = ColorIndexAtPos(pos);
+       }
+       if(dir == Direction.E ){
+                registers[RegEnergyE] = EnergyAtPos(pos);
+                registers[RegColorE] = ColorIndexAtPos(pos);
+       }
+       if(dir == Direction.S ){
+                       registers[RegEnergyS] = EnergyAtPos(pos);
+                       registers[RegColorS] = ColorIndexAtPos(pos);
+       }
+       if(dir == Direction.W ){
+                       registers[RegEnergyW] = EnergyAtPos(pos);
+                       registers[RegColorW] = ColorIndexAtPos(pos);
+       }
+       if(dir == Direction.UP){
+                       registers[RegEnergyUP] = EnergyAtPos(pos);
+                       registers[RegColorUP] = ColorIndexAtPos(pos);
+       }
       }
-      else if(codeToken == "<FH>"){
-        FaceHead = i;
-        return;
+    );
+  }
+  
+  int EnergyAtPos(Position pos){
+    return pos.object.energy.energyCount.floor();
+  }
+  
+  int ColorIndexAtPos(Position pos){
+    return pos.object.getColor().ThisIs(Color.Green) ? 1 : pos.object.getColor().ThisIs(Color.Blue) ? 2 : pos.object.getColor().ThisIs(Color.Red) ? 3 : 0;
+  }
+  
+  tick(){
+    if (!assemblerError) {
+      int i = OperationsPerCycle;
+      while(i > 0){
+            operation();
+            i--;  
       }
-      else if(codeToken == "<WH>")
-      {
-        WriteHead = i;
-        return;
-      }
-      else if(codeToken == "<IP>")
-      {
-        IP = i;
-        return;
-      }
-      GreenCode toAdd = GreenCode.factoriesName(codeToken);
-      i++;
-      if(toAdd != null)
-        code.add(toAdd);
-      else
-       throw new Exception("Unknown GreenCode Name: ${e.group(1)}");
-    });   
     }
-  
-  GreenCodeContext.byHex(String codeString){
-    if(codeString.length % 2 != 0)
-      throw new Exception("GreenCodeContext code not even");
-    if(codeString.length == 0)
-      return;
-    for(int pos = 0; pos < codeString.length; pos+=2){
-      String nibbleHigh = codeString[pos];
-      String nibbleLow = codeString[pos+1];
-      GreenCode codeElement = GreenCode.factoriesHexBytes("$nibbleHigh$nibbleLow");
-      if(codeElement != null)
-        code.add(codeElement);
-      else
-        throw new Exception("Unknown GreenCode Hex");
-    }      
   }
 
-  GreenCodeContext.byRandom(int count){
+  String codeToStringNames() {
+    return code.map((e) => e.toString() + "\n").join();
+  }
+  
+  String codeToStringNamesWithHeads(){
+    int pos = 0; 
+    return code.map((e) {
+      String r = (pos == registers[RegIP] ? "<IP>\n" : "") 
+    + (pos == registers[RegReadHead] ? "<RH>\n" : "") 
+    + (pos == registers[RegWriteHead] ? "<WH>\n" : "") 
+    + e.toString() + "\n"; 
+      pos++;
+      return r;}).join();
+  }
+  
+  List<GreenCode> _codeRange(int from, int to) {
+  if(code.length == 0) return  [] as List<GreenCode>;
+    int _from = min(from % code.length, to % code.length);
+    int _to = max(from % code.length, to % code.length);
+    if(_to > 0)
+      return code.getRange(_from, _to).toList();
+  else
+     return [] as List<GreenCode>;
+  }
+
+  _removeCodeRange(int from, int to){
+    if(code.length == 0) return;
+    int _from = min(from % code.length, to % code.length);
+    int _to = max(from % code.length, to % code.length);   
+    if(_to > 0)
+      code.removeRange(_from, _to);
+    else
+      return;
+  }
+  
+  int eat(){
+    return registers[RegEatingCount];
+  }
+
+  List<GreenCode> codeRangeBetweenHeads(){
+    return _codeRange(registers[RegReadHead], registers[RegWriteHead]);
+  }
+  
+  removeCodeRangeBetweenHeads(){
+    _removeCodeRange(registers[RegReadHead], registers[RegWriteHead]);
+  }
+  
+  GreenCodeContext.byNames(String codeString) {
+    createEmptyRegisters();
+    if (!codeString.trim().endsWith(";")) assemblerError = true;
+    if (codeString.trim()== "") return;
+    RegExp regExp = new RegExp("(.+?) ([@#*]?)([0-9]+?);", multiLine: true);
+    regExp.allMatches(codeString).forEach((e) {
+      String name = e.group(1).trim();
+      String flag = e.group(2).trim();
+      int operand = int.parse(e.group(3).trim());
+      try {
+        code.add(GreenCode.byName(name, flag, operand));
+      } on GreenCodeInvalidOperation catch (ex) {
+        _logger.warning("Assemlber Error on ${e.group(0)}: ${ex}, ${ex.cause}");
+        assemblerError = true;
+      }
+    });
+    if (assemblerError) _logger.warning("Could not start Cell becouse of Errors!: $codeString");
+  }
+
+  void createEmptyRegisters() {
+    for (int i = 0; i < registersCount(); i++) registers[i] = 0;
+  }
+  
+  GreenCodeContext.byRandom(int count) {
     Random rnd = new Random();
-    while(count > 0){
-      code.add(GreenCode.factories[rnd.nextInt(GreenCode.factories.length -1)]);
+    while (count > 0) {
+      code.add(GreenCode.getRandomCode(rnd.nextInt(128)));
       count--;
     }
+    createEmptyRegisters();
   }
-  
-  int removeCodeFromTo(int from, int to){
-    while(to != from && code.length != 0){
-      code.removeAt(from);
-      from--;
-      if(from < to)
-        to--;
-      if(from <= 0)
-        from = code.length - 1;
-    }
-  }
-  
-  String codeToStringNames(){
-    return codeToStringNamesRange(0, code.length, true);
-  }
-  
-  String codeToStringNamesRange(int from, int to, bool withHeads){
-    String returner = "";
-    int i = 0;
-    code.forEach((element){
-      if(i < from || i > to)
-        return;
-      if(i == ReadHead && withHeads)
-        returner += "<RH>;" + "\n";
-      if(i == FaceHead && withHeads)
-        returner += "<FH>;" + "\n";
-      if(i == WriteHead && withHeads)
-        returner += "<WH>;" + "\n"; 
-      if(i == IP && withHeads)
-        returner += "<IP>;" + "\n";
-      returner+=element.name + ";\n";
-      i++;
-    });
-    if(i == ReadHead && withHeads)
-      returner += "<RH>;" + "\n";
-    if(i == FaceHead && withHeads)
-      returner += "<FH>;" + "\n";
-    if(i == WriteHead && withHeads)
-      returner += "<WH>;" + "\n";      
-    if(i == IP && withHeads)
-      returner += "<IP>;" + "\n";
-    return returner;
-  }
-  
-  doGreenCode(){
-    nextMove = Direction.NONE;
-    injectTo = Direction.NONE;
-    inject = false;
-    eatOn = Direction.NONE;
-    eat = false;    
-    if(code.length != 0){
-      IP = IP % code.length;
-      code[IP].doOn(this);
-      IP = getAddresse(++IP);
-    }
 }
+
+class GreenCodeInvalidOperation implements Exception {
+  String cause;
+  GreenCodeInvalidOperation(this.cause);
 }
 
 abstract class GreenCode {
-  String hexCode;
-  String name;
-
-  static List<GreenCode> factories = [new GreenCodeNopA(), 
-                                      new GreenCodeNopB(),
-                                      new GreenCodeNopC(), 
-                                      new GreenCodeIfNot0(), 
-                                      new GreenCodeMove(),
-                                      new GreenCodeIfNotEqu(),
-                                      new GreenCodeIfBit1(),
-                                      new GreenCodeInc(),
-                                      new GreenCodeCopy(),
-                                      new GreenCodeInject(),
-                                      new GreenCodeEat(),
-                                      new GreenCodeJumpF(),
-                                      new GreenCodeJumpB(),
-                                      new GreenCodeSearchF(),
-                                      new GreenCodeSearchB(),
-                                      new GreenCodePop(),
-                                      new GreenCodePush(),
-                                      new GreenCodeHead(),
-                                      new GreenCodeEatDir()];
+  String operandFlag;
+  int operand;
   
-  static GreenCode factoriesHexBytes(String hexByte){
-    var returner = factories.where((e){ 
-      return e.factoryByHex(hexByte) != null;
-    });
-    if(returner.length == 0)
-    return null;
-      else
-    return returner.first; 
+  static List<String> possibleFlags = ["*", "#", "@"];
+
+  String getName();
+
+  String toString(){
+    return getName()  + " " + operandFlag + operand.toString() + ";"; 
   }
   
-  static GreenCode factoriesName(String name){
-    var returner = factories.where((e){ 
-      return e.factoryByName(name) != null;
-    });
-    if(returner.length == 0)
-    return null;
-      else
-    return returner.first; 
-  }
-  
-  GreenCode factoryByName(String name){
-    if(name == this.name)   
-      return this;
-    else return null;
-    
-  }
-  
-  GreenCode factoryByHex(String hexByte){
-    if(hexByte.length > 2)
-      throw new Exception("GreenCode Construction Failed: To Long hexByte");
-    if(hexCode == hexByte)   
-      return this;
-    else return null;
-  }
-  doOn(GreenCodeContext context);
-}
-
-abstract class GreenCodeNop extends GreenCode {
-  String register;
-  GreenCodeNop compliment();
-}
-
-class GreenCodeNopA extends GreenCodeNop{    
-  GreenCodeNopA(){
-      name = "nop-A";
-      hexCode = "01";
-      register = "AX";
-  } 
-  compliment(){
-    return new GreenCodeNopB();
-   }
-
-  doOn(GreenCodeContext context){}
-}
-
-class GreenCodeNopB extends GreenCodeNop {    
-  GreenCodeNopB(){
-      name = "nop-B";
-      hexCode = "02";
-      register = "BX";
-   } 
-  compliment(){
-    return new GreenCodeNopC();
-  }
-  
-  doOn(GreenCodeContext context){}
-}
-
-
-class GreenCodeNopC extends GreenCodeNop {    
-  GreenCodeNopC(){
-      name = "nop-C";
-      hexCode = "03";
-      register = "CX";
-      }
-  compliment(){ return new GreenCodeNopA(); 
-} 
-  
-  doOn(GreenCodeContext context){}
-}
-
-class GreenCodeIfNot0 extends GreenCode {    
-  GreenCodeIfNot0(){
-      name = "if-not-0";
-      hexCode = "04";
-  } 
-    
-  doOn(GreenCodeContext context){
-    if(context.code[context.getAddresse(context.IP + 1)] is GreenCodeNop)
-    {  if(context.registers[(context.code[context.getAddresse(context.IP + 1)] as GreenCodeNop).register] == 0)
-        context.IP = context.getAddresse(context.IP + 2);
-      else
-        context.IP = context.getAddresse(context.IP + 2);
+  int valueOnContext(GreenCodeContext context) {
+    switch (operandFlag) {
+      case "#":
+        return operand;
+      case "@":
+        return context.registers[operand % context.registersCount()];
+      case "*":
+        return context.registers[context.registers[operand % context.registersCount()] % context.registersCount()];
+      default:
+        throw new GreenCodeInvalidOperation("Invalid Operand on Operation call: SOULD NEVER HAPPEN!");
     }
-    else if(context.registers["BX"] == 0)
-      context.IP = context.getAddresse(context.IP + 1);
   }
-}
 
-class GreenCodeEat extends GreenCode {    
-  GreenCodeEat(){
-      name = "eat";
-      hexCode = "2A";
-  } 
-    
-  doOn(GreenCodeContext context){
-    context.eat = true;
+  onContextCall(GreenCodeContext context){
+    onContextDo(context);
+    context.registers[GreenCodeContext.RegALU] %= GreenCodeContext.MaxNumber;
   }
-}
+  
+  onContextDo(GreenCodeContext context);
 
-
-class GreenCodeEatDir extends GreenCode {    
-  GreenCodeEatDir(){
-      name = "eatD";
-      hexCode = "0A";
-  } 
-    
-  doOn(GreenCodeContext context){
-    int arg;
-    if(context.code[context.getAddresse(context.IP + 1)] is GreenCodeNop)
-      arg = context.registers[(context.code[context.getAddresse(context.IP + 1)] as GreenCodeNop).register];
-    else 
-      arg = context.registers["BX"];
-    context.eatOn = Direction.values.firstWhere((e) => e.value == arg % Direction.values.length);
-    context.eat = true;
+  GreenCode.byValues(String operandFlag, int operand) {
+    setValues(operandFlag, operand);
   }
-}
 
-
-class GreenCodeMove extends GreenCode {    
-  GreenCodeMove(){
-      name = "move";
-      hexCode = "05";
-  } 
-    
-  doOn(GreenCodeContext context){
-    int arg;
-    if(context.code[context.getAddresse(context.IP + 1)] is GreenCodeNop)
-      arg = context.registers[(context.code[context.getAddresse(context.IP + 1)] as GreenCodeNop).register];
-    else 
-      arg = context.registers["BX"];
-     context.nextMove = Direction.values.firstWhere((e) => e.value == arg % Direction.values.length);
-     
+  setValues(String operandFlag, int operand) {
+    if (!possibleFlags.contains(operandFlag)) throw new GreenCodeInvalidOperation("Illiagel Operand Flag");
+    this.operandFlag = operandFlag;
+    this.operand = operand;
   }
-}
 
-
-class GreenCodeCopy extends GreenCode {    
-  GreenCodeCopy(){
-      name = "copy";
-      hexCode = "C9";
-  } 
-    
-  doOn(GreenCodeContext context){    
-    context.modulateHeads();
-    int momReadHead = context.ReadHead;
-    int costCounter = context.FaceHead - context.ReadHead;
-    if(costCounter < 0)
-      costCounter = context.code.length + costCounter;
-    int iCounter = 0;
-    while(iCounter < costCounter)
-    {         
-         GreenCode toWrite;
-         // Mutationsfaktor
-         Random rnd = new Random();         
-         if(rnd.nextInt(100) == 17)
-         {
-           toWrite = GreenCode.factories[rnd.nextInt(GreenCode.factories.length)];
-         }
-         else
-           toWrite = context.code[momReadHead];
-         context.code.insert(context.WriteHead, toWrite);
-         context.WriteHead++;
-         if(context.WriteHead < context.IP)
-           context.IP++;   
-         iCounter++;;
-         momReadHead++;
-         momReadHead %= context.code.length;
-    }
-    context.copyCost+=costCounter;
-    context.modulateHeads();
-  }
-}
-
-class GreenCodeInject extends GreenCode {    
-  GreenCodeInject(){
-      name = "inject";
-      hexCode = "09";
-  } 
-    
-  doOn(GreenCodeContext context){
-    int arg;
-    if(context.code[context.getAddresse(context.IP + 1)] is GreenCodeNop)
-      arg = context.registers[(context.code[context.getAddresse(context.IP + 1)] as GreenCodeNop).register];
-    else 
-      arg = context.registers["BX"];
-    context.injectTo = Direction.values.firstWhere((e) => e.value == arg % Direction.values.length);
-    context.inject = true;
-  }
-}
-
-
-class GreenCodeIfNotEqu extends GreenCode {    
-  GreenCodeIfNotEqu(){
-      name = "if-n-equ";
-      hexCode = "06";
-  } 
-    
-  doOn(GreenCodeContext context){
-    if(context.code[context.getAddresse(context.IP + 1)] is GreenCodeNop)
-    {  if(context.registers[(context.code[context.getAddresse(context.IP + 1)] as GreenCodeNop).register] 
-      ==  context.registers[(context.code[context.getAddresse(context.IP + 1)] as GreenCodeNop).compliment().register])
-        context.IP = context.getAddresse(context.IP + 2);
-    else
-      context.IP = context.getAddresse(context.IP + 1);
-    }
-    else if(context.registers["BX"] == context.registers["CX"])
-      context.IP = context.getAddresse(context.IP + 1);
-  }
-}
-
-
-class GreenCodeIfBit1 extends GreenCode {    
-  GreenCodeIfBit1(){
-      name = "if-bit-1";
-      hexCode = "07";
-  } 
-    
-  doOn(GreenCodeContext context){
-    if(context.code[context.getAddresse(context.IP + 1)] is GreenCodeNop)
-    {  if((context.registers[(context.code[context.getAddresse(context.IP + 1)] as GreenCodeNop).register] & 1) != 1)
-        context.IP = context.getAddresse(context.IP + 2);
-      else
-        context.IP = context.getAddresse(context.IP + 1);
-    }
-    else if((context.registers["BX"] & 1) != 1)
-      context.IP = context.getAddresse(context.IP + 1);
-  }
-}
-
-class GreenCodeJumpF extends GreenCode {    
-  GreenCodeJumpF(){
-      name = "jump-f";
-      hexCode = "0B";
-  } 
-    
-  doOn(GreenCodeContext context){
-    List<GreenCodeNop> nops = new  List<GreenCodeNop>();
-    int i = 1;
-    while(context.code[context.getAddresse(context.IP + i)] is GreenCodeNop){
-      nops.add(context.code[context.getAddresse(context.IP + i)]);
-      i++;
-    }    
-    if(nops.length == 0)
+  static GreenCode getRandomCode(int operand){
+    int codesLength = 10;
+    var rnd = new Random();
+    String operandFlag = possibleFlags.elementAt(rnd.nextInt(possibleFlags.length));
+    switch(rnd.nextInt(codesLength))
     {
-      context.IP = context.getAddresse(context.IP + context.registers["BX"]);
+      case 0:
+        return new GreenCodeLoad(operandFlag, operand);
+      case 1:
+        return new GreenCodeStore(operandFlag, operand);
+      case 2:
+        return new GreenCodeAdd(operandFlag, operand);
+      case 3:
+        return new GreenCodeSub(operandFlag, operand);
+      case 4:
+        return new GreenCodeDiv(operandFlag, operand);
+      case 5:
+        return new GreenCodeMult(operandFlag, operand);
+      case 6:        
+        return new GreenCodeGet(operandFlag, operand);
+      case 7:
+        return new GreenCodeJzero(operandFlag, operand);
+      case 8:
+        return new GreenCodeCopy(operandFlag, operand);
+      case 9:
+        return new GreenCodeLabel(operandFlag, operand);
     }
-    else
-    {      
-      int z = context.getAddresse(context.IP + nops.length + 1);
-      int startPoint = context.IP;
-      int matched = 0;
-      while(true){
-        if(context.code[context.getAddresse(z)] is GreenCodeNop)
-        {
-          if(context.code[context.getAddresse(z)].hexCode == nops[matched].compliment().hexCode)
-            matched++;
-        }
-        else
-          matched = 0;
-        if(matched == nops.length)
-        {
-          context.IP = z;
-          break;
-         }
-        z = context.getAddresse(++z);
-        if(z == startPoint)
-          break;        
-      }
-    }
+    throw new GreenCodeInvalidOperation("Random Error: SHOULD NEVER HAPPEN!");
   }
-}
-
-class GreenCodeJumpB extends GreenCode {    
-  GreenCodeJumpB(){
-      name = "jump-b";
-      hexCode = "0C";
-  } 
-    
-  doOn(GreenCodeContext context){
-    List<GreenCodeNop> nops = new  List<GreenCodeNop>();
-    int i = 1;
-    while(context.code[context.getAddresse(context.IP + i)] is GreenCodeNop){
-      nops.add(context.code[context.getAddresse(context.IP + i)]);
-      i++;
-    }    
-    if(nops.length == 0)
-    {
-      context.IP = context.getAddresse(context.IP - context.registers["BX"]);
-    }
-    else
-    {
-      nops = nops.reversed.toList();
-      int z = context.IP;
-      int startPoint = context.IP;
-      int matched = 0;
-      while(true){
-        if(context.code[context.getAddresse(z)] is GreenCodeNop)
-        {
-          if(context.code[context.getAddresse(z)].hexCode == nops[matched].compliment().hexCode)
-            matched++;
-        }
-        else
-          matched = 0;
-        if(matched == nops.length)
-        {
-          context.IP = z + matched -1;
-          break;
-         }
-        z = context.getAddresse(--z);
-        if(z == startPoint)
-          break;        
-      }
-    }
-  }
-}
-
-class GreenCodeSearchF extends GreenCode {    
-  GreenCodeSearchF(){
-      name = "search-f";
-      hexCode = "0D";
-  } 
   
-  doOn(GreenCodeContext context){
-    int buffIP = context.IP;
-      new GreenCodeJumpF().doOn(context);
-    context.registers["BX"] = context.IP - buffIP;
-    context.IP = buffIP;
+  static GreenCode byName(String name, String operandFlag, int operand) {
+    GreenCode r = null;
+    if (GreenCodeLoad.me.getName() == name) r = new GreenCodeLoad(operandFlag, operand);
+    if (GreenCodeStore.me.getName() == name) r = new GreenCodeStore(operandFlag, operand);
+    if (GreenCodeAdd.me.getName() == name) r = new GreenCodeAdd(operandFlag, operand);
+    if (GreenCodeSub.me.getName() == name) r = new GreenCodeSub(operandFlag, operand);
+    if (GreenCodeDiv.me.getName() == name) r = new GreenCodeDiv(operandFlag, operand);
+    if (GreenCodeMult.me.getName() == name) r = new GreenCodeMult(operandFlag, operand);
+    if (GreenCodeGet.me.getName() == name) r = new GreenCodeGet(operandFlag, operand);
+    if (GreenCodeJzero.me.getName() == name) r = new GreenCodeJzero(operandFlag, operand);
+    if (GreenCodeCopy.me.getName() == name) r = new GreenCodeCopy(operandFlag, operand);   
+    if (GreenCodeLabel.me.getName() == name) r = new GreenCodeLabel(operandFlag, operand);   
+    if (r == null) throw new GreenCodeInvalidOperation("Illiagel OperandName");
+    return r;
   }
 }
 
-class GreenCodeSearchB extends GreenCode {    
-  GreenCodeSearchB(){
-      name = "search-b";
-      hexCode = "0E";
-  } 
-    
-  doOn(GreenCodeContext context){
-    int buffIP = context.IP;
-      new GreenCodeJumpB().doOn(context);
-    context.registers["BX"] = context.IP - buffIP;
-    context.IP = buffIP;
+class GreenCodeLoad extends GreenCode {
+  static GreenCodeLoad me = new GreenCodeLoad("#", 0);
+
+  GreenCodeLoad(String operandFlag, int operand) : super.byValues(operandFlag, operand);
+
+  String getName() {
+    return "LOAD";
+  }
+
+  onContextDo(GreenCodeContext context) {
+    context.registers[GreenCodeContext.RegALU] = valueOnContext(context);
   }
 }
 
-class GreenCodePush extends GreenCode {    
-  GreenCodePush(){
-      name = "push";
-      hexCode = "0F";
-  } 
-    
-  doOn(GreenCodeContext context){
-    int arg;
-    if(context.code[context.getAddresse(context.IP + 1)] is GreenCodeNop)
-      context.stack.add(context.registers[(context.code[context.getAddresse(context.IP + 1)] as GreenCodeNop).register]);
-    else 
-      context.stack.add(context.registers["BX"]);
+class GreenCodeStore extends GreenCode {
+  static GreenCodeStore me = new GreenCodeStore("#", 0);
+
+  GreenCodeStore(String operandFlag, int operand) : super.byValues(operandFlag, operand);
+
+  String getName() {
+    return "STORE";
+  }
+  
+  onContextDo(GreenCodeContext context) {
+    context.registers[(valueOnContext(context) % context.registersCount())] = context.registers[GreenCodeContext.RegALU];
   }
 }
 
-class GreenCodePop extends GreenCode {    
-  GreenCodePop(){
-      name = "pop";
-      hexCode = "11";
-  } 
-    
-  doOn(GreenCodeContext context){
-    int arg;
-    if(context.code[context.getAddresse(context.IP + 1)] is GreenCodeNop)
-      if(context.stack.length > 0)
-        context.registers[(context.code[context.getAddresse(context.IP + 1)] as GreenCodeNop).register] = context.stack.removeLast();
-    else 
-    {
-      if(context.stack.length > 0)
-        context.registers["BX"] =context.stack.removeLast();
-    }
-   }
-}
+class GreenCodeAdd extends GreenCode {
+  static GreenCodeAdd me = new GreenCodeAdd("#", 0);
 
-class GreenCodeInc extends GreenCode {
-  GreenCodeInc(){
-      name = "inc";
-      hexCode = "10";
+  GreenCodeAdd(String operandFlag, int operand) : super.byValues(operandFlag, operand);
+
+  String getName() {
+    return "ADD";
   }
-  doOn(GreenCodeContext context){
-    if(context.code[context.getAddresse(context.IP + 1)] is GreenCodeNop)
-      context.registers[(context.code[context.getAddresse(context.IP + 1)] as GreenCodeNop).register ]++;
-    else 
-      context.registers["BX"]++;
+
+  onContextDo(GreenCodeContext context) {
+    context.registers[GreenCodeContext.RegALU] += valueOnContext(context);
   }
 }
 
-  class GreenCodeHead extends GreenCode {
-    GreenCodeHead(){
-      name= "head";
-      hexCode = "13";
-    }
+class GreenCodeSub extends GreenCode {
+  static GreenCodeSub me = new GreenCodeSub("#", 0);
 
-    doOn(GreenCodeContext context){
-      if(context.code[context.getAddresse(context.IP + 1)] is GreenCodeNop){
-        if(context.code[context.getAddresse(context.IP + 1)] is GreenCodeNopA)
-        {
-          context.FaceHead = context.getAddresse(context.FaceHead+ context.registers["BX"]) % context.code.length;
-        }  
-        else if(context.code[context.getAddresse(context.IP + 1)] is GreenCodeNopB)
-          context.WriteHead = context.getAddresse(context.WriteHead+ context.registers["BX"]) % context.code.length;
-        else if(context.code[context.getAddresse(context.IP + 1)] is GreenCodeNopC)
-          context.ReadHead = context.getAddresse(context.ReadHead+ context.registers["BX"]) % context.code.length;
-        }
-      else
+  GreenCodeSub(String operandFlag, int operand) : super.byValues(operandFlag, operand);
+
+  String getName() {
+    return "SUB";
+  }
+
+  onContextDo(GreenCodeContext context) {
+    context.registers[GreenCodeContext.RegALU] -= valueOnContext(context);
+    context.registers[GreenCodeContext.RegALU] = max(context.registers[GreenCodeContext.RegALU], 0);
+  }
+}
+
+class GreenCodeDiv extends GreenCode {
+  static GreenCodeDiv me = new GreenCodeDiv("#", 0);
+
+  GreenCodeDiv(String operandFlag, int operand) : super.byValues(operandFlag, operand);
+
+  String getName() {
+    return "DIV";
+  }
+
+  onContextDo(GreenCodeContext context) {
+    if(valueOnContext(context) != 0)
+    context.registers[GreenCodeContext.RegALU] =  (context.registers[GreenCodeContext.RegALU] / valueOnContext(context)).floor(); 
+  }
+}
+
+class GreenCodeMult extends GreenCode {
+  static GreenCodeMult me = new GreenCodeMult("#", 0);
+
+  GreenCodeMult(String operandFlag, int operand) : super.byValues(operandFlag, operand);
+
+  String getName() {
+    return "MULT";
+  }
+
+  onContextDo(GreenCodeContext context) {
+    if(valueOnContext(context) != 0)
+    context.registers[GreenCodeContext.RegALU] = context.registers[GreenCodeContext.RegALU] * valueOnContext(context); 
+  }
+}
+
+class GreenCodeGet extends GreenCode {
+  static GreenCodeGet me = new GreenCodeGet ("#", 0);
+
+  GreenCodeGet(String operandFlag, int operand) : super.byValues(operandFlag, operand);
+
+  String getName() {
+    return "GET";
+  }
+
+  onContextDo(GreenCodeContext context) {
+    int start = context.registers[GreenCodeContext.RegIP] % context.code.length;
+    int i = start;
+    do{
+      GreenCode code = context.code[i];
+      if(code is GreenCodeLabel)
       {
-        context.FaceHead = context.getAddresse(context.FaceHead+ context.registers["BX"]);
-      }      
+        if(code.valueOnContext(context) == valueOnContext(context))
+        {   
+          break;
+        }
+      }
+      i++;
+      i%=context.code.length;
     }
+    while(i != start);
+    context.registers[GreenCodeContext.RegReadHead] = i; 
   }
-  
+}
+
+class GreenCodeLabel extends GreenCode {
+  static GreenCodeLabel me = new GreenCodeLabel ("#", 0);
+
+  GreenCodeLabel(String operandFlag, int operand) : super.byValues(operandFlag, operand);
+
+  String getName() {
+    return "LABEL";
+  }
+
+  onContextDo(GreenCodeContext context) {    
+  }
+}
+
+class GreenCodeJzero extends GreenCode {
+  static GreenCodeJzero me = new GreenCodeJzero ("#", 0);
+
+  GreenCodeJzero(String operandFlag, int operand) : super.byValues(operandFlag, operand);
+
+  String getName() {
+    return "JZERO";
+  }
+
+  onContextDo(GreenCodeContext context) {
+    if(context.registers[GreenCodeContext.RegALU] == 0)
+      context.registers[GreenCodeContext.RegIP] = context.registers[GreenCodeContext.RegIP] + valueOnContext(context) % context.code.length; 
+  }
+}
+
+class GreenCodeCopy extends GreenCode {
+  static GreenCodeCopy me = new GreenCodeCopy ("#", 0);
+
+  GreenCodeCopy(String operandFlag, int operand) : super.byValues(operandFlag, operand);
+
+  String getName() {
+    return "COPY";
+  }
+
+  onContextDo(GreenCodeContext context) {
+    List<GreenCode> list = context.codeRangeBetweenHeads();
+    if(list.length == 0)
+      return;
+    var rnd = new Random();
+    if(rnd.nextInt(10000)<1){
+      int pos = rnd.nextInt(list.length);
+      list.replaceRange(pos, pos, [GreenCode.getRandomCode(rnd.nextInt(GreenCodeContext.MaxNumber))]);
+    }
+    context.code.insertAll(valueOnContext(context) % context.code.length, list);
+    context.copyCost = list.length;
+  }
+}

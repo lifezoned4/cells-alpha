@@ -1,4 +1,5 @@
 import 'dart:html';
+import 'dart:convert';
 import 'package:cellsserver/cellsProtocolClient.dart';
 
 ClientCommEngine commEngine;
@@ -149,10 +150,26 @@ InitAdminClient(String url, String user, String password)
   querySelector("#demoMode")..onClick.listen((e) => commEngine.demoMode());
   
   TextAreaElement textarea = querySelector("#greenCodeAdmin");
+  TextAreaElement textareaRegisters = querySelector("#greenCodeRegisters");
   commEngine.onAdminSelectionInfo = (data) {
-    // print("BEFORE WRITE");
-    textarea.value = data.toString();
-  };
+    // print("BEFORE WRITE"); 
+    if(data is Map){
+      if(data.containsKey("code"))
+        textarea.value = data["code"].toString();
+      
+      String registers = "";
+      try {
+        if(data.containsKey("registers"))
+          JSON.decode(data["registers"]).forEach((key, value) => registers += "$key: $value\n" );
+      } on Exception {}
+      textareaRegisters.value = registers;
+    }
+    else
+    {
+      textarea.value = "";
+      textareaRegisters.value = ""; 
+    }
+   };
   
   commEngine.onUpdatedCache = () {
     viewer.updateDisplayArea(displayArea);
