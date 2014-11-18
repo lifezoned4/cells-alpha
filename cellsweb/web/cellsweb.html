@@ -13,78 +13,39 @@
        <label>cells:// </label><input type="url" value="127.0.0.1:8080" id="url">
        <label>User: </label><input id="user" value="test">
        <label>Password</label><input value="test" type="password" id="password">
-       <button id="connectuser">User Connect</button> 
-       <button id="connectadmin">Admin Connect</button>     
+       <button id="connect">Connect</button> 
      </div>
+     
      <br>
      <br> 
-     <div id="movebar" hidden="true">
-       <button id="buttonUp">Up </button>
-       <button id="buttonDown">Down </button>
-       <button id="buttonLeft">Left </button>
-       <button id="buttonRight">Right </button>
-       <button id="buttonSink">Sink </button>
-       <button id="buttonRise">Rise </button>
-     </div>
+     
      <table>
      <tr>
       <td>
-     <table>
-       <tr>
-      <div id="infoarea"></div>
-      </tr>
-      <tr>
-      <div id="displayarea"> </div>
-      </tr>
-      <tr>
-      <div id="errorbar"> </div>
-      </tr>
-     </table>
+        <table>
+        <tr>
+          <div id="infoarea"><textarea id="infoareaText" rows="1" cols="100"></textarea><Button id="demo">Demo</Button></div>
+          </tr>
+          <tr>
+          <div id="displayarea"> </div>
+          </tr>
+          <tr>
+          <div id="errorbar"> </div>
+          </tr>
+        </table>
       </td>
       <td>
-    <div id="admincontroll" hidden="true">
-     <label>Delay: </label><input id="delay"><button id="setDelay"> Send </button>
      <table>
      <tr>
      <td>
-       <textarea rows="31" id="greenCodeAdmin"> </textarea>
+       <textarea rows="31" id="greenCodeContext"> </textarea>
      </td>
      <td>
-       <textarea rows="31" id="greenCodeRegisters"></textarea>
+       <textarea rows="31" id="greenCodeContextRegisters"></textarea>
      </td>
      </tr>
      </table>
-     <button id="demoMode"> Demo </button>
-    </div>
-    <div id="bootcontroll" hidden="true">
-    <table>
-    <tr>
-      <td>
-          <textarea rows="7" id="greenCode"> </textarea>
-          <button id="live"> live </button>
-      </td>
-    <tr>
-    <tr>
-      <td>
-         <button id="selectedEnergySmall"> -</button>
-         <button id="selectedEnergyMedium"> 77  </button>
-         <button id="selectedEnergyLarge"> -) </button>
-         <button id="bootEnergyLarge"> ( </button>
-         <button id="bootEnergyMedium"> 77  </button>
-         <button id="bootEnergySmall"> - </button>
-      </td>
-    </tr>
-    </table>
-    </div>
-    </td>
-    </tr>
-    </table>
-    <div id="bootcontrollSpwan" hidden="true">
-      <button id="buttonREDspawn"> RED </button>
-      <button id="buttonGREENspawn"> GREEN </button>
-      <button id="buttonBLUEspawn"> BLUE </button>
-    </div>
-  
+   
     <script type="application/dart" src="cellsweb.dart"></script>
     <script src="packages/browser/dart.js"></script>
   </body>

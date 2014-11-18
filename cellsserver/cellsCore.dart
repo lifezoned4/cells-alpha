@@ -5,163 +5,88 @@ import 'package:logging/logging.dart';
 import "package:bignum/bignum.dart";
 import "dart:io";
 import 'dart:convert' show JSON;
-import 'dart:math';
 
-import "lib/greenCode.dart";
 import "lib/cells.dart";
 
 final _logger = new Logger("cellsCore");
 
-class User extends ITickable {
+class User {
+  Energy energy;
   bool isAdmin = false;
   WebSocket socketAct;
   BigInteger pubKey;
   String username;  
-  int lastSendTokken;
+  int lastSendToken;
   int ticksLeft = 0;
-  MovingAreaViewSubscription bootSubcription;
+  MovingAreaViewSubscription userSubcription;
   
   WorldObject selected;
     
-  User(this.username, this.pubKey, this.lastSendTokken);
+  User(this.username, this.pubKey, this.lastSendToken);
   
   dealWithWebSocket(String message, WebSocket conn){
       print(message);
       Map jsonMap = JSON.decode(message);
       switch(jsonMap["command"]){
-        case "adminSelection":
+        case "Selection":
+          int x = jsonMap["data"]["x"];
+          int y = jsonMap["data"]["y"];
+          selected = World.getObjectAt(x, y, subscriptions.first.world.objects, subscriptions.first.world.width);
+          
+          break;
+        case "SelectionId":
           int id = jsonMap["data"]["id"];
-          var iterator =  subscriptions.first.world.positions.where((e) => e.object.id == id);
+          var iterator =  subscriptions.first.world.objects.where((o) => o.cell != null && o.cell.id == id);
           if(iterator.length != 1)
           {
             _logger.warning("Error on this id: $id! Count $iterator.legnth");
           } else {
-            selected = iterator.first.object;
+            selected = iterator.first;
           }          
-          break;
-        case "moveSpectator":
-          if (jsonMap["data"]["dx"].abs() + jsonMap["data"]["dy"].abs() + jsonMap["data"]["dz"].abs() > 1)
-            return;
-          this.bootSubcription.toFollow.pos.dx = jsonMap["data"]["dx"];
-          this.bootSubcription.toFollow.pos.dy = jsonMap["data"]["dy"];
-          this.bootSubcription.toFollow.pos.dz = jsonMap["data"]["dz"];
-          break;
-          
-        case "spawnMass":
-          Color color;
-          switch(jsonMap["data"]["color"]){
-            case "RED":
-              color = Color.Red;
-              break;
-            case "GREEN":
-              color = Color.Green;
-              break;
-            case "BLUE":
-              color = Color.Blue;
-          }
-          Boot boot = this.bootSubcription.toFollow;
-          if(boot.pos.isIn.positions.where((pos) => pos.x == boot.pos.x + boot.facing.dirX &&
-              pos.y == boot.pos.y + boot.facing.dirY &&
-              pos.z == boot.pos.z + boot.facing.dirZ).length == 0 &&
-              boot.energy.energyCount > 50 && color != null){
-          Position newPos;
-          try {
-          newPos = new Position(boot.pos.isIn, 
-               boot.pos.x + boot.facing.dirX 
-              ,boot.pos.y + boot.facing.dirY
-              ,boot.pos.z + boot.facing.dirZ);
-          } on Exception catch(ex, stacktrace) {
-              _logger.warning("Added on an invalide field", ex, stacktrace);
-              return;
-          }
-          boot.energy.decEnergyBy(50.0);
-          Mass newMass = new Mass(color);
-          newMass.energy.energyCount = 50.0;
-          newPos.putOn(newMass);
-          }
-          break;
-        case "demoMode":
-          subscriptions.first.world.demoMode();
-          break;          
-        case "liveSelected":
-          if(this.bootSubcription.toFollow is Boot){
-            Boot boot = this.bootSubcription.toFollow;
-            if(boot.selected != null){
-              if(boot.selected is Mass){
-                Mass mass = boot.selected;
-                String greenCode = jsonMap["data"];
-                if(!new GreenCodeContext.byNames(greenCode).assemblerError)
-                {
-                  Cell cell = new Cell.withCode(mass.getColor(), greenCode);
-                  cell.energy.energyCount = mass.energy.energyCount;
-                  mass.pos.putOn(cell);
-                  boot.selected = cell;
-                  cell.isHold = true;
-                }             
-              } else if(boot.selected is Cell) {
-                Cell cell = boot.selected;
-                String greenCode = jsonMap["data"];
-                if(!new GreenCodeContext.byNames(greenCode).assemblerError)
-                {
-                  Cell newCell = new Cell.withCode(cell.getColor(), greenCode);
-                  newCell.energy.energyCount = cell.energy.energyCount;
-                  newCell.greenCodeContext.registers = cell.greenCodeContext.registers;
-                  cell.pos.putOn(newCell);
-                  boot.selected = newCell;
-                  newCell.isHold = true;
-                }
-              }
-            }
-          }
-          break;
-        case "getEnergyFromSelected":
-          if(this.bootSubcription.toFollow is Boot){
-            Boot boot = this.bootSubcription.toFollow;
-            if(boot.selected != null){
-             double toGet = (jsonMap["data"]["count"] as int).toDouble();
-             if(boot.selected is Mass){
-               Mass mass = boot.selected;
-               Random rnd = new Random();
-               if(boot.energy.energyCount + toGet <= Energy.maxEnergyInObject)
-               {
-                 double consumed = mass.energy.decEnergyBy(toGet);
-                 if(mass.energy.energyCount <= 0)
-                   boot.selected = null;                   
-                 boot.energy.incEnergyBy(consumed);                    
-               }
-              }
-            }
-          }
         break;
-        case "sendEnergyFromBoot":
-          if(this.bootSubcription.toFollow is Boot){
-            Boot boot = this.bootSubcription.toFollow;
-            if(boot.selected != null){
-             double toSend = boot.energy.decEnergyBy((jsonMap["data"]["count"] as int).toDouble());
-             double left = toSend;             
-             if(boot.selected is Mass){
-               Mass mass = boot.selected;
-               Random rnd = new Random();
-               int tryed = 0;
-               double put = mass.energy.incEnergyBy(toSend);
-               boot.energy.incEnergyBy(toSend - put);
-             }
-            }
-          }
-         break;
+        case "insertEnergy":
+          State state = State.Void;
+          int v = int.parse(jsonMap["data"]["state"]);
+          if(State.allStates.where((s) => s == v).length > 0)
+            state = new State(v);
+          WorldObject toPlaceOn = World.getObjectAt(userSubcription.x, userSubcription.y, userSubcription.world.objects, userSubcription.world.width);
+          int dec = 0;
+          if(toPlaceOn.getStateIntern() == State.Void || state == toPlaceOn.getStateIntern()) {
+            userSubcription.user.energy.incEnergyBy(toPlaceOn.energy.incEnergyBy(userSubcription.user.energy.decEnergyBy(1)));
+          }          
+        break;                
+        case "putSelection":
+           
+        break;
+        
+        case "liveSelection":
+        
+        break;
+        case "pushSelectionEnergyToUser":          
+          selected.energy.incEnergyBy(userSubcription.user.energy.incEnergyBy(selected.energy.decEnergyBy(int.parse(jsonMap["data"]["count"]))));
+        break;
+        
+        case "demo":
+          subscriptions.first.world.randomStateAdd();
+        break;
       }
   }
   
   String getSendData(){
     Map jsonMap = new Map();
-    jsonMap.putIfAbsent("username", () => username);
+    jsonMap["username"] = username;
     Map jsonMapData = new Map();
     subscriptions.forEach((sub) => jsonMapData.addAll(sub.getStateAsMap()));   
-    // _logger.info(selected);
-    if(selected is Cell && selected.energy.energyCount > 0){
-      // _logger.info("Send adminInfo");
-      jsonMapData.putIfAbsent("adminSelection", () => {"code": (selected as Cell).greenCodeContext.codeToStringNamesWithHeads(), "registers": (selected as Cell).greenCodeContext.registersToString()});
-    } else  jsonMapData.putIfAbsent("adminSelection", () => {"code": "", "registers": JSON.encode({})});
+    if(selected != null){
+      jsonMapData["Selection"] = {};
+      jsonMapData["Selection"].addAll({"x":selected.x, "y": selected.y, "state": selected.getStateIntern().toValue(), "energy": selected.getEnergyCount()});
+      if(selected.cell != null){
+        jsonMapData["Selection"].addAll()({"code": (selected as Cell).greenCodeContext.codeToStringNamesWithHeads(), 
+                                 "registers": (selected as Cell).greenCodeContext.registersToString()});
+    }
+    }
+    else
+      jsonMapData["Selection"] = {"code": "", "registers": ""};    
     jsonMap.putIfAbsent("data", () => jsonMapData);
     return JSON.encode(jsonMap);
   }
@@ -203,71 +128,58 @@ class WorldTicksSubscription extends WorldSubscription {
   }
 }
 
-class WorldAreaViewCubicSubscription extends WorldSubscription {
-  int x;
-  int y;
-  int z;
-  int radius;
-  
-  WorldAreaViewCubicSubscription(world, user, this.x, this.y, this.z, this.radius): super(world, user);
+class WorldAreaViewSubscription extends WorldSubscription {
+  int width = 0;
+  int height = 0;
+  WorldAreaViewSubscription(world, user, this.height, this.width): super(world, user);
   
   Map getStateAsMap(){
     Map jsonMap = new Map();
     Map jsonViewArea = new Map();
-    world.getObjectsForCube(x, y, z, radius).forEach((Position pos) => addInfoAboutPositionInto(pos, jsonViewArea));
+    World.getObjectsForRect(0, 0, width, height, world.objects).forEach((o) => addInfoAboutPositionInto(o, jsonViewArea));
     jsonMap.putIfAbsent("viewArea", () => jsonViewArea);
     return jsonMap;
   } 
   
-  static addInfoAboutPositionInto(Position pos, Map jsonMap){
+  static addInfoAboutPositionInto(WorldObject o, Map jsonMap){
     Map jsonPosition = new Map();
-    jsonPosition.putIfAbsent("x", () =>  pos.x);
-    jsonPosition.putIfAbsent("y", () =>  pos.y);
-    jsonPosition.putIfAbsent("z", () =>  pos.z);{}
+    jsonPosition.putIfAbsent("x", () =>  o.x);
+    jsonPosition.putIfAbsent("y", () =>  o.y);
     jsonPosition.putIfAbsent("object", () => 
-        {"id": pos.object.id,"type": pos.object.type, "hold": pos.object.isHold ? 1 : 0, "color": 
-           {"r": pos.object.getColor().r, 
-            "g": pos.object.getColor().g, 
-            "b": pos.object.getColor().b}});
+        {
+         "id": o.cell != null ? o.cell.id : 0,
+         "state": o.getStateIntern().toValue(), 
+         "hold": o.cell != null ? (o.cell.isHold ? 1 : 0) : 0,
+         "cell": o.cell != null ? 1 : 0
+        });
     jsonMap.putIfAbsent(jsonMap.length.toString(), () => jsonPosition);
-
   }
 }
 
-class MovingAreaViewSubscription extends WorldSubscription {
-  
+class MovingAreaViewSubscription extends WorldSubscription {  
   static const int watchAreaWidth = 7;
   static const int watchAreaHeight = 7;
-  static const int watchAreaDepth = 7;
   
-  WorldObject toFollow;
+  getX() => world.getWorldObjectWhereCellId(idToFollow) != null ? world.getWorldObjectWhereCellId(idToFollow).x : x;
+  getY() => world.getWorldObjectWhereCellId(idToFollow) != null ? world.getWorldObjectWhereCellId(idToFollow).y : y;
+    
+  int idToFollow = 0;
+
+  int x;
+  int y;
   
-  MovingAreaViewSubscription(world, user, this.toFollow) : super(world, user);
+  
+  MovingAreaViewSubscription(world, user, this.idToFollow) : super(world, user);
   
   Map getStateAsMap(){
     Map jsonMap = new Map();
     Map jsonViewArea = new Map();
-    world.getObjectsForRect(toFollow.pos.x - (watchAreaWidth/2).ceil(), 
-                            toFollow.pos.y - (watchAreaHeight/2).ceil(),
-                            toFollow.pos.z - (watchAreaDepth/2).ceil(), watchAreaWidth + 1, watchAreaHeight +1 , watchAreaDepth +1).forEach((Position pos)
-        => WorldAreaViewCubicSubscription.addInfoAboutPositionInto(pos, jsonViewArea));
-    jsonMap.putIfAbsent("viewArea",() => jsonViewArea);
-    if(toFollow is Boot){
-      Boot boot = toFollow;
-      int selectedEnergy = 0;
-      String greenCode = "";
-      if(boot.selected != null)
-        if(boot.selected is Mass)
-        {
-          Mass mass = boot.selected;
-          selectedEnergy = mass.energy.energyCount.round();
-        } else if (boot.selected is Cell){
-          Cell cell = boot.selected;
-          selectedEnergy = cell.energy.energyCount.round();
-          greenCode =  cell.greenCodeContext.codeToStringNames();
-        }
-        jsonMap.putIfAbsent("bootInfo", () => {"greenCode": greenCode, "selectedEnergy": selectedEnergy, "energy": boot.energy.energyCount.round(), "dir": boot.facing.name, "x": toFollow.pos.x - (watchAreaWidth/2).floor(), "y": toFollow.pos.y - (watchAreaHeight/2).floor(), "z": toFollow.pos.z - (watchAreaDepth/2).floor()});
-    }
+    World.getObjectsForRect(getX() - (watchAreaWidth/2).ceil(), 
+                            getY() - (watchAreaHeight/2).ceil(),
+                            watchAreaWidth + 1, watchAreaHeight +1, 
+                            world.objects).forEach((WorldObject o)
+        => WorldAreaViewSubscription.addInfoAboutPositionInto(o, jsonViewArea));
+    jsonMap.putIfAbsent("viewArea",() => jsonViewArea);    
     return jsonMap;
   }
 }

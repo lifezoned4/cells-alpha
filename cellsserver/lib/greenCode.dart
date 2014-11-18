@@ -8,46 +8,42 @@ import 'dart:convert';
 Logger _logger = new Logger("greenCode");
 
 class Direction {
-  static Direction N = new Direction._(0, -1, 0, 0, "N");
-  static Direction E = new Direction._(1, 0, 0, 1, "E");
-  static Direction S = new Direction._(0, 1, 0, 2, "S");
-  static Direction W = new Direction._(-1, 0, 0, 3, "W");
-  static Direction UP = new Direction._(0, 0, -1, 4, "UP");
-  static Direction DOWN = new Direction._(0, 0, 1, 5, "DOWN");
-  static Direction NONE = new Direction._(0, 0, 0, 6, "NONE");
-
-  static get values => [N, E, S, W, UP, DOWN, NONE];
-
-  bool isThis(int x, int y, int z) {
-    return dirX == x && dirY == y && dirZ == z;
-  }
-
-  static Direction getThis(int x, int y, int z) {
-    List<Direction> valuesList = new List.from(values);
-    Iterable<Direction> it = valuesList.where((dir) => dir.isThis(x, y, z));
-    if (it.length == 1) return it.first; else return null;
-  }
-
-  int value;
-  int dirX;
-  int dirY;
-  int dirZ;
-  String name;
-
-
-  Direction() {
-    dirX = 0;
-    dirY = 0;
-    dirZ = 0;
-    name = "NONE";
-  }
-
-  Direction._(this.dirX, this.dirY, this.dirZ, this.value, this.name);
-}
-
-
-class GreenCodeContext {
+  int _value = 0;
+  int x;
+  int y;
   
+  static Direction N = new Direction(1,0,-1);
+  static Direction E = new Direction(2,1,0);
+  static Direction S = new Direction(3,0,1);
+  static Direction W = new Direction(4,-1,0);
+  static Direction NONE = new Direction(4,0,0);
+    
+  Direction(this._value, this.x, this.y);
+
+  bool operator==(Direction t){
+    return _value == t._value;
+  }
+  
+  static Direction byValue(int value){
+    int m = value % 5;
+    switch(m)
+    {
+      case 1:
+        return N;
+      case 2:
+        return E;
+      case 3:
+        return S;
+      case 4:
+        return W;
+      default:
+        return NONE;
+        
+    }
+  }
+}
+  
+class GreenCodeContext {
   static const int MaxNumber = 4092;
   static const int OperationsPerCycle = 1;
   
@@ -61,21 +57,18 @@ class GreenCodeContext {
   static const RegInject = 7;
   static const RegMove = 8;  
   
-  static const RegColorOWN = 9;
+  static const RegStateOWN = 9;
   static const RegEnergyOWN = 10;
-  static const RegColorDOWN = 11;
-  static const RegColorN = 12;
-  static const RegColorE = 13;
-  static const RegColorS = 14;
-  static const RegColorW = 15;
-  static const RegColorUP = 16;
+  static const RegStateN = 11;
+  static const RegStateE = 12;
+  static const RegStateS = 13;
+  static const RegStateW = 14;
 
-  static const RegEnergyDOWN = 17;
-  static const RegEnergyN = 18;
-  static const RegEnergyE = 19;
-  static const RegEnergyS = 20;
-  static const RegEnergyW = 21;
-  static const RegEnergyUP = 22;
+  static const RegEnergyN = 15;
+  static const RegEnergyE = 16;
+  static const RegEnergyS = 17;
+  static const RegEnergyW = 18;
+
   
   List<GreenCode> code = new List<GreenCode>();
 
@@ -89,90 +82,40 @@ class GreenCodeContext {
     return JSON.encode(map);
   }
   
-  Direction nextMove(){
-    return DirectionByRegister(registers[RegMove]);    
-  }
-  
-  Direction injectTo(){
-    return DirectionByRegister(registers[RegInject]);
-  }
-
-  Direction DirectionByRegister(reg) {    
-    switch(reg % 7)
-    { 
-      case 1:
-        return Direction.DOWN;
-      case 2:
-        return Direction.N;
-      case 3:
-        return Direction.E;
-      case 4:
-        return Direction.S;        
-      case 6:
-        return Direction.W;        
-      case 7:
-        return Direction.UP;      
-      default:
-        return Direction.NONE;
-    }
-  }
-  
   int registersCount() {
     return 31;
   }
   
   int copyCost = 0;
   
+  Direction nextMove() => Direction.byValue(registers[RegMove]);
+  Direction nextInject() => Direction.byValue(registers[RegInject]);
+  
   operation(){
     code.elementAt(registers[RegIP] % (code.length)).onContextCall(this);
     registers[RegIP] = (registers[RegIP] + 1) % code.length; 
   }
   
-  preTick(World world, Position me, int x, int y, int z){
+  preTick(World world, WorldObject w, int x, int y){
     registers[RegClock]+=1;
     registers[RegEatingCount] = 0;
     registers[RegInject] = 0;
     registers[RegMove] = 0; 
-    registers[RegColorOWN] = ColorIndexAtPos(me);
-    registers[RegEnergyOWN] = me.object.energy.energyCount.floor();
+    registers[RegStateOWN] = w.getStateIntern().toValue();
+    registers[RegEnergyOWN] = w.getEnergyCount();
+    
+    var nei = world.getNeightbourhood(x, y);
+   
+    registers[RegStateN] = nei.n.getStateIntern().toValue();
+    registers[RegStateE] = nei.e.getStateIntern().toValue();
+    registers[RegStateS] = nei.s.getStateIntern().toValue();
+    registers[RegStateW] = nei.s.getStateIntern().toValue();
 
-    var poses = world.getObjectsForCube(x, y, z, 2);
-    poses.forEach((pos) {
-       Direction dir = Direction.getThis(me.x - pos.x, me.y - pos.y, me.z - pos.z);
-       if(dir == Direction.DOWN ){
-         registers[RegEnergyDOWN] = EnergyAtPos(pos);
-         registers[RegColorDOWN] = ColorIndexAtPos(pos);
-       }
-       if(dir == Direction.N ){
-                registers[RegEnergyN] = EnergyAtPos(pos);
-                registers[RegColorN] = ColorIndexAtPos(pos);
-       }
-       if(dir == Direction.E ){
-                registers[RegEnergyE] = EnergyAtPos(pos);
-                registers[RegColorE] = ColorIndexAtPos(pos);
-       }
-       if(dir == Direction.S ){
-                       registers[RegEnergyS] = EnergyAtPos(pos);
-                       registers[RegColorS] = ColorIndexAtPos(pos);
-       }
-       if(dir == Direction.W ){
-                       registers[RegEnergyW] = EnergyAtPos(pos);
-                       registers[RegColorW] = ColorIndexAtPos(pos);
-       }
-       if(dir == Direction.UP){
-                       registers[RegEnergyUP] = EnergyAtPos(pos);
-                       registers[RegColorUP] = ColorIndexAtPos(pos);
-       }
-      }
-    );
-  }
-  
-  int EnergyAtPos(Position pos){
-    return pos.object.energy.energyCount.floor();
-  }
-  
-  int ColorIndexAtPos(Position pos){
-    return pos.object.getColor().ThisIs(Color.Green) ? 1 : pos.object.getColor().ThisIs(Color.Blue) ? 2 : pos.object.getColor().ThisIs(Color.Red) ? 3 : 0;
+    registers[RegEnergyN] = nei.n.getEnergyCount();
+    registers[RegEnergyE] = nei.e.getEnergyCount();
+    registers[RegEnergyS] = nei.s.getEnergyCount();
+    registers[RegEnergyW] = nei.w.getEnergyCount();
+
   }
   
   tick(){
@@ -186,6 +129,8 @@ class GreenCodeContext {
   }
 
   String codeToStringNames() {
+    if(code.length == 0)
+      return "";
     return code.map((e) => e.toString() + "\n").join();
   }
   

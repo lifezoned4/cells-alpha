@@ -22,9 +22,8 @@ final _logger = new Logger("cellsProtocolServer");
 Dsa dsa = new Dsa();
 
 class ServerCommEngine {
-  static const int Width = 30;
-  static const int Height = 16;
-  static const int Depth = 1;
+  static const int width = 25;
+  static const int height = 15;
 
   Map<String, RestfulCommand> restfulCommands = new Map<String, RestfulCommand>();
 
@@ -34,10 +33,9 @@ class ServerCommEngine {
   World world;
   ServerCommEngine(){
     RegRestfulCommand(new RestfulWebSocketAuthUser(this));
-    RegRestfulCommand(new RestfulWebSocketAuthAdmin(this));
-    RegRestfulCommand(new RestfulMoveSpectator(this));
+    RegRestfulCommand(new RestfulMoveSpectation(this));
     RegRestfulCommand(new RestfulSelectInfoAbout(this));
-    // authEngine.addAuth(restfulCommands[RestfulWebSocketAuth.commandNameInfo], new AllAccess());
+    RegRestfulCommand(new RestfulGetWorldSize(this));
 
     try {
       world = FilePersistContext.loadWorld();
@@ -45,6 +43,7 @@ class ServerCommEngine {
     catch(ex, stacktrace){
        _logger.warning("File Loading Failed");
        _logger.warning("Error was: ", ex, stacktrace);
+      return;
     }
 
     world.start();
@@ -58,18 +57,23 @@ class ServerCommEngine {
     _logger.info(message);
     Map jsonMap = JSON.decode(message);
     switch(jsonMap["command"]){
-      case "tokken":
-        User foundUser = world.users.where((user) => user.lastSendTokken == jsonMap["data"]).first;
-        if(foundUser == null)
-          conn.add("{""command: ""error"", ""data"":""Tokken unknown""}");
-        else {
+      case "token":
+         var it = world.users.keys.where((user) => user.lastSendToken == jsonMap["data"]);
+        
+         if(it.length > 0)
+         {
+          User foundUser = it.first;
           foundUser.socketAct = conn;
-        }
+         }
+         else {
+          conn.add("{""command: ""error"", ""data"":""Tokken unknown""}");                   
+         }
         break;
       default:
-        User foundUser = world.users.where((user) => user.socketAct == conn).first;
-        if(foundUser != null)
+        var it = world.users.keys.where((user) => user.socketAct == conn);
+        if(it.length > 0 )
         {
+          User foundUser = it.first;
           foundUser.dealWithWebSocket(message, conn);
         }
         break;
@@ -125,22 +129,22 @@ abstract class RestfulCommand {
   }
 }
 
-class RestfulMoveSpectator extends RestfulCommand  {
-  static String commandNameInfo = "MoveSpectator";
+class RestfulMoveSpectation extends RestfulCommand  {
+  static String commandNameInfo = "MoveSpectation";
 
-  RestfulMoveSpectator(ServerCommEngine engine) : super(engine){
+  RestfulMoveSpectation(ServerCommEngine engine) : super(engine){
     commandName = commandNameInfo;
   }
 
   String dealWithCommand(Map<String, dynamic> jsonMap, AuthContext context){
     super.dealWithCommand(jsonMap, context);
-    if (jsonMap["data"]["dx"].abs() + jsonMap["data"]["dy"].abs() + jsonMap["data"]["dz"].abs() > 1)
+    if (jsonMap["data"]["dx"].abs() + jsonMap["data"]["dy"].abs() > 1)
       return "Invalid";
-    if(engine.world.users.where((user) => user.username == context.username).isNotEmpty) {
-      User foundUser = engine.world.users.where((user) => (user.pubKey == user.pubKey) && (user.username == context.username)).first;
-      foundUser.bootSubcription.toFollow.pos.dx = jsonMap["data"]["dx"];
-      foundUser.bootSubcription.toFollow.pos.dy = jsonMap["data"]["dy"];
-      foundUser.bootSubcription.toFollow.pos.dz = jsonMap["data"]["dz"];
+    if(engine.world.users.keys.where((user) => user.username == context.username).isNotEmpty) {
+      User foundUser = engine.world.users.keys.where((user) => (user.pubKey == user.pubKey) && (user.username == context.username)).first;
+      foundUser.userSubcription.x += jsonMap["data"]["dx"] + engine.world.width % engine.world.width;
+      foundUser.userSubcription.y += jsonMap["data"]["dy"] + engine.world.height % engine.world.height;
+
       return "Okay";
     }
     else { return "Invalid";}
@@ -157,40 +161,49 @@ class RestfulSelectInfoAbout extends RestfulCommand {
   String dealWithCommand(Map<String, dynamic> jsonMap, AuthContext context){
     super.dealWithCommand(jsonMap, context);
     int id = jsonMap["data"]["id"];
-    int tokken = jsonMap["data"]["tokken"];
+    int token = jsonMap["data"]["token"];
 
-    var iterator =  engine.world.positions.where((e) => e.object.id == id);
+    var iterator =  engine.world.objects.where((o) => o.cell != null && o.cell.id == id);
     if(iterator.length != 1)
     {
       _logger.warning("Error on this id: $id! Count $iterator.legnth");
       return "Error on this id: $id!";
     } else {
-      WorldObject object = iterator.first.object;
-      Map returner = {"id": object.id, "energy": object.energy.energyCount,
-        "x": object.pos.x,
-        "y": object.pos.y,
-        "z": object.pos.z};
-      if(object is Cell){
-        Cell cell = object;
-        returner.putIfAbsent("code", () => cell.greenCodeContext.codeToStringNames());
-      }
-      if(engine.world.users.where((user) => (user.lastSendTokken == tokken) && user.bootSubcription == null).isNotEmpty){
+      WorldObject object = iterator.first;
+      Map returner = {"id": object.cell.id, "energy": object.energy.energyCount,
+        "x": object.x,
+        "y": object.y,
+      };
+      
+      returner.putIfAbsent("code", () => object.cell.greenCodeContext.codeToStringNames());
+    
+     if(engine.world.users.keys.where((user) => (user.lastSendToken == token) && user.userSubcription == null).isNotEmpty){
         _logger.info("Selecting object ${id}");
-        if(object is Cell){
-          if(engine.world.users.where((user) => user.lastSendTokken == tokken && user.bootSubcription == null).length > 1)
-            _logger.info("BAD THINGS HAPPENED");
-          _logger.info("IS CELL");
-          engine.world.users.where((user) => user.lastSendTokken == tokken && user.bootSubcription == null).first.selected = object;
+        engine.world.users.keys.where((user) => user.lastSendToken == token && user.userSubcription == null).first.selected = object;
         }
-      }
+     
       return JSON.encode(returner);
-      }
+    }
+  }
+}
+
+class RestfulGetWorldSize extends  RestfulCommand {
+  static String commandNameInfo = "commandGetWorldSize";
+
+  RestfulGetWorldSize(ServerCommEngine engine) : super(engine){
+      commandName = commandNameInfo;
+      
+    }
+  String dealWithCommand(Map<String, dynamic> jsonMap, AuthContext context){
+    super.dealWithCommand(jsonMap, context);
+    return JSON.encode({"width": engine.world.width, "height":  engine.world.height});    
   }
 }
 
 class RestfulWebSocketAuthUser extends  RestfulCommand {
-  static String commandNameInfo = "WebSocketAuthUser";
+  static String commandNameInfo = "WebSocketAuthAdmin";
   static const int ticksInTokken = 120;
+
 
   RestfulWebSocketAuthUser(ServerCommEngine engine) : super(engine){
     commandName = commandNameInfo;
@@ -199,64 +212,26 @@ class RestfulWebSocketAuthUser extends  RestfulCommand {
  String dealWithCommand(Map<String, dynamic> jsonMap, AuthContext context){
    super.dealWithCommand(jsonMap, context);
    int tokken = new Random().nextInt(1<<32 -1);
-   if(engine.world.users.where((user) => user.username == context.username).isNotEmpty && engine.world.users.where((user) => user.username == context.username).first.bootSubcription != null) {
-    User foundUser = engine.world.users.where((user) => (user.pubKey == user.pubKey) && (user.username == context.username)).first;
-    foundUser.lastSendTokken = tokken;
-    foundUser.ticksLeft = ticksInTokken;
-   }
-   else{
-    User newUser = new User(context.username, context.pubKey, tokken);
-    newUser.ticksLeft = ticksInTokken;
-    engine.world.users.add(newUser);
-    newUser.subscriptions.add(new WorldTicksSubscription(engine.world, newUser));
-    Boot boot = engine.world.findBoot(context.username);
-    if(boot == null)
-    {
-      boot = engine.world.newBoot(context.username);
-    }
-    newUser.bootSubcription = new MovingAreaViewSubscription(engine.world, newUser, boot);
-    newUser.subscriptions.add(newUser.bootSubcription);
-    }
-   return tokken.toString();
- }
-}
-
-class RestfulWebSocketAuthAdmin extends  RestfulCommand {
-  static String commandNameInfo = "WebSocketAuthAdmin";
-  static const int ticksInTokken = 120;
-
-
-  RestfulWebSocketAuthAdmin(ServerCommEngine engine) : super(engine){
-    commandName = commandNameInfo;
-  }
-
- String dealWithCommand(Map<String, dynamic> jsonMap, AuthContext context){
-   super.dealWithCommand(jsonMap, context);
-   int tokken = new Random().nextInt(1<<32 -1);
    
    User foundUser = null;
-   Iterable iterFoundUser = engine.world.users.where((u) => u.isAdmin && u.username == context.username);
+   Iterable iterFoundUser = engine.world.users.keys.where((u) => u.isAdmin && u.username == context.username);
    if(iterFoundUser.length > 0)
     foundUser = iterFoundUser.first;
      
    if(foundUser == null){
-    User newAdminUser = new User(context.username, context.pubKey, tokken);
-    newAdminUser.isAdmin = true;
-    newAdminUser.ticksLeft = ticksInTokken;
-    engine.world.users.add(newAdminUser);
-    newAdminUser.subscriptions.add(new WorldTicksSubscription(engine.world, newAdminUser));
-    newAdminUser.bootSubcription = null;
-    newAdminUser.subscriptions.add(new WorldAreaViewCubicSubscription
-        (engine.world, newAdminUser,
-            (ServerCommEngine.Width/2).ceil(),
-            (ServerCommEngine.Height/2).ceil(),
-            (ServerCommEngine.Depth/2).ceil(), (max(max(ServerCommEngine.Width.toDouble(),
-                                                       ServerCommEngine.Height.toDouble()),
-                                                       ServerCommEngine.Depth.toDouble())~/2 + 1)));
-   }
+    User newUser = new User(context.username, context.pubKey, tokken);
+    newUser.isAdmin = true;
+    newUser.ticksLeft = ticksInTokken;
+    engine.world.users[newUser] = 0;
+    newUser.subscriptions.add(new WorldTicksSubscription(engine.world, newUser));
+    newUser.userSubcription = null;
+    newUser.subscriptions.add(new WorldAreaViewSubscription(engine.world, newUser,
+             ServerCommEngine.width,
+             ServerCommEngine.height));
+   }                                      
    else
    {
-     foundUser.lastSendTokken = tokken;         
+     foundUser.lastSendToken = tokken;         
      foundUser.ticksLeft = ticksInTokken;
    }
    return tokken.toString();

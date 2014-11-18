@@ -9,8 +9,7 @@ body {
     font-weight: bold;
     font-family: courier;
     width: 30px;
-    height: 30px;
-    background: rgb(0,33,0);  
+    height: 30px;  
 }
 
 
@@ -24,7 +23,7 @@ body {
     height: 30px
   }
   
-#FieldM {
+#Field1 {
     font-size: 13px;
     font-weight: bold;
     font-family: courier;
@@ -32,7 +31,7 @@ body {
     height: 30px; 
     }
 
-#FieldC {
+#Field2 {
     font-size: 13px;
     font-weight: bold;
     font-family: courier;
@@ -41,7 +40,16 @@ body {
     border-radius: 15px;
   }
 
-#FieldB {
+#Field3 {
+    font-size: 13px;
+    font-weight: bold;
+    font-family: courier;
+    width: 30px;
+    height: 30px; 
+    border-radius: 10px;
+  }
+
+#Field4 {
     font-size: 13px;
     font-weight: bold;
     font-family: courier;

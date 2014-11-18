@@ -1,9 +1,12 @@
 library persist;
 
 import 'dart:io';
+import 'package:logging/logging.dart';
 import 'lib/cells.dart';
 import 'cellsProtocolServer.dart';
 import 'dart:convert' show JSON;
+
+Logger _logger = new Logger("FilePersistContext");
 
 class FilePersistContext {
   static const String commandAuthsPath = "auth/commands/";
@@ -12,32 +15,18 @@ class FilePersistContext {
   String path;
   
   static World loadWorld(){
-    World newWorld = new World(ServerCommEngine.Width, ServerCommEngine.Height, ServerCommEngine.Depth);
+    World newWorld = new World(ServerCommEngine.width, ServerCommEngine.height);
     File persistedWorld = new File("saves/world");
     persistedWorld.openRead();
+    int i = 0;
     persistedWorld.readAsLinesSync().forEach((line) {
       Map jsonMap = JSON.decode(line);
-      Position newPos = new Position(newWorld, jsonMap["x"], jsonMap["y"], jsonMap["z"]);
-      WorldObject toPlace;
-      switch(jsonMap["type"]){
-        case "M":
-          toPlace = new Mass(new Color(jsonMap["worldObject"]["color"]["r"],
-                                       jsonMap["worldObject"]["color"]["g"], 
-                                       jsonMap["worldObject"]["color"]["b"], jsonMap["worldObject"]["color"]["name"]));
-          break;
-        case "C":
-          toPlace = new Cell.withCode(new Color(jsonMap["worldObject"]["color"]["r"],
-                                       jsonMap["worldObject"]["color"]["g"], 
-                                       jsonMap["worldObject"]["color"]["b"], jsonMap["worldObject"]["color"]["name"]), jsonMap["cell"]["code"]);
-          (toPlace as Cell).outputBuffer = jsonMap["cell"]["outputBuffer"];
-          (toPlace as Cell).livingBleed = jsonMap["cell"]["livingBleed"];          
-          break;
-        case "B":
-          toPlace = new Boot(jsonMap["boot"]["user"]); 
-          break;
-      }
-      toPlace.energy.energyCount = jsonMap["worldObject"]["energy"];
-      newPos.putOn(toPlace);
+      WorldObject o = new WorldObject(jsonMap["x"], jsonMap["y"], new State(jsonMap["state"]));
+      if(jsonMap.containsKey("cellId") != 0)
+        o.cell = new Cell.withCode(jsonMap["cellId"], jsonMap["greenCode"]);
+      o.energy.energyCount = jsonMap["energy"];
+      assert(i == o.y*ServerCommEngine.width + o.x);
+      i++;
     });
     return newWorld;
   }
@@ -46,30 +35,12 @@ class FilePersistContext {
     File persistedWorld = new File("saves/world");
     persistedWorld.openWrite(); 
     String totalFile = "";
-    world.positions.forEach((pos){
-      
-       Map jsonMap = {"x": pos.x, "y": pos.y, "z": pos.z, 
-                      "worldObject": {"energy": pos.object.energy.energyCount, 
-                                      "color": {"r": pos.object.getColor().r, 
-                                           "g": pos.object.getColor().g,
-                                           "b": pos.object.getColor().b,
-                                           "name": pos.object.getColor().name}}};
-       if(pos.object is Cell){
-         Cell cell = pos.object;
-         jsonMap.putIfAbsent("type", () => "C");
-         jsonMap.putIfAbsent("cell", () => {"code": cell.greenCodeContext.codeToStringNames(),
-                                            "outputBuffer": cell.outputBuffer,
-                                            "livingBleed": cell.livingBleed});
-       }
-       if(pos.object is Mass){
-         Mass mass = pos.object;
-         jsonMap.putIfAbsent("type", () => "M");
-        }
-       if(pos.object is Boot){
-         Boot boot = pos.object;
-         jsonMap.putIfAbsent("type", () => "B");
-         jsonMap.putIfAbsent("boot", () => {"user": boot.user});
-       }       
+    world.objects.forEach((o){      
+       Map<String, dynamic> jsonMap = {"x": o.x, "y": o.y, 
+                      "energy": o.energy.energyCount, 
+                      "state": o.getStateIntern().toValue(),
+                      "greenCode": o.cell != null ? o.cell.greenCodeContext.codeToStringNames() : "",
+                      "cellId": o.cell != null ? o.cell.id : 0}; 
        totalFile += JSON.encode(jsonMap) + '\n';
     });
     persistedWorld.writeAsStringSync(totalFile);
