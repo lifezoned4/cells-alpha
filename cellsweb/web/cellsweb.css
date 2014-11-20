@@ -4,17 +4,18 @@ body {
   color: white;
 }
 
+
 #Field {
     font-size: 13px;
     font-weight: bold;
     font-family: courier;
     width: 30px;
-    height: 30px;  
+    height: 30px;
 }
 
 
 #FieldLine {
-  height: 30px;
+  height: 20px;
   width: 100%;
   }
 
@@ -22,40 +23,90 @@ body {
     width: 30px;
     height: 30px
   }
-  
+
 #Field1 {
     font-size: 13px;
     font-weight: bold;
     font-family: courier;
-    width: 30px;
-    height: 30px; 
+    width: 40px;
+    height: 40px;
+    color: white;
+    background-color: red;
     }
 
 #Field2 {
     font-size: 13px;
     font-weight: bold;
     font-family: courier;
-    width: 30px;
-    height: 30px; 
-    border-radius: 15px;
+    width: 40px;
+    height: 40px;
+    color: white;
+	background-color: green;
   }
 
 #Field3 {
     font-size: 13px;
     font-weight: bold;
     font-family: courier;
-    width: 30px;
-    height: 30px; 
-    border-radius: 10px;
+    width: 40px;
+    height: 40px;
+    color: white;
+    background-color: blue;
   }
 
 #Field4 {
     font-size: 13px;
     font-weight: bold;
     font-family: courier;
-    width: 30px;
-    height: 30px; 
-    border-radius: 10px;
+    width: 40px;
+    height: 40px;
+    background-color: white;
+  }
+
+#Field1C {
+    font-size: 13px;
+    font-weight: bold;
+    font-family: courier;
+    width: 40px;
+    height: 40px;
+    border-radius: 30px;
+    background-color: red;
+    color: white;
+    }
+
+#Field2C {
+    font-size: 13px;
+    font-weight: bold;
+    font-family: courier;
+    width: 40px;
+    height: 40px;
+    border-radius: 30px;
+    color: white;
+    background-color: green;
+  }
+
+#Field3C {
+    font-size: 13px;
+    font-weight: bold;
+    font-family: courier;
+    width: 40px;
+    height: 40px;
+    border-radius: 30px;
+    color: white;
+    background-color: blue;
+    color: white;
+  }
+
+#Field4C {
+    font-size: 13px;
+    font-weight: bold;
+    font-family: courier;
+    width: 40px;
+    height: 40px;
+    border-radius: 15px;
+    background: black
+    color: white;
+    background-color: white;
   }
 
 #errorbar {

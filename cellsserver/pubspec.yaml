@@ -3,5 +3,6 @@ description: Cells Server
 dependencies:
   bignum: any
   crypto: any
-  logging_handlers: any
   logging: any
+  logging_handlers: any
+  unittest: any

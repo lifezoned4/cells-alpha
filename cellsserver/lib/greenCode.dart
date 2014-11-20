@@ -11,19 +11,19 @@ class Direction {
   int _value = 0;
   int x;
   int y;
-  
+
   static Direction N = new Direction(1,0,-1);
   static Direction E = new Direction(2,1,0);
   static Direction S = new Direction(3,0,1);
   static Direction W = new Direction(4,-1,0);
   static Direction NONE = new Direction(4,0,0);
-    
+
   Direction(this._value, this.x, this.y);
 
   bool operator==(Direction t){
     return _value == t._value;
   }
-  
+
   static Direction byValue(int value){
     int m = value % 5;
     switch(m)
@@ -38,25 +38,25 @@ class Direction {
         return W;
       default:
         return NONE;
-        
+
     }
   }
 }
-  
+
 class GreenCodeContext {
   static const int MaxNumber = 4092;
   static const int OperationsPerCycle = 1;
-  
+
   static const RegALU = 0;
   static const RegIP = 1;
   static const RegReadHead = 2;
-  static const RegWriteHead = 3; 
+  static const RegWriteHead = 3;
   static const RegClock = 4;
   static const RegCodeLen = 5;
   static const RegEatingCount = 6;
   static const RegInject = 7;
-  static const RegMove = 8;  
-  
+  static const RegMove = 8;
+
   static const RegStateOWN = 9;
   static const RegEnergyOWN = 10;
   static const RegStateN = 11;
@@ -69,7 +69,7 @@ class GreenCodeContext {
   static const RegEnergyS = 17;
   static const RegEnergyW = 18;
 
-  
+
   List<GreenCode> code = new List<GreenCode>();
 
   bool assemblerError = false;
@@ -81,31 +81,31 @@ class GreenCodeContext {
     registers.forEach((key, value) => map.putIfAbsent(key.toString(), () => value));
     return JSON.encode(map);
   }
-  
+
   int registersCount() {
     return 31;
   }
-  
+
   int copyCost = 0;
-  
+
   Direction nextMove() => Direction.byValue(registers[RegMove]);
   Direction nextInject() => Direction.byValue(registers[RegInject]);
-  
+
   operation(){
     code.elementAt(registers[RegIP] % (code.length)).onContextCall(this);
-    registers[RegIP] = (registers[RegIP] + 1) % code.length; 
+    registers[RegIP] = (registers[RegIP] + 1) % code.length;
   }
-  
+
   preTick(World world, WorldObject w, int x, int y){
     registers[RegClock]+=1;
     registers[RegEatingCount] = 0;
     registers[RegInject] = 0;
-    registers[RegMove] = 0; 
+    registers[RegMove] = 0;
     registers[RegStateOWN] = w.getStateIntern().toValue();
-    registers[RegEnergyOWN] = w.getEnergyCount();
-    
+    registers[RegEnergyOWN] = w.getEnergyCount() - w.cell.consumed;
+
     var nei = world.getNeightbourhood(x, y);
-   
+
     registers[RegStateN] = nei.n.getStateIntern().toValue();
     registers[RegStateE] = nei.e.getStateIntern().toValue();
     registers[RegStateS] = nei.s.getStateIntern().toValue();
@@ -117,13 +117,13 @@ class GreenCodeContext {
     registers[RegEnergyW] = nei.w.getEnergyCount();
 
   }
-  
+
   tick(){
     if (!assemblerError) {
       int i = OperationsPerCycle;
       while(i > 0){
             operation();
-            i--;  
+            i--;
       }
     }
   }
@@ -133,18 +133,18 @@ class GreenCodeContext {
       return "";
     return code.map((e) => e.toString() + "\n").join();
   }
-  
+
   String codeToStringNamesWithHeads(){
-    int pos = 0; 
+    int pos = 0;
     return code.map((e) {
-      String r = (pos == registers[RegIP] ? "<IP>\n" : "") 
-    + (pos == registers[RegReadHead] ? "<RH>\n" : "") 
-    + (pos == registers[RegWriteHead] ? "<WH>\n" : "") 
-    + e.toString() + "\n"; 
+      String r = (pos == registers[RegIP] ? "<IP>\n" : "")
+    + (pos == registers[RegReadHead] ? "<RH>\n" : "")
+    + (pos == registers[RegWriteHead] ? "<WH>\n" : "")
+    + e.toString() + "\n";
       pos++;
       return r;}).join();
   }
-  
+
   List<GreenCode> _codeRange(int from, int to) {
   if(code.length == 0) return  [] as List<GreenCode>;
     int _from = min(from % code.length, to % code.length);
@@ -158,13 +158,13 @@ class GreenCodeContext {
   _removeCodeRange(int from, int to){
     if(code.length == 0) return;
     int _from = min(from % code.length, to % code.length);
-    int _to = max(from % code.length, to % code.length);   
+    int _to = max(from % code.length, to % code.length);
     if(_to > 0)
       code.removeRange(_from, _to);
     else
       return;
   }
-  
+
   int eat(){
     return registers[RegEatingCount];
   }
@@ -172,11 +172,11 @@ class GreenCodeContext {
   List<GreenCode> codeRangeBetweenHeads(){
     return _codeRange(registers[RegReadHead], registers[RegWriteHead]);
   }
-  
+
   removeCodeRangeBetweenHeads(){
     _removeCodeRange(registers[RegReadHead], registers[RegWriteHead]);
   }
-  
+
   GreenCodeContext.byNames(String codeString) {
     createEmptyRegisters();
     if (!codeString.trim().endsWith(";")) assemblerError = true;
@@ -199,7 +199,7 @@ class GreenCodeContext {
   void createEmptyRegisters() {
     for (int i = 0; i < registersCount(); i++) registers[i] = 0;
   }
-  
+
   GreenCodeContext.byRandom(int count) {
     Random rnd = new Random();
     while (count > 0) {
@@ -218,15 +218,15 @@ class GreenCodeInvalidOperation implements Exception {
 abstract class GreenCode {
   String operandFlag;
   int operand;
-  
+
   static List<String> possibleFlags = ["*", "#", "@"];
 
   String getName();
 
   String toString(){
-    return getName()  + " " + operandFlag + operand.toString() + ";"; 
+    return getName()  + " " + operandFlag + operand.toString() + ";";
   }
-  
+
   int valueOnContext(GreenCodeContext context) {
     switch (operandFlag) {
       case "#":
@@ -244,7 +244,7 @@ abstract class GreenCode {
     onContextDo(context);
     context.registers[GreenCodeContext.RegALU] %= GreenCodeContext.MaxNumber;
   }
-  
+
   onContextDo(GreenCodeContext context);
 
   GreenCode.byValues(String operandFlag, int operand) {
@@ -275,7 +275,7 @@ abstract class GreenCode {
         return new GreenCodeDiv(operandFlag, operand);
       case 5:
         return new GreenCodeMult(operandFlag, operand);
-      case 6:        
+      case 6:
         return new GreenCodeGet(operandFlag, operand);
       case 7:
         return new GreenCodeJzero(operandFlag, operand);
@@ -286,7 +286,7 @@ abstract class GreenCode {
     }
     throw new GreenCodeInvalidOperation("Random Error: SHOULD NEVER HAPPEN!");
   }
-  
+
   static GreenCode byName(String name, String operandFlag, int operand) {
     GreenCode r = null;
     if (GreenCodeLoad.me.getName() == name) r = new GreenCodeLoad(operandFlag, operand);
@@ -297,8 +297,8 @@ abstract class GreenCode {
     if (GreenCodeMult.me.getName() == name) r = new GreenCodeMult(operandFlag, operand);
     if (GreenCodeGet.me.getName() == name) r = new GreenCodeGet(operandFlag, operand);
     if (GreenCodeJzero.me.getName() == name) r = new GreenCodeJzero(operandFlag, operand);
-    if (GreenCodeCopy.me.getName() == name) r = new GreenCodeCopy(operandFlag, operand);   
-    if (GreenCodeLabel.me.getName() == name) r = new GreenCodeLabel(operandFlag, operand);   
+    if (GreenCodeCopy.me.getName() == name) r = new GreenCodeCopy(operandFlag, operand);
+    if (GreenCodeLabel.me.getName() == name) r = new GreenCodeLabel(operandFlag, operand);
     if (r == null) throw new GreenCodeInvalidOperation("Illiagel OperandName");
     return r;
   }
@@ -326,7 +326,7 @@ class GreenCodeStore extends GreenCode {
   String getName() {
     return "STORE";
   }
-  
+
   onContextDo(GreenCodeContext context) {
     context.registers[(valueOnContext(context) % context.registersCount())] = context.registers[GreenCodeContext.RegALU];
   }
@@ -372,7 +372,7 @@ class GreenCodeDiv extends GreenCode {
 
   onContextDo(GreenCodeContext context) {
     if(valueOnContext(context) != 0)
-    context.registers[GreenCodeContext.RegALU] =  (context.registers[GreenCodeContext.RegALU] / valueOnContext(context)).floor(); 
+    context.registers[GreenCodeContext.RegALU] =  (context.registers[GreenCodeContext.RegALU] / valueOnContext(context)).floor();
   }
 }
 
@@ -387,7 +387,7 @@ class GreenCodeMult extends GreenCode {
 
   onContextDo(GreenCodeContext context) {
     if(valueOnContext(context) != 0)
-    context.registers[GreenCodeContext.RegALU] = context.registers[GreenCodeContext.RegALU] * valueOnContext(context); 
+    context.registers[GreenCodeContext.RegALU] = context.registers[GreenCodeContext.RegALU] * valueOnContext(context);
   }
 }
 
@@ -408,7 +408,7 @@ class GreenCodeGet extends GreenCode {
       if(code is GreenCodeLabel)
       {
         if(code.valueOnContext(context) == valueOnContext(context))
-        {   
+        {
           break;
         }
       }
@@ -416,7 +416,7 @@ class GreenCodeGet extends GreenCode {
       i%=context.code.length;
     }
     while(i != start);
-    context.registers[GreenCodeContext.RegReadHead] = i; 
+    context.registers[GreenCodeContext.RegReadHead] = i;
   }
 }
 
@@ -429,7 +429,7 @@ class GreenCodeLabel extends GreenCode {
     return "LABEL";
   }
 
-  onContextDo(GreenCodeContext context) {    
+  onContextDo(GreenCodeContext context) {
   }
 }
 
@@ -444,7 +444,7 @@ class GreenCodeJzero extends GreenCode {
 
   onContextDo(GreenCodeContext context) {
     if(context.registers[GreenCodeContext.RegALU] == 0)
-      context.registers[GreenCodeContext.RegIP] = context.registers[GreenCodeContext.RegIP] + valueOnContext(context) % context.code.length; 
+      context.registers[GreenCodeContext.RegIP] = context.registers[GreenCodeContext.RegIP] + valueOnContext(context) % context.code.length;
   }
 }
 

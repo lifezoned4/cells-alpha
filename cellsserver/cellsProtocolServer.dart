@@ -22,8 +22,8 @@ final _logger = new Logger("cellsProtocolServer");
 Dsa dsa = new Dsa();
 
 class ServerCommEngine {
-  static const int width = 25;
-  static const int height = 15;
+  static const int width = 17;
+  static const int height = 10;
 
   Map<String, RestfulCommand> restfulCommands = new Map<String, RestfulCommand>();
 
@@ -59,14 +59,14 @@ class ServerCommEngine {
     switch(jsonMap["command"]){
       case "token":
          var it = world.users.keys.where((user) => user.lastSendToken == jsonMap["data"]);
-        
+
          if(it.length > 0)
          {
           User foundUser = it.first;
           foundUser.socketAct = conn;
          }
          else {
-          conn.add("{""command: ""error"", ""data"":""Tokken unknown""}");                   
+          conn.add("{""command: ""error"", ""data"":""Tokken unknown""}");
          }
         break;
       default:
@@ -174,14 +174,14 @@ class RestfulSelectInfoAbout extends RestfulCommand {
         "x": object.x,
         "y": object.y,
       };
-      
+
       returner.putIfAbsent("code", () => object.cell.greenCodeContext.codeToStringNames());
-    
+
      if(engine.world.users.keys.where((user) => (user.lastSendToken == token) && user.userSubcription == null).isNotEmpty){
         _logger.info("Selecting object ${id}");
         engine.world.users.keys.where((user) => user.lastSendToken == token && user.userSubcription == null).first.selected = object;
         }
-     
+
       return JSON.encode(returner);
     }
   }
@@ -192,11 +192,11 @@ class RestfulGetWorldSize extends  RestfulCommand {
 
   RestfulGetWorldSize(ServerCommEngine engine) : super(engine){
       commandName = commandNameInfo;
-      
+
     }
   String dealWithCommand(Map<String, dynamic> jsonMap, AuthContext context){
     super.dealWithCommand(jsonMap, context);
-    return JSON.encode({"width": engine.world.width, "height":  engine.world.height});    
+    return JSON.encode({"width": engine.world.width, "height":  engine.world.height});
   }
 }
 
@@ -212,12 +212,12 @@ class RestfulWebSocketAuthUser extends  RestfulCommand {
  String dealWithCommand(Map<String, dynamic> jsonMap, AuthContext context){
    super.dealWithCommand(jsonMap, context);
    int tokken = new Random().nextInt(1<<32 -1);
-   
+
    User foundUser = null;
    Iterable iterFoundUser = engine.world.users.keys.where((u) => u.isAdmin && u.username == context.username);
    if(iterFoundUser.length > 0)
     foundUser = iterFoundUser.first;
-     
+
    if(foundUser == null){
     User newUser = new User(context.username, context.pubKey, tokken);
     newUser.isAdmin = true;
@@ -228,10 +228,10 @@ class RestfulWebSocketAuthUser extends  RestfulCommand {
     newUser.subscriptions.add(new WorldAreaViewSubscription(engine.world, newUser,
              ServerCommEngine.width,
              ServerCommEngine.height));
-   }                                      
+   }
    else
    {
-     foundUser.lastSendToken = tokken;         
+     foundUser.lastSendToken = tokken;
      foundUser.ticksLeft = ticksInTokken;
    }
    return tokken.toString();

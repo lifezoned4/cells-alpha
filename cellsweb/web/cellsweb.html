@@ -7,18 +7,19 @@
     <link rel="stylesheet" href="cellsweb.css">
   </head>
   <body>
-    
+
     <div style="background: rgb(0,33,0); width:1300px; height:625px">
      <div  id="loginarea">
        <label>cells:// </label><input type="url" value="127.0.0.1:8080" id="url">
        <label>User: </label><input id="user" value="test">
        <label>Password</label><input value="test" type="password" id="password">
-       <button id="connect">Connect</button> 
+       <button id="connect">Connect</button>
      </div>
-     
+
      <br>
-     <br> 
-     
+     <br>
+
+     <div id="clientarea" hidden=true>
      <table>
      <tr>
       <td>
@@ -36,16 +37,28 @@
       </td>
       <td>
      <table>
-     <tr>
-     <td>
-       <textarea rows="31" id="greenCodeContext"> </textarea>
-     </td>
-     <td>
-       <textarea rows="31" id="greenCodeContextRegisters"></textarea>
-     </td>
-     </tr>
-     </table>
-   
+		    <tr>
+		    <td>
+		    	<table>
+		      <tr>
+		      	<td>
+		    		  <textarea rows="28" id="greenCodeContext"> </textarea>
+		    		</td>
+		    	</tr>
+		    	<tr>
+		    		<td>
+		    			<button id="startcell" style="width: 100%;"> Start </button>
+		    		</td>
+		    	</tr>
+		    	</table>
+		    </td>
+		    <td>
+		      <textarea rows="31" id="greenCodeContextRegisters"></textarea>
+		    </td>
+		    </tr>
+		 </table>
+     </div>
+
     <script type="application/dart" src="cellsweb.dart"></script>
     <script src="packages/browser/dart.js"></script>
   </body>

@@ -16,8 +16,9 @@ class WorldObjectFacade {
 
   bool isHold = false;
   bool isCell = false;
-  
+
   int id = 0;
+  int energy = 0;
 
   WorldObjectFacade.Empty() {
     utctimestamp = new DateTime.now().toUtc().millisecondsSinceEpoch;
@@ -52,6 +53,7 @@ class ClientCommEngine {
   Function onErrorChange;
   Function onUpdatedCache;
   Function onSelectionInfo;
+  Function onTotalEnergy;
 
   DsaKeyPair keyPair;
   String serverURL;
@@ -90,24 +92,23 @@ class ClientCommEngine {
     int i = 0;
     clientcache.clear();
     while(i < width * height)
-    { 
+    {
       clientcache.add(new WorldObjectFacade.Empty());
       i++;
     }
   }
-  
+
   retrieveWorldSize(){
     commandGetWorldSize((result) =>
         initCache(JSON.decode(result)["width"],JSON.decode(result)["height"]));
   }
-  
+
   retrieveInfoForObject(int x, int y) {
     Map jsonMap = new Map();
     jsonMap.putIfAbsent("command", () => "Selection");
     jsonMap.putIfAbsent("data", () => {
       "x": x, "y": y
     });
-    var json = JSON.encode(jsonMap);
     ws.send(JSON.encode(jsonMap));
   }
 
@@ -142,11 +143,10 @@ class ClientCommEngine {
         jsonMap.putIfAbsent("data", () => {
         });
         ws.send(JSON.encode(jsonMap));
-
   }
-  
+
   List<WorldObjectFacade> clientcache = new List<WorldObjectFacade>();
-  
+
   _dealWithWebSocketMsg(MessageEvent msg) {
     try {
       Map jsonMap = JSON.decode(msg.data);
@@ -171,7 +171,7 @@ class ClientCommEngine {
           case "viewArea":
             // clearCache();
             Map jsonMap = value;
-            jsonMap.forEach((k, v) { 
+            jsonMap.forEach((k, v) {
                 if(clientcache.length > (v["x"] + v["y"]*width)){
                   WorldObjectFacade toWorkOn = clientcache[v["x"] + (v["y"]*width)];
                   toWorkOn.id = v["object"]["state"];
@@ -179,10 +179,15 @@ class ClientCommEngine {
                   toWorkOn.utctimestamp = new DateTime.now().toUtc().millisecondsSinceEpoch;
                   toWorkOn.isHold = v["object"]["hold"] == 1 ? true : false;
                   toWorkOn.isCell = v["object"]["cell"] == 1;
+                  toWorkOn.energy = v["object"]["energy"];
             }
             });
             onUpdatedCache();
             break;
+
+          case "TotalEnergy":
+          	onTotalEnergy(value);
+          	break;
           case "error":
             onErrorChange(value);
             break;
@@ -206,7 +211,7 @@ class ClientCommEngine {
         jsonMap.putIfAbsent("utc", () => new DateTime.now().toUtc().millisecondsSinceEpoch);
         jsonMap.putIfAbsent("data", () => {
           "token": token
-        });      
+        });
       String msg = JSON.encode(jsonMap);
 
       msg = _sign(msg);
@@ -215,7 +220,7 @@ class ClientCommEngine {
         onErrorChange("Getting World Size failed");
       }
   }
-  
+
   commandSelectInfoAbout(int id, Function callback) {
     try {
       String command = "SelectInfoAbout";

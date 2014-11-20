@@ -1,110 +1,154 @@
 import 'dart:html';
+import 'dart:math';
+import 'dart:convert';
 import 'package:cellsserver/cellsProtocolClient.dart';
 
 ClientCommEngine commEngine;
 
 class Viewer {
-  ClientCommEngine commEngine;
+	ClientCommEngine commEngine;
 
-  int selectedX = 0;
-  int selectedY = 0;
-  
-  Viewer(this.commEngine) {
-    commEngine.width;
-    commEngine.height;
-  }
+	int selectedX = 0;
+	int selectedY = 0;
 
-  updateDisplayArea(DivElement displayArea) {
-    String text = "";
-    displayArea.children.clear();
-    TableElement table = new TableElement();
+	Viewer(this.commEngine) {
 
-    for (int y = 0; y < commEngine.height; y++) {
-      TableRowElement line = new TableRowElement();
-      line.id = "FieldLine";
-      for (int x = 0; x < commEngine.width; x++) {
-        TableCellElement cell = new TableCellElement();
-        cell.id = "FieldSurrounder";
-        ButtonElement bt = new ButtonElement();
-        bt.id = "Field";
-        if((x + (y * commEngine.width)) < commEngine.clientcache.length){
-         WorldObjectFacade r = commEngine.clientcache[x + (y * commEngine.width)];
-         if (r != null && !r.isTooOld()) {
-            bt.text = (r.isHold ? "~" : "") + r.state.toString();
-            bt.id = "Field${r.state}${r.isCell ? "" : "C"}";
-            double oldnessScalar = (1 - ((r.oldness() + 1) / 2000));
-            bt.style.background = "rgb(${((254) * oldnessScalar).round()},${((254) * oldnessScalar).round()},${((254)*oldnessScalar).round()})";         
-            if(selectedX == x && selectedY == y)
-            {
-              bt.style.background = "#FFFF00";
-            }
-            bt.style.color = "#000000";
-            bt.onClick.listen(
-                (e) => 
-                    commEngine.selectInfoAbout(x, y)
-            );
-          }
-        }
-        cell.children.add(bt);
-        line.children.add(cell);
-      }
-      table.children.add(line);
-    }
-    displayArea.children.add(table);
-  }
+	}
+
+
+	int width = 0;
+	int height = 0;
+	createButtons(DivElement displayArea) {
+		TableElement table = new TableElement();
+		if (width != commEngine.width || height != commEngine.height) {
+			width = commEngine.width;
+			height = commEngine.height;
+			displayArea.children.clear();
+			for (int y = 0; y < commEngine.height; y++) {
+				TableRowElement line = new TableRowElement();
+				line.id = "FieldLine";
+				for (int x = 0; x < commEngine.width; x++) {
+					TableCellElement cell = new TableCellElement();
+					bts.add(new ButtonElement());
+					ButtonElement bt = bts[x + (y * commEngine.width)];
+					bt.onClick.listen((e) => commEngine.selectInfoAbout(x, y));
+					cell.children.add(bt);
+					line.children.add(cell);
+				}
+				table.children.add(line);
+			}
+			displayArea.children.add(table);
+		}
+	}
+
+	List<ButtonElement> bts = new List<ButtonElement>();
+	updateDisplayArea(displayArea) {
+		String text = "";
+
+		createButtons(displayArea);
+		for (int y = 0; y < commEngine.height; y++) {
+			for (int x = 0; x < commEngine.width; x++) {
+				TableCellElement cell = new TableCellElement();
+				cell.id = "FieldSurrounder";
+				ButtonElement bt = bts[x + (y * commEngine.width)];
+				bt.id = "Field";
+				if ((x + (y * commEngine.width)) < commEngine.clientcache.length) {
+					WorldObjectFacade r = commEngine.clientcache[x + (y * commEngine.width)];
+					if (r != null && !r.isTooOld()) {
+						String selector = "";
+						if (selectedX == x && selectedY == y) {
+							selector = "~";
+						}
+						bt.text = selector + (r.energy > 0 ? (log(r.energy.toDouble() / log(10)).floor() + 1) : 0).toString();
+						bt.id = "Field${r.state}${r.isCell ? "C" : ""}";
+						double oldnessScalar = (1 - ((r.oldness() + 1) / 2000));
+					}
+				}
+			}
+		}
+
+	}
 }
 
 HideConnectionBar() {
-  querySelector("#loginarea").hidden = true;
+	querySelector("#loginarea").hidden = true;
+	querySelector("#clientarea").hidden = false;
 }
 
 InitClient(String url, String user, String password) {
-  HideConnectionBar();
+	HideConnectionBar();
 
-  ButtonElement demo = querySelector("#demo");
-  
-  DivElement displayArea = querySelector("#displayarea");
+	ButtonElement demo = querySelector("#demo");
 
-  DivElement errorbar = querySelector('#errorbar');
-  errorbar.text = "Logging in progress...";
+	DivElement displayArea = querySelector("#displayarea");
 
-  commEngine = new ClientCommEngine.fromUser(url, user, password);
+	DivElement errorbar = querySelector('#errorbar');
+	errorbar.text = "Logging in progress...";
 
-  demo.onClick.listen((e) =>commEngine.sendDemo());
-    
-  Viewer viewer = new Viewer(commEngine);
+	commEngine = new ClientCommEngine.fromUser(url, user, password);
 
-  commEngine.onErrorChange = (data) {
-    errorbar.text = data;
-  };
+	demo.onClick.listen((e) => commEngine.sendDemo());
 
-  commEngine.retrieveWorldSize();
-  
-  commEngine.commandWebSocketAuth((String response) {
-    int parsedTokken = int.parse(response, onError: (wrongInt) => 0);
-    if (parsedTokken != 0) commEngine.initWebSocket(parsedTokken);
-  }, ClientCommEngine.AdminMode);
+	Viewer viewer = new Viewer(commEngine);
 
-  TextAreaElement textarea = querySelector("#greenCodeContext");
-  TextAreaElement infoarea = querySelector("#infoareaText");
-  TextAreaElement textareaRegisters = querySelector("#greenCodeContextRegisters");
-  
-  commEngine.onSelectionInfo = (data) {
-      infoarea.text = "(${data["x"]},${data["y"]}): State: ${data["state"]} Energy ${data["energy"]}";
-      viewer.selectedX = data["x"];
-      viewer.selectedY = data["y"];
-  };
+	commEngine.onErrorChange = (data) {
+		errorbar.text = data;
+	};
 
-  commEngine.onUpdatedCache = () {
-    viewer.updateDisplayArea(displayArea);
-  };
+	commEngine.retrieveWorldSize();
+
+	commEngine.commandWebSocketAuth((String response) {
+		int parsedTokken = int.parse(response, onError: (wrongInt) => 0);
+		if (parsedTokken != 0) commEngine.initWebSocket(parsedTokken);
+	}, ClientCommEngine.AdminMode);
+
+	TextAreaElement textareaGreenCode = querySelector("#greenCodeContext");
+	TextAreaElement infoarea = querySelector("#infoareaText");
+	TextAreaElement textareaRegisters = querySelector("#greenCodeContextRegisters");
+
+	ButtonElement startcell = querySelector("#startcell");
+	startcell.onClick.listen((e) =>
+			commEngine.liveSelectedWebSocket(textareaGreenCode.value));
+
+
+	bool viewingCode = false;
+	commEngine.onSelectionInfo = (data) {
+		if (data.length > 0) {
+			infoarea.text = "(${data["x"]},${data["y"]}): State: ${data["state"]} Energy ${data["energy"]} ${data["id"] == null ? "" : "ID: ${data["id"]}"}";
+			viewer.selectedX = data["x"];
+			viewer.selectedY = data["y"];
+			if(data.containsKey("code")){
+				textareaGreenCode.value = data["code"];
+				viewingCode = true;
+			}
+			else
+			{
+				if(viewingCode){
+					textareaGreenCode.value = "";
+					viewingCode = false;
+				}
+			}
+			String registers = "";
+			if (data.containsKey("registers")) (JSON.decode(data["registers"]) as Map).forEach((key, value) => registers += "$key: $value\n");
+			textareaRegisters.value = registers;
+		}
+	};
+
+
+	commEngine.onUpdatedCache = () {
+		viewer.updateDisplayArea(displayArea);
+	};
+
+	commEngine.onTotalEnergy = (data) {
+		errorbar.text = "TotalEnergy: ${data}";
+	};
 }
 
 
 void main() {
-  InputElement url = querySelector("#url");
-  InputElement user = querySelector("#user");
-  InputElement password = querySelector("#password");
+	InputElement url = querySelector("#url");
+	InputElement user = querySelector("#user");
+	InputElement password = querySelector("#password");
 
-  ButtonElement connect = querySelector("#connect")..onClick.listen((e) => InitClient(url.value, user.value, password.value));
-  }
+	ButtonElement connect = querySelector("#connect")..onClick.listen((e) => InitClient(url.value, user.value, password.value));
+}
