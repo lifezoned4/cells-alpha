@@ -27,7 +27,6 @@ class State {
 
 	int _value;
 
-
 	String toString() {
 		return _value.toString();
 	}
@@ -83,6 +82,8 @@ class Energy {
 		energyCount -= dec;
 		return dec;
 	}
+
+	toString() =>  "{energyCount. $energyCount}";
 }
 
 class Cell {
@@ -93,9 +94,15 @@ class Cell {
 
 	GreenCodeContext greenCodeContext = null;
 
+	getInternEnergyCountAt(WorldObject o){
+		return o.getEnergyCount() - consumed;
+	}
+
 	Cell.withCode(this.id, String codeString) {
 		greenCodeContext = new GreenCodeContext.byNames(codeString);
 	}
+
+	toString() => "{id: $id, consumed: $consumed, isHold: $isHold, nextMove: ${greenCodeContext.nextMove()}";
 }
 
 class WorldObject {
@@ -122,6 +129,8 @@ class WorldObject {
 		return energy != null ? energy.energyCount : 0;
 	}
 	Cell cell = null;
+
+	toString() => "{x: $x, y: $y, state: ${_state.toString()}, energy: ${getEnergyCount()}, cell = $cell";
 }
 
 class Neighbourhood {
@@ -129,10 +138,45 @@ class Neighbourhood {
 	WorldObject e;
 	WorldObject s;
 	WorldObject w;
+
+	WorldObject getObjectAtDirection(Direction dir){
+		if(dir == Direction.N)
+			return n;
+		if(dir == Direction.E)
+			return e;
+		if(dir == Direction.S)
+			return s;
+		if(dir == Direction.W)
+			return w;
+		return new WorldObject(-1, -1, State.Unknown);
+	}
+
+	static Neighbourhood getNeightbourhood(int x, int y, List<WorldObject> objects, int width, int height) {
+		Neighbourhood nei = new Neighbourhood();
+		nei.n = World.getObjectAt(x, y - 1, objects, width, height);
+		nei.e = World.getObjectAt(x + 1, y, objects, width, height);
+		nei.s = World.getObjectAt(x, y + 1, objects, width, height);
+		nei.w = World.getObjectAt(x - 1, y, objects, width, height);
+		return nei;
+	}
+
+	static WorldObject getObjectAtDirectionFrom(Direction dir, WorldObject w, List<WorldObject> objects, int width, int height)
+	{
+		if(dir == Direction.NONE)
+			return w;
+		Neighbourhood nei = getNeightbourhood(w.x,w.y, objects, width, height);
+		WorldObject o =  nei.getObjectAtDirection(dir);
+		if(o._state == State.Unknown)
+			throw new Exception("BAD");
+		return o;
+	}
 }
 
 class World {
 	int delay = 200;
+
+
+	static bool persitActive = false;
 	static int persistAfterTicks = 100;
 	Timer timer;
 	int ticksSinceStart = 0;
@@ -200,7 +244,9 @@ class World {
 	tick() {
 		ticksSinceStart++;
 
-		if (ticksSinceStart % persistAfterTicks == 0) FilePersistContext.wirteSave(this);
+		if (ticksSinceStart % persistAfterTicks == 0)
+			if(persitActive)
+				FilePersistContext.wirteSave(this);
 
 		int i = 0;
 		// randomStateAdd();
@@ -214,9 +260,12 @@ class World {
 				context.tick();
 
 				w.cell.consumed+=(1 + (log(w.cell.greenCodeContext.code.length + 1)/log(10)).floor());
-
 			}
 			totalEnergy += w.getEnergyCount();
+
+		});
+
+		objects.forEach((w){
 			cellularNextOn(w, future);
 			i++;
 		});
@@ -232,6 +281,12 @@ class World {
 		users.keys.forEach((user) => user.tick());
 
 		timer = new Timer(new Duration(milliseconds: delay), tick);
+	}
+
+	static void putObjectAt(int x, int y, List<WorldObject> objects, int width, int height, WorldObject o) {
+		if ((x < 0) || (y < 0) || (x >= width) || (y >= height))
+    			throw new Exception("putting object outside of space (width: $width, height: $height) with (x:$x, y:$y)");
+		objects.replaceRange(x +(width*y), x +(width*y) + 1, [o]);
 	}
 
 	static WorldObject getObjectAt(int x, int y, List<WorldObject> objects, int width, int height) {
@@ -252,19 +307,10 @@ class World {
 		return r;
 	}
 
-	Neighbourhood getNeightbourhood(int x, int y) {
-		Neighbourhood nei = new Neighbourhood();
-		nei.n = getObjectAt(x, y - 1, objects, width, height);
-		nei.e = getObjectAt(x + 1, y, objects, width, height);
-		nei.s = getObjectAt(x, y + 1, objects, width, height);
-		nei.w = getObjectAt(x - 1, y, objects, width, height);
-		return nei;
-	}
-
 	cellularNextOn(WorldObject w, List<WorldObject> future) {
 		int x = w.x;
 		int y = w.y;
-		Neighbourhood nei = getNeightbourhood(x, y);
+		Neighbourhood nei = Neighbourhood.getNeightbourhood(x, y, objects, width, height);
 
 		WorldObject futureObject = getObjectAt(x, y, future, width, height);
 
@@ -273,7 +319,7 @@ class World {
 
 				if(dir != Direction.NONE){
 					List<WorldObject> l = [nei.n, nei.e, nei.s, nei.w];
-					l = l.where((lw) =>	(lw.x == (x + dir.x )) && (lw.y == (y + dir.y))).toList();
+					l = l.where((lw) => lw == Neighbourhood.getObjectAtDirectionFrom(dir, w, objects, width, height)).toList();
 					l = l.where((lw) => lw.cell == null && lw._state == State.Void).toList();
 
 					if(l.length > 0){
@@ -288,14 +334,13 @@ class World {
 			List<WorldObject> l = [nei.n, nei.e, nei.s, nei.w];
 
 			l = l.where((lw) => lw.cell != null).toList();
-			l = l.where((lw) {
-					Direction dir = lw.cell.greenCodeContext.nextMove();
-					if(dir != Direction.NONE){
-							_logger.info("DIRECTION: ${x} = ${(lw.x + dir.x)}, ${y} = ${(lw.y + dir.y)}");
-							return (x == (lw.x + dir.x)) && (y == (lw.y + dir.y));
-					} return false;
 
-					}).toList();
+			l = l.where((lw) => lw.cell.greenCodeContext.nextMove() != Direction.NONE).toList();
+
+			l = l.where((lw){
+						return Neighbourhood.getObjectAtDirectionFrom(lw.cell.greenCodeContext.nextMove(), lw, objects, width, height) == w;
+					}
+			).toList();
 
 			if (l.length == 1) {
 					futureObject.cell = l.first.cell;
@@ -315,24 +360,62 @@ class World {
 		  			futureObject._state = w._state;
 		  			futureObject.cell = w.cell;
 					}
-	  		futureObject.energy.energyCount = w.getEnergyCount();
+		  		futureObject.energy.energyCount = w.getEnergyCount();
+				}
+
+		}
+
+		{
+  			List<WorldObject> l = [nei.n, nei.e, nei.s, nei.w];
+				l = l.where((lw) => lw.cell != null).toList();
+				l = l.where((lw) => lw.cell.greenCodeContext.nextInject() != Direction.NONE).toList();
+
+				if(l.length > 0){
+					if(w.cell != null){
+						l.forEach((lw){
+								futureObject.cell.greenCodeContext.insertCode(lw.cell.greenCodeContext.codeRangeBetweenHeads());
+								lw.cell.greenCodeContext.removeCodeRangeBetweenHeads();
+						});
+					} else if(w.cell == null && w.getEnergyCount() <= 0)
+					{
+						futureObject.cell = new Cell.withCode(10, "");
+						l.forEach((lw){
+							futureObject.cell.greenCodeContext.insertCode(lw.cell.greenCodeContext.codeRangeBetweenHeads());
+            								lw.cell.greenCodeContext.removeCodeRangeBetweenHeads();
+            						});
+					}
+					else
+					{
+						futureObject.energy.energyCount = w.getEnergyCount();
+						futureObject.cell = new Cell.withCode(10, "");
+            						l.forEach((lw){
+            							futureObject.cell.greenCodeContext.insertCode(lw.cell.greenCodeContext.codeRangeBetweenHeads());
+                        								lw.cell.greenCodeContext.removeCodeRangeBetweenHeads();
+                        						});
+					}
 				}
 		}
 
-		// TODO: INJECT
 
-
+		if(futureObject._state == State.Unknown)
+		{
+			futureObject._state = w._state;
+			futureObject.energy.energyCount = w.energy.energyCount;
+		}
 
 		{
 			List<WorldObject> l = [nei.n, nei.e, nei.s, nei.w];
 
-			futureObject.energy.energyCount = l.fold(w.getEnergyCount(), (i, lw) => lw.getEnergyCount() < w.getEnergyCount() && lw.getStateOut() == w.getStateIn() ? i + 1 : i);
-
+			futureObject.energy.energyCount = l.fold(futureObject.getEnergyCount(), (i, lw) => lw.getEnergyCount() < w.getEnergyCount() && lw.getStateOut() == w.getStateIn() ? i + 1 : i);
 			futureObject.energy.energyCount = l.fold(futureObject.getEnergyCount(), (i, lw) => lw.getEnergyCount() > w.getEnergyCount() && lw.getStateIn() == w.getStateOut() ? i - 1 : i);
-		}
 
-		if(futureObject._state == State.Unknown)
-			futureObject._state = w._state;
+			futureObject.energy.energyCount = l.fold(futureObject.getEnergyCount(),  (i, lw){
+				if(w.cell == 0 && w.getEnergyCount() <= 0 && lw.cell!= 0)
+					if(lw.cell.greenCodeContext.nextInject() != Direction.NONE)
+						return i + (lw.getEnergyCount()/2).floor();
+				return i;
+			});
+		}
 
 		if(futureObject.energy.energyCount <= 0){
 			futureObject._state = State.Void;
@@ -340,8 +423,9 @@ class World {
 
 		if(futureObject._state == State.Void)
 			futureObject.energy.energyCount = 0;
+	}
 
-
-		// future.replaceRange(x + (width * y), x + (width * y) + 1, [futureObject]);
-		}
+	toString(){
+		return "[$ticksSinceStart] " +  objects.map((w) => w._state.toString()).join(";");
+	}
 }

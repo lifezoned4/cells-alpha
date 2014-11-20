@@ -46,6 +46,7 @@ class ServerCommEngine {
       return;
     }
 
+    World.persitActive = true;
     world.start();
   }
 
