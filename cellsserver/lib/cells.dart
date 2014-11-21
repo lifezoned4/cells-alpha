@@ -279,8 +279,6 @@ class World {
 		// randomStateAdd();
 		List<WorldObject> future = newState(width, height, State.Unknown);
 
-		totalEnergy = 0;
-		totalCellCount = 0;
 		objects.forEach((w) {
 			if (w.cell != null) if (!w.cell.isHold) {
 				var context = w.cell.greenCodeContext;
@@ -288,11 +286,10 @@ class World {
 				context.tick();
 
 				w.cell.consumed+=(CellsConfiguration.baseConsume + (log(w.cell.greenCodeContext.code.length + CellsConfiguration.baseConsume)/log(10)).floor());
-
 			}
-			totalEnergy += w.getEnergyCount();
 
 		});
+
 
 		objects.forEach((w){
 			cellularNextOn(w, future);
@@ -301,9 +298,20 @@ class World {
 
 		objects = future;
 
+		totalEnergy = 0;
+		objects.forEach((w){
+			totalEnergy += w.getEnergyCount();
+		});
+
+		totalCellCount = 0;
 		listOfCells = objects.where((w) => w.cell != null).map((w) => w.cell).toList();
 		totalCellCount = listOfCells.length;
 
+		if(diffrenziator > 0){
+
+			_logger.info("diffy: ${diffrenziator -lastDiffy}");
+			lastDiffy = diffrenziator;
+    }
 
 		users.keys.forEach((u)  {
 			if(u.selected != null)
@@ -339,12 +347,16 @@ class World {
 		return r;
 	}
 
+	double lastDiffy = 0.0;
+	double diffrenziator = 0.0;
 	cellularNextOn(WorldObject w, List<WorldObject> future) {
 		int x = w.x;
 		int y = w.y;
 		Neighbourhood nei = Neighbourhood.getNeightbourhood(x, y, objects, width, height);
 
 		WorldObject futureObject = getObjectAt(x, y, future, width, height);
+
+		futureObject.energy.energyCount = w.getEnergyCount();
 
 		if (w.cell != null) {
 				Direction dir = w.cell.greenCodeContext.nextMove();
@@ -355,14 +367,15 @@ class World {
 					l = l.where((lw) => lw.cell == null && lw.state == State.Void).toList();
 
 					if(l.length > 0){
+						assert(w.cell != null && w.state != State.Void);
 						futureObject.cell = null;
 						futureObject.energy.energyCount = 0;
+						// diffrenziator -= w.getEnergyCount();
 						futureObject.state = State.Void;
 					}
 				}
 		}
-
-		if(w.cell == null && w.getEnergyCount() <= 0){
+		else if(w.cell == null && futureObject.getEnergyCount() <= 0){
 			List<WorldObject> l = [nei.n, nei.e, nei.s, nei.w];
 
 			l = l.where((lw) => lw.cell != null).toList();
@@ -374,10 +387,13 @@ class World {
 					}
 			).toList();
 
+			assert(l.length <= 1);
+
 			if (l.length == 1) {
 					futureObject.cell = l.first.cell;
 					futureObject.state = l.first.state;
 					futureObject.energy.energyCount = l.first.energy.energyCount;
+					// diffrenziator += l.first.energy.energyCount;
 				}
 		}
 
@@ -386,77 +402,130 @@ class World {
 		  		if(w.cell.consumed > w.getEnergyCount()){
 						futureObject.state = w.getStateOut();
 						futureObject.cell = null;
-
 		  		}
 		  		else
 		  		{
 		  			futureObject.state = w.state;
 		  			futureObject.cell = w.cell;
 					}
-		  		futureObject.energy.energyCount = w.getEnergyCount();
+		  //		if(futureObject.energy.energyCount != 0 && futureObject.state !=  State.Void)
+		  //			futureObject.energy.energyCount = w.getEnergyCount();
 				}
 		}
 
 		{
   			List<WorldObject> l = [nei.n, nei.e, nei.s, nei.w];
+
 				l = l.where((lw) => lw.cell != null).toList();
 				l = l.where((lw) => lw.cell.greenCodeContext.nextInject() != Direction.NONE).toList();
 				l = l.where((lw) => Neighbourhood.getObjectAtDirectionFrom(lw.cell.greenCodeContext.nextInject(), lw, objects, width, height) == w).toList();
 
 				if(l.length > 0){
-					if(w.cell != null){
+					assert(l.length == 1);
+					if(w.cell != null && w.cell.greenCodeContext.nextMove() == Direction.NONE){
+						assert(w.state != State.Void);
 						futureObject.cell = w.cell;
+						futureObject.state = w.state;
+						futureObject.energy.energyCount = w.getEnergyCount();
 						l.forEach((lw){
 								futureObject.cell.greenCodeContext.insertCode(lw.cell.greenCodeContext.codeRangeBetweenHeads());
 								lw.cell.greenCodeContext.removeCodeRangeBetweenHeads();
 						});
 					} else if(w.cell == null && w.state == State.Void)
 					{
+						assert(l.length == 1 && l.first.state != State.Void);
 						futureObject.state = l.first.state;
-						futureObject.energy.energyCount = l.fold(0, (i, lw) => i + (lw.getEnergyCount()/2).floor());
+						var sum = l.fold(0, (i, lw) => i + (lw.getEnergyCount()/2).floor());
+						double sumFloorless = l.fold(0, (i, lw) => i + (lw.getEnergyCount()/2));
+						futureObject.energy.energyCount = sum;
+						// diffrenziator += sum;
+						if(sum != 0 && sum - sumFloorless != 0){
+							// diffrenziator += sum - sumFloorless;
+							// _logger.info("Getting sum: ${sum - sumFloorless}");
+						}
 						futureObject.cell = new Cell.withCode("");
 						l.forEach((lw){
 							futureObject.cell.greenCodeContext.insertCode(lw.cell.greenCodeContext.codeRangeBetweenHeads());
             								lw.cell.greenCodeContext.removeCodeRangeBetweenHeads();
             						});
 					}
-					else
+					else if(w.state == l.first.state)
 					{
-						if(w.state == l.first.state)
-						{
+									assert(w.state != State.Void);
 									futureObject.state = l.first.state;
 									futureObject.energy.energyCount = w.getEnergyCount();
+									assert(futureObject.energy.energyCount >= 0);
 									futureObject.cell = new Cell.withCode("");
             						l.forEach((lw){
             							futureObject.cell.greenCodeContext.insertCode(lw.cell.greenCodeContext.codeRangeBetweenHeads());
                         								lw.cell.greenCodeContext.removeCodeRangeBetweenHeads();
                         						});
-						}
 					}
 				}
-		}
-
-
-		if(futureObject.state == State.Unknown)
-		{
-			futureObject.state = w.state;
-			futureObject.cell = w.cell;
-			futureObject.energy.energyCount = w.energy.energyCount;
 		}
 
 		{
 			List<WorldObject> l = [nei.n, nei.e, nei.s, nei.w];
 
-			futureObject.energy.energyCount = l.fold(futureObject.getEnergyCount(), (i, lw) => lw.getEnergyCount() < w.getEnergyCount() && lw.getStateOut() == w.getStateIn() ? i + CellsConfiguration.Smelting : i);
-			futureObject.energy.energyCount = l.fold(futureObject.getEnergyCount(), (i, lw) => lw.getEnergyCount() > w.getEnergyCount() && lw.getStateIn() == w.getStateOut() ? i - CellsConfiguration.Smelting : i);
+			int rest = l.fold(futureObject.getEnergyCount(), (i, lw) => lw.getEnergyCount() < w.getEnergyCount() && lw.getStateOut() == w.getStateIn() ?
+  						(lw.getEnergyCount() < CellsConfiguration.Smelting ? i + lw.getEnergyCount() : i + CellsConfiguration.Smelting) : i);
+
+			diffrenziator += rest - futureObject.getEnergyCount();
+			futureObject.energy.energyCount = rest;
+
+			assert(futureObject.energy.energyCount >= 0);
+
+			rest = l.fold(futureObject.getEnergyCount(), (i, lw) => lw.getEnergyCount() > w.getEnergyCount() && lw.getStateIn() == w.getStateOut() ?
+  					(0 >= (i - CellsConfiguration.Smelting) ? 0 : i - CellsConfiguration.Smelting) : i);
+
+			diffrenziator += futureObject.getEnergyCount() - rest;
+			futureObject.energy.energyCount = rest;
+
+			if(w.cell != null)
+				if(w.cell.greenCodeContext.nextMove() != Direction.NONE &&
+				(l.where((lw) => lw == Neighbourhood.getObjectAtDirectionFrom(w.cell.greenCodeContext.nextMove(), w, objects, width, height))
+					.fold(true, (b, lw) => b && ![State.VoidEnd, State.Red, State.Blue, State.Green].contains(lw.state))))
+					futureObject.energy.energyCount = 0;
+
+			if(futureObject.getEnergyCount() < 0)
+				assert(futureObject.energy.energyCount >= 0);
+
+			if(w.cell != null && w.cell.greenCodeContext.nextInject() != Direction.NONE){
+
+					var diff = l.where((lw) => lw.state != w.state && lw.state == State.Void && lw.cell == null)
+																				.where((lw) => lw == Neighbourhood.getObjectAtDirectionFrom(w.cell.greenCodeContext.nextInject(), w, objects, width, height))
+																				.fold(0, (i, lw) => (w.getEnergyCount()/2).floor());
+				futureObject.energy.energyCount -= diff;
+				// diffrenziator -= diff;
+				if(diff != 0 && (w.getEnergyCount()/2) - diff != 0){
+				//	diffrenziator+= (w.getEnergyCount()/2) - diff;
+				//	_logger.info("Lossing diff: ${(w.getEnergyCount()/2) - diff}");
+				}
+				if(futureObject.energy.energyCount <= 0)
+				{
+					_logger.info("NEGATIVE ENERGY WARNING!!");
+				}
+			}
 		}
 
 		if(futureObject.energy.energyCount <= 0){
 			futureObject.state = State.Void;
+			if(futureObject.energy.energyCount < 0)
+				_logger.info("NEGATIVE ENERGY WARNING!!");
     	}
 
-		if(futureObject.state == State.Void)
+		if(futureObject.state == State.Void){
+			if(futureObject.energy.energyCount > 0)
+      				_logger.info("POSTIV VOID ENERGY WARNING!!");
 			futureObject.energy.energyCount = 0;
+		}
+
+		if([State.Red, State.Blue, State.Green].contains(w.state) && futureObject.state == State.Unknown)
+		{
+			futureObject.state = w.state;
+			futureObject.cell = w.cell;
+		  futureObject.energy.energyCount = w.energy.energyCount;
+		}
 	}
 
 	toString(){
