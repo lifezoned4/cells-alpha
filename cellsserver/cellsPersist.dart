@@ -15,6 +15,8 @@ class FilePersistContext {
   String path;
 
   static World loadWorld(){
+
+  	_logger.info("START LOADING....");
     World newWorld = new World(ServerCommEngine.width, ServerCommEngine.height);
     File persistedWorld = new File("saves/world");
     persistedWorld.openRead();
@@ -26,8 +28,12 @@ class FilePersistContext {
         o.cell = new Cell.withCode(jsonMap["greenCode"]);
       o.energy.energyCount = jsonMap["energy"];
       assert(i == o.y*ServerCommEngine.width + o.x);
+      World.putObjectAt(o.x, o.y, newWorld.objects, newWorld.width, newWorld.height, o);
       i++;
+    	_logger.info("LOADING:($i/${ServerCommEngine.width*ServerCommEngine.height})");
+
     });
+  	_logger.info("LOADING FINISHED!)");
     return newWorld;
   }
 

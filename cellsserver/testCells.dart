@@ -195,22 +195,22 @@ main() {
 
 
 		WorldObject o = new WorldObject(0, 4, State.Green);
-    		o.energy.energyCount = 100;
-    		o.cell = new Cell.withCode("LOAD #1; STORE #8;");
+		o.energy.energyCount = 100;
+		o.cell = new Cell.withCode("LOAD #1; STORE #8;");
 
-   	World.putObjectAt(o.x, o.y, world.objects, world.width, world.height, o);
+		World.putObjectAt(o.x, o.y, world.objects, world.width, world.height, o);
 
-   	WorldObject energy = new WorldObject(0, 2, State.Green);
-   	energy.energy.energyCount = 1771;
+		WorldObject energy = new WorldObject(0, 2, State.Green);
+		energy.energy.energyCount = 1771;
 
-    World.putObjectAt(energy.x, energy.y, world.objects, world.width, world.height, energy);
+		World.putObjectAt(energy.x, energy.y, world.objects, world.width, world.height, energy);
 
-  	int i = 0;
-  		while (i < 20) {
-  			i++;
-  			world.tick();
-  			expect(world.totalCellCount, 1);
-  		}
+		int i = 0;
+		while (i < 20) {
+			i++;
+			world.tick();
+			expect(world.totalCellCount, 1);
+		}
 	});
 
 	test("CellInjectIntoVoid", () {
@@ -316,5 +316,22 @@ main() {
 		expect(o.cell.greenCodeContext.code.length, 2);
 		WorldObject upO = World.getObjectAt(1, 0, world.objects, world.width, world.height);
 		expect(upO.cell.greenCodeContext.code.length, 7);
+	});
+
+	test("ErrorsInAssembler", () {
+		World world = new World(3, 3);
+  	expect(9, world.objects.length);
+
+  	WorldObject cellO = new WorldObject(1, 0, State.Green);
+  		cellO.energy.energyCount = 150;
+  		cellO.cell = new Cell.withCode("LOAD #1; STOR3E #2; LOAD #1; ADD #2; STORE #8;");
+
+  		expect(cellO.cell.greenCodeContext.code.length, 0);
+
+  		World.putObjectAt(cellO.x, cellO.y, world.objects, world.width, world.height, cellO);
+
+  		world.tick();
+  		expect(cellO.cell.greenCodeContext.registers[GreenCodeContext.RegEnergyOWN], 150);
+  		expect(cellO.cell.greenCodeContext.registers[GreenCodeContext.RegIP], 0);
 	});
 }

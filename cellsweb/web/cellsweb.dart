@@ -59,7 +59,7 @@ class Viewer {
 						if (selectedX == x && selectedY == y) {
 							selector = "~";
 						}
-						bt.text = selector + (r.energy > 0 ? (log(r.energy.toDouble() / log(10)).floor() + 1) : 0).toString();
+						bt.text = selector + (r.energy > 0 ? (log(r.energy.toDouble() / log(/*baseEnergy*/ 500)).floor() + 1) : 0).toString();
 						bt.id = "Field${r.state}${r.isCell ? "C" : ""}";
 						double oldnessScalar = (1 - ((r.oldness() + 1) / 2000));
 					}

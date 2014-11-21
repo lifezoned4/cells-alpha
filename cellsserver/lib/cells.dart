@@ -16,6 +16,7 @@ class CellsConfiguration {
 	static const int baseEnergy = Smelting * 100;
 	static const int Smelting = 5;
 	static const int baseConsume = 2;
+	static const int probMutation = 10000; // p = 1 / probMuation
 }
 
 
@@ -189,7 +190,7 @@ class Neighbourhood {
 }
 
 class World {
-	int delay = 200;
+	int delay = 20;
 
 	static List<World> worlds = new List<World>();
 
@@ -224,7 +225,7 @@ class World {
 			List<State> selectFrom = State.allStates.where((s) => s != State.Void && s != State.VoidEnd).toList();
 			State state = selectFrom.elementAt(rnd.nextInt(selectFrom.length));
 			WorldObject newObject = new WorldObject(x, y, state);
-			newObject.energy.energyCount = rnd.nextInt(200);
+			newObject.energy.energyCount = rnd.nextInt(CellsConfiguration.baseEnergy);
 			newObject.cell = new Cell.withCode("");
 			newObject.cell.greenCodeContext = new GreenCodeContext.byRandom(30);
 			objects.replaceRange(x + y * width, (x + y * width) + 1, [newObject]);
@@ -399,6 +400,7 @@ class World {
 
 				if(l.length > 0){
 					if(w.cell != null){
+						futureObject.cell = w.cell;
 						l.forEach((lw){
 								futureObject.cell.greenCodeContext.insertCode(lw.cell.greenCodeContext.codeRangeBetweenHeads());
 								lw.cell.greenCodeContext.removeCodeRangeBetweenHeads();

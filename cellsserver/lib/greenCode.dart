@@ -115,6 +115,7 @@ class GreenCodeContext {
 	preTick(World world, WorldObject w, int x, int y) {
 		registers[RegClock] += 1;
 		registers[RegEatingCount] = 0;
+		registers[RegCodeLen] = code.length;
 		registers[RegInject] = 0;
 		registers[RegMove] = 0;
 		registers[RegStateOWN] = w.getStateIntern().toValue();
@@ -135,13 +136,11 @@ class GreenCodeContext {
 	}
 
 	tick() {
-		if (!assemblerError) {
 			int i = OperationsPerCycle;
 			while (i > 0) {
 				operation();
 				i--;
 			}
-		}
 	}
 
 	String codeToStringNames() {
@@ -203,7 +202,11 @@ class GreenCodeContext {
 				assemblerError = true;
 			}
 		});
-		if (assemblerError) _logger.warning("Could not start Cell becouse of Errors!: $codeString");
+		if (assemblerError)
+		{
+			code.clear();
+			_logger.warning("Could not start Cell becouse of Errors!: $codeString");
+		}
 	}
 
 	void createEmptyRegisters() {
@@ -464,7 +467,7 @@ class GreenCodeCopy extends GreenCode {
 		List<GreenCode> list = context.codeRangeBetweenHeads();
 		if (list.length == 0) return;
 		var rnd = new Random();
-		if (rnd.nextInt(10000) < 1) {
+		if (rnd.nextInt(CellsConfiguration.probMutation) < 1) {
 			int pos = rnd.nextInt(list.length);
 			list.replaceRange(pos, pos, [GreenCode.getRandomCode(rnd.nextInt(GreenCodeContext.MaxNumber))]);
 		}
