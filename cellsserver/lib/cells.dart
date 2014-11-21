@@ -148,13 +148,17 @@ class WorldObject {
 	}
 
 	setFrom(WorldObject wo) {
+		diff = wo.diff;
 		setStateFrom(wo);
 		setEnergyFrom(wo);
 		setCellFrom(wo);
 	}
 
 	setStateFrom(WorldObject wo) => state = wo.state;
-	setEnergyFrom(WorldObject wo) => setEnergyCount(wo.getEnergyCount());
+	setEnergyFrom(WorldObject wo){
+					setEnergyCount(wo.getEnergyCount());
+					diff = wo.diff;
+					}
 	setCellFrom(WorldObject wo) => cell = wo.cell;
 
 	Energy _energy = new Energy(0);
@@ -165,8 +169,17 @@ class WorldObject {
 
 	double diff = 0.0;
 	setEnergyCount(int value){
-		diff += (_energy.energyCount - value);
+	/*	if(_energy.energyCount != 0){
+			diff += _energy.energyCount - value;
+			if(_energy.energyCount - value > 0)
+				_logger.info("HIGHER: $diff");
+			else if(_energy.energyCount - value < 0)
+				_logger.info("LOWER: $diff");
+		} */
 		_energy.energyCount = value;
+
+		// if(diff != 0)
+		// _logger.info("DIFF IN WO: $diff");
 	}
 	Cell cell = null;
 
@@ -309,10 +322,11 @@ class World {
 			WorldObject w = new WorldObject(_w.x, _w.y, _w.state);
 			w.setCellFrom(_w);
 			w.setEnergyFrom(_w);
+			w.diff = _w.diff;
 			WorldObject fo = w.cellularNext(this, _w, cellularMoveCellToField)
-					.cellularNext(this, _w, cellularKillCells)
-										.cellularNext(this, _w, cellularEnergyManagment)
-					.cellularNext(this, _w, cellularCellInjection);
+												.cellularNext(this, _w, cellularKillCells)
+												.cellularNext(this, _w, cellularEnergyManagment)
+												.cellularNext(this, _w, cellularCellInjection);
 
 			putObjectAt(fo.x, fo.y, future, width, height, fo);
 		});

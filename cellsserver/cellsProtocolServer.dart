@@ -171,7 +171,7 @@ class RestfulSelectInfoAbout extends RestfulCommand {
       return "Error on this id: $id!";
     } else {
       WorldObject object = iterator.first;
-      Map returner = {"id": object.cell.id, "energy": object.energy.energyCount,
+      Map returner = {"id": object.cell.id, "energy": object.getEnergyCount(),
         "x": object.x,
         "y": object.y,
       };

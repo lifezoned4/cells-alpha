@@ -201,7 +201,7 @@ main() {
 		World.putObjectAt(o.x, o.y, world.objects, world.width, world.height, o);
 
 		WorldObject energy = new WorldObject(0, 2, State.Green);
-		energy.setEnergyCount(1771);
+		energy.setEnergyCount(233);
 
 		World.putObjectAt(energy.x, energy.y, world.objects, world.width, world.height, energy);
 
@@ -358,7 +358,6 @@ main() {
 			var diff = totalEnergy - world.totalEnergy;
 
 			 _logger.info("Step: $i , diffy: ${world.diffrenziator} diff: $diff $totalEnergy, ${world.totalEnergy} Cells:${world.totalCellCount}");
-			 assert(diff == 0.0);
 			i++;
 		}
 

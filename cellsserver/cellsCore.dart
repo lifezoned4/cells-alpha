@@ -49,15 +49,7 @@ class User {
           }
         break;
         case "insertEnergy":
-          State state = State.Void;
-          int v = int.parse(jsonMap["data"]["state"]);
-          if(State.allStates.where((s) => s == v).length > 0)
-            state = new State(v);
-          WorldObject toPlaceOn = World.getObjectAt(userSubcription.x, userSubcription.y, userSubcription.world.objects, userSubcription.world.width, userSubcription.world.height);
-          int dec = 0;
-          if(toPlaceOn.getStateIntern() == State.Void || state == toPlaceOn.getStateIntern()) {
-            userSubcription.user.energy.incEnergyBy(toPlaceOn.energy.incEnergyBy(userSubcription.user.energy.decEnergyBy(1)));
-          }
+
         break;
         case "putSelection":
 
@@ -73,7 +65,7 @@ class User {
 					}
         break;
         case "pushSelectionEnergyToUser":
-          selected.energy.incEnergyBy(userSubcription.user.energy.incEnergyBy(selected.energy.decEnergyBy(int.parse(jsonMap["data"]["count"]))));
+
         break;
 
         case "demo":

@@ -30,7 +30,7 @@ class FilePersistContext {
       	if(jsonMap["greenCode"] is List)
       		o.cell = new Cell.withList(jsonMap["greenCode"]);
       }
-      o.energy.energyCount = jsonMap["energy"];
+      o.setEnergyCount(jsonMap["energy"]);
       assert(i == o.y*ServerCommEngine.width + o.x);
       World.putObjectAt(o.x, o.y, newWorld.objects, newWorld.width, newWorld.height, o);
       i++;
@@ -47,7 +47,7 @@ class FilePersistContext {
     String totalFile = "";
     world.objects.forEach((o){
        Map<String, dynamic> jsonMap = {"x": o.x, "y": o.y,
-                      "energy": o.energy.energyCount,
+                      "energy": o.getEnergyCount(),
                       "state": o.getStateIntern().toValue(),
                       "greenCode": o.cell != null ? o.cell.greenCodeContext.code.map((cc) => cc.toString()).toList() : ""};
        totalFile += JSON.encode(jsonMap) + '\n';
