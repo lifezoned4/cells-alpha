@@ -271,6 +271,8 @@ main() {
 
 		o = World.getObjectAt(1, 1, world.objects, world.width, world.height);
 
+
+		expect(world.totalEnergy, 300);
 		expect(o.getEnergyCount(), 100);
 		expect(o.cell != null, true);
 		expect(o.cell.greenCodeContext.code.length, 2);
@@ -336,7 +338,7 @@ main() {
 	});
 
 
-	test("TotalEnergyConstant", (){
+	/* test("TotalEnergyConstant", (){
 		World world = new World(500, 500);
 		int i = 0;
 		while(i < 500)
@@ -360,5 +362,5 @@ main() {
 			i++;
 		}
 
-	});
+	});*/
 }
