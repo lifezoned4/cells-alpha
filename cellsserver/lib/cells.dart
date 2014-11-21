@@ -12,6 +12,13 @@ import "package:logging/logging.dart";
 
 final _logger = new Logger("cells");
 
+class CellsConfiguration {
+	static const int baseEnergy = Smelting * 100;
+	static const int Smelting = 5;
+	static const int baseConsume = 2;
+}
+
+
 class State {
 
 	static State Red = new State(1);
@@ -56,8 +63,7 @@ class State {
 }
 
 class Energy {
-	static int baseEnergy = 10;
-	static int maxEnergyInObject = baseEnergy * 10;
+	static const int maxEnergyInObject = CellsConfiguration.baseEnergy * 100;
 	int energyCount;
 
 	Energy(this.energyCount);
@@ -119,18 +125,18 @@ class WorldObject {
 	int x;
 	int y;
 
-	WorldObject(this.x, this.y, this._state);
+	WorldObject(this.x, this.y, this.state);
 
-	State _state;
+	State state;
 	State getStateIn() {
-		if (cell == null) return _state; else return State.compliment(_state);
+		if (cell == null) return state; else return State.compliment(state);
 	}
 	State getStateOut() {
-		if (cell == null) return _state; else return State.invCompliment(_state);
+		if (cell == null) return state; else return State.invCompliment(state);
 	}
 
 	State getStateIntern() {
-		return _state;
+		return state;
 	}
 
 	Energy energy = new Energy(0);
@@ -140,7 +146,7 @@ class WorldObject {
 	}
 	Cell cell = null;
 
-	toString() => "{x: $x, y: $y, state: ${_state.toString()}, energy: ${getEnergyCount()}, cell = $cell";
+	toString() => "{x: $x, y: $y, state: ${state.toString()}, energy: ${getEnergyCount()}, cell = $cell";
 }
 
 class Neighbourhood {
@@ -176,7 +182,7 @@ class Neighbourhood {
 			return w;
 		Neighbourhood nei = getNeightbourhood(w.x,w.y, objects, width, height);
 		WorldObject o =  nei.getObjectAtDirection(dir);
-		if(o._state == State.Unknown)
+		if(o.state == State.Unknown)
 			throw new Exception("BAD");
 		return o;
 	}
@@ -275,7 +281,7 @@ class World {
 				context.preTick(this, w, w.x, w.y);
 				context.tick();
 
-				w.cell.consumed+=(1 + (log(w.cell.greenCodeContext.code.length + 1)/log(10)).floor());
+				w.cell.consumed+=(CellsConfiguration.baseConsume + (log(w.cell.greenCodeContext.code.length + CellsConfiguration.baseConsume)/log(10)).floor());
 
 			}
 			totalEnergy += w.getEnergyCount();
@@ -340,12 +346,12 @@ class World {
 				if(dir != Direction.NONE){
 					List<WorldObject> l = [nei.n, nei.e, nei.s, nei.w];
 					l = l.where((lw) => lw == Neighbourhood.getObjectAtDirectionFrom(dir, w, objects, width, height)).toList();
-					l = l.where((lw) => lw.cell == null && lw._state == State.Void).toList();
+					l = l.where((lw) => lw.cell == null && lw.state == State.Void).toList();
 
 					if(l.length > 0){
 						futureObject.cell = null;
 						futureObject.energy.energyCount = 0;
-						futureObject._state = State.Void;
+						futureObject.state = State.Void;
 					}
 				}
 		}
@@ -364,7 +370,7 @@ class World {
 
 			if (l.length == 1) {
 					futureObject.cell = l.first.cell;
-					futureObject._state = l.first._state;
+					futureObject.state = l.first.state;
 					futureObject.energy.energyCount = l.first.energy.energyCount;
 				}
 		}
@@ -372,13 +378,13 @@ class World {
 		if (w.cell != null) {
 	  		if(w.cell.greenCodeContext.nextMove() == Direction.NONE){
 		  		if(w.cell.consumed > w.getEnergyCount()){
-						futureObject._state = w.getStateOut();
+						futureObject.state = w.getStateOut();
 						futureObject.cell = null;
 
 		  		}
 		  		else
 		  		{
-		  			futureObject._state = w._state;
+		  			futureObject.state = w.state;
 		  			futureObject.cell = w.cell;
 					}
 		  		futureObject.energy.energyCount = w.getEnergyCount();
@@ -397,9 +403,9 @@ class World {
 								futureObject.cell.greenCodeContext.insertCode(lw.cell.greenCodeContext.codeRangeBetweenHeads());
 								lw.cell.greenCodeContext.removeCodeRangeBetweenHeads();
 						});
-					} else if(w.cell == null && w._state == State.Void)
+					} else if(w.cell == null && w.state == State.Void)
 					{
-						futureObject._state = l.first._state;
+						futureObject.state = l.first.state;
 						futureObject.energy.energyCount = l.fold(0, (i, lw) => i + (lw.getEnergyCount()/2).floor());
 						futureObject.cell = new Cell.withCode("");
 						l.forEach((lw){
@@ -409,9 +415,9 @@ class World {
 					}
 					else
 					{
-						if(w._state == l.first._state)
+						if(w.state == l.first.state)
 						{
-									futureObject._state = l.first._state;
+									futureObject.state = l.first.state;
 									futureObject.energy.energyCount = w.getEnergyCount();
 									futureObject.cell = new Cell.withCode("");
             						l.forEach((lw){
@@ -424,9 +430,9 @@ class World {
 		}
 
 
-		if(futureObject._state == State.Unknown)
+		if(futureObject.state == State.Unknown)
 		{
-			futureObject._state = w._state;
+			futureObject.state = w.state;
 			futureObject.cell = w.cell;
 			futureObject.energy.energyCount = w.energy.energyCount;
 		}
@@ -434,15 +440,15 @@ class World {
 		{
 			List<WorldObject> l = [nei.n, nei.e, nei.s, nei.w];
 
-			futureObject.energy.energyCount = l.fold(futureObject.getEnergyCount(), (i, lw) => lw.getEnergyCount() < w.getEnergyCount() && lw.getStateOut() == w.getStateIn() ? i + 1 : i);
-			futureObject.energy.energyCount = l.fold(futureObject.getEnergyCount(), (i, lw) => lw.getEnergyCount() > w.getEnergyCount() && lw.getStateIn() == w.getStateOut() ? i - 1 : i);
+			futureObject.energy.energyCount = l.fold(futureObject.getEnergyCount(), (i, lw) => lw.getEnergyCount() < w.getEnergyCount() && lw.getStateOut() == w.getStateIn() ? i + CellsConfiguration.Smelting : i);
+			futureObject.energy.energyCount = l.fold(futureObject.getEnergyCount(), (i, lw) => lw.getEnergyCount() > w.getEnergyCount() && lw.getStateIn() == w.getStateOut() ? i - CellsConfiguration.Smelting : i);
 		}
 
 		if(futureObject.energy.energyCount <= 0){
-			futureObject._state = State.Void;
+			futureObject.state = State.Void;
     	}
 
-		if(futureObject._state == State.Void)
+		if(futureObject.state == State.Void)
 			futureObject.energy.energyCount = 0;
 	}
 

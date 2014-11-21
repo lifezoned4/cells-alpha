@@ -65,8 +65,11 @@ class User {
 
         case "liveSelection":
 					if(selected != null){
-						selected.cell = new Cell.withCode(jsonMap["data"]);
-						selectedCellId = selected.cell.id;
+						if(selected.getStateIntern() != State.Void)
+						{
+							selected.cell = new Cell.withCode(jsonMap["data"]);
+							selectedCellId = selected.cell.id;
+						}
 					}
         break;
         case "pushSelectionEnergyToUser":

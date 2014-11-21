@@ -121,7 +121,7 @@ main() {
 		World.putObjectAt(1, 1, world.objects, world.width, world.height, o);
 
 		while (energyCount > 0) {
-			energyCount--;
+			energyCount -= CellsConfiguration.baseConsume;
 			world.tick();
 			o = World.getObjectAt(1, 1, world.objects, world.width, world.height);
 			expect(o.cell, theCell);
