@@ -106,6 +106,11 @@ class Cell {
 		return o.getEnergyCount() - consumed;
 	}
 
+	Cell.withMap(Map codes){
+		id = Cell.getNextCellId(this);
+		greenCodeContext = new GreenCodeContext.byMap(codes);
+	}
+
 	Cell.withCode(String codeString) {
 		id = Cell.getNextCellId(this);
 		greenCodeContext = new GreenCodeContext.byNames(codeString);

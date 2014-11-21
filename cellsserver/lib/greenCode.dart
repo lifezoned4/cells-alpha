@@ -186,6 +186,18 @@ class GreenCodeContext {
 		_removeCodeRange(registers[RegReadHead], registers[RegWriteHead]);
 	}
 
+	GreenCodeContext.byMap(Map map){
+		map.forEach((String key, String s) {
+					RegExp regExp = new RegExp("(.+?) ([@#*]?)([0-9]+?);");
+      		regExp.allMatches(s).forEach((e) {
+      			String name = e.group(1).trim();
+      			String flag = e.group(2).trim();
+      			int operand = int.parse(e.group(3).trim());
+				code.add(GreenCode.byName(name, flag, operand));
+			});
+		});
+	}
+
 	GreenCodeContext.byNames(String codeString) {
 		createEmptyRegisters();
 		if (!codeString.trim().endsWith(";")) assemblerError = true;

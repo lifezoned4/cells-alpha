@@ -22,10 +22,13 @@ class FilePersistContext {
     persistedWorld.openRead();
     int i = 0;
     persistedWorld.readAsLinesSync().forEach((line) {
+    	// _logger.info("decoding: $line");
       Map jsonMap = JSON.decode(line);
       WorldObject o = new WorldObject(jsonMap["x"], jsonMap["y"], new State(jsonMap["state"]));
       if(jsonMap.containsKey("greenCode"))
-        o.cell = new Cell.withCode(jsonMap["greenCode"]);
+      {
+      	o.cell = new Cell.withCode(jsonMap["greenCode"]);
+      }
       o.energy.energyCount = jsonMap["energy"];
       assert(i == o.y*ServerCommEngine.width + o.x);
       World.putObjectAt(o.x, o.y, newWorld.objects, newWorld.width, newWorld.height, o);
@@ -33,7 +36,7 @@ class FilePersistContext {
     	_logger.info("LOADING:($i/${ServerCommEngine.width*ServerCommEngine.height})");
 
     });
-  	_logger.info("LOADING FINISHED!)");
+  	_logger.info("LOADING FINISHED!");
     return newWorld;
   }
 
@@ -45,7 +48,7 @@ class FilePersistContext {
        Map<String, dynamic> jsonMap = {"x": o.x, "y": o.y,
                       "energy": o.energy.energyCount,
                       "state": o.getStateIntern().toValue(),
-                      "greenCode": o.cell != null ? o.cell.greenCodeContext.codeToStringNames() : ""};
+                      "greenCode": o.cell != null ? o.cell.greenCodeContext.code.map((cc) => cc.toString()).toList() : ""};
        totalFile += JSON.encode(jsonMap) + '\n';
     });
     persistedWorld.writeAsStringSync(totalFile);
