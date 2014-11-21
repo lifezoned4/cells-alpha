@@ -154,13 +154,19 @@ class WorldObject {
 	}
 
 	setStateFrom(WorldObject wo) => state = wo.state;
-	setEnergyFrom(WorldObject wo) => energy.energyCount = wo.energy.energyCount;
+	setEnergyFrom(WorldObject wo) => setEnergyCount(wo.getEnergyCount());
 	setCellFrom(WorldObject wo) => cell = wo.cell;
 
-	Energy energy = new Energy(0);
+	Energy _energy = new Energy(0);
 
 	int getEnergyCount() {
-		return energy != null ? energy.energyCount : 0;
+		return _energy != null ? _energy.energyCount : 0;
+	}
+
+	double diff = 0.0;
+	setEnergyCount(int value){
+		diff += (_energy.energyCount - value);
+		_energy.energyCount = value;
 	}
 	Cell cell = null;
 
@@ -239,7 +245,7 @@ class World {
 			List<State> selectFrom = State.allStates.where((s) => s != State.Void && s != State.VoidEnd).toList();
 			State state = selectFrom.elementAt(rnd.nextInt(selectFrom.length));
 			WorldObject newObject = new WorldObject(x, y, state);
-			newObject.energy.energyCount = rnd.nextInt(CellsConfiguration.baseEnergy);
+			newObject.setEnergyCount(rnd.nextInt(CellsConfiguration.baseEnergy));
 			newObject.cell = new Cell.withCode("");
 			newObject.cell.greenCodeContext = new GreenCodeContext.byRandom(30);
 			objects.replaceRange(x + y * width, (x + y * width) + 1, [newObject]);
@@ -299,8 +305,14 @@ class World {
 
 		// objects => future
 		// object.nei, w,
-		objects.forEach((w) {
-			WorldObject fo = w.cellularNext(this, w, cellularMoveCellToField).cellularNext(this, w, cellularKillCells).cellularNext(this, w, cellularEnergyManagment).cellularNext(this, w, cellularCellInjection);
+		objects.forEach((_w) {
+			WorldObject w = new WorldObject(_w.x, _w.y, _w.state);
+			w.setCellFrom(_w);
+			w.setEnergyFrom(_w);
+			WorldObject fo = w.cellularNext(this, _w, cellularMoveCellToField)
+					.cellularNext(this, _w, cellularKillCells)
+										.cellularNext(this, _w, cellularEnergyManagment)
+					.cellularNext(this, _w, cellularCellInjection);
 
 			putObjectAt(fo.x, fo.y, future, width, height, fo);
 		});
@@ -311,6 +323,13 @@ class World {
 		objects.forEach((w) {
 			totalEnergy += w.getEnergyCount();
 		});
+
+
+
+		objects.forEach(
+				(w){
+				if(w.state == State.Void)
+						assert(w.getEnergyCount() == 0);});
 
 		totalCellCount = 0;
 		listOfCells = objects.where((w) => w.cell != null).map((w) => w.cell).toList();
@@ -367,26 +386,26 @@ class World {
 	void SetFromWorldObjectTo(WorldObject fromO, WorldObject fo) {
 		fo.state = fromO.state;
 		fo.cell = fromO.cell;
-		fo.energy.energyCount = fromO.energy.energyCount;
+		fo.setEnergyCount(fromO.getEnergyCount());
 	}
 
 
 	WorldObject cellularMoveCellToField(WorldObject fo, WorldObject past, List<WorldObject> pastNei) {
-		Iterable<WorldObject> it = pastNei.where((lw) => lw.cell != null).where((lw) => fo == Neighbourhood.getObjectAtDirectionFrom(lw.cell.greenCodeContext.nextMove(), lw, objects, width, height));
+		List<WorldObject> l = pastNei.where((lw) => lw.cell != null).where((lw) => past == Neighbourhood.getObjectAtDirectionFrom(lw.cell.greenCodeContext.nextMove(), lw, objects, width, height)).toList();
 
-		if ((fo.cell == null && fo.getEnergyCount() == 0) && it.length == 1) {
-			WorldObject wo = it.first;
+		if ((fo.cell == null && fo.getEnergyCount() == 0) && l.length == 1) {
+			WorldObject wo = l.first;
 			fo.setFrom(wo);
-		} else if (it.length > 1) {
+		} else if (l.length > 1) {
 			;
 			//
-		} else if((fo.cell != null && fo.cell.greenCodeContext.nextMove() != Direction.NONE))
+		} else if(fo.cell != null && fo.cell.greenCodeContext.nextMove() != Direction.NONE)
 		{
-			var l = pastNei.where((lw) => lw == Neighbourhood.getObjectAtDirectionFrom(fo.cell.greenCodeContext.nextMove(), fo, objects, width, height)).toList();
+			var l = pastNei.where((lw) => lw == Neighbourhood.getObjectAtDirectionFrom(past.cell.greenCodeContext.nextMove(), past, objects, width, height)).toList();
 			l = l.where((lw) => lw.cell == null && lw.getEnergyCount() == 0).toList();
-			if(it.length == 1){
+			if(l.length == 1){
 				fo.cell = null;
-				fo.energy.energyCount = 0;
+				fo..setEnergyCount(0);
 				fo.state = State.Void;
 			}
 		}
@@ -394,10 +413,11 @@ class World {
 	}
 
 	cellularKillCells(WorldObject fo, WorldObject past, List<WorldObject> pastNei) {
-		if (fo.cell != null && fo.cell.consumed > fo.getEnergyCount()) {
-			fo.state = fo.getStateOut();
-			fo..cell = null;
-			fo.energy.energyCount = fo.energy.energyCount;
+		if (fo.cell != null && fo.cell.consumed > past.getEnergyCount())
+			if(fo.cell.greenCodeContext.nextMove() == Direction.NONE){
+				fo.state = fo.getStateOut();
+				fo..cell = null;
+				fo.setEnergyCount(fo.getEnergyCount());
 		}
 
 		return fo;
@@ -405,15 +425,32 @@ class World {
 
 	cellularCellInjection(WorldObject fo, WorldObject past, List<WorldObject> pastNei) {
 		var it = pastNei.where((lw) => lw.cell != null).toList().where((lw) => lw.cell.greenCodeContext.nextInject() != Direction.NONE).toList().where((lw) => Neighbourhood.getObjectAtDirectionFrom(lw.cell.greenCodeContext.nextInject(), lw, objects, width, height) == past).toList();
-
-		if (it.length == 1) {
-			fo.cell = fo.cell == null ? new Cell.withCode("") : fo.cell;
-			fo.state = fo.state == State.Void && fo.cell == null ? it.first.state : fo.state;
-			fo.energy.energyCount = fo.cell == null ? (it.first.getEnergyCount() / 2).floor() : fo.energy.energyCount;
-			fo.cell.greenCodeContext.insertCode(it.first.cell.greenCodeContext.codeRangeBetweenHeads());
-			it.first.cell.greenCodeContext.removeCodeRangeBetweenHeads();
+		var l = it.toList();
+		if (l.length == 1) {
+			if(fo.cell != null && fo.cell.greenCodeContext.nextMove() == Direction.NONE){
+				fo.state = fo.state == State.Void && fo.cell == null ? l.first.state : fo.state;
+				fo.setEnergyCount(fo.cell == null ? (l.first.getEnergyCount() / 2).floor() : fo.getEnergyCount());
+				fo.cell.greenCodeContext.insertCode(l.first.cell.greenCodeContext.codeRangeBetweenHeads());
+				l.first.cell.greenCodeContext.removeCodeRangeBetweenHeads();
+		}  else if(fo.cell == null && fo.state == State.Void){
+					fo.cell = new Cell.withCode("");
+					fo.setStateFrom(l.first);
+					if(fo.getEnergyCount() != 0)
+						fo.setEnergyCount(fo.getEnergyCount() + l.first.getEnergyCount());
+					else
+						fo.setEnergyFrom(l.first);
+					l.forEach((lw){
+          							fo.cell.greenCodeContext.insertCode(lw.cell.greenCodeContext.codeRangeBetweenHeads());
+                      								lw.cell.greenCodeContext.removeCodeRangeBetweenHeads();
+                      						});
+			} if(fo.cell == null && fo.getEnergyCount() > 0){
+				fo.cell = new Cell.withCode("");
+				l.forEach((lw){
+					fo.cell.greenCodeContext.insertCode(lw.cell.greenCodeContext.codeRangeBetweenHeads());
+          lw.cell.greenCodeContext.removeCodeRangeBetweenHeads();
+                              		});
+			}
 		}
-
 		return fo;
 	}
 
@@ -423,16 +460,24 @@ class World {
 		sum += pastNei.fold(0, (i, lw) => lw.getEnergyCount() < fo.getEnergyCount() && lw.getStateOut() == past.getStateIn() ? (lw.getEnergyCount() < CellsConfiguration.Smelting ? i + lw.getEnergyCount() : i + CellsConfiguration.Smelting) : i);
 		sum += pastNei.fold(0, (i, lw) => lw.getEnergyCount() > fo.getEnergyCount() && lw.getStateIn() == past.getStateOut() ? (0 >= (i - CellsConfiguration.Smelting) ? 0 : i - CellsConfiguration.Smelting) : i);
 
-		if (fo.cell != null) {
-			var it = pastNei.where((lw) => lw == Neighbourhood.getObjectAtDirectionFrom(fo.cell.greenCodeContext.nextInject(), past, objects, width, height));
-			if (it.length > 0) {
-				if (it.first.getEnergyCount() == 0) {
-					sum -= pastNei.where((lw) => lw.state != past.state && lw.state == State.Void && lw.cell == null).where((lw) => lw == Neighbourhood.getObjectAtDirectionFrom(past.cell.greenCodeContext.nextInject(), past, objects, width, height)).fold(0, (i, lw) => (past.getEnergyCount() / 2).floor());
+		if(fo.cell != null){
+			var l = pastNei.where((lw) => lw == Neighbourhood.getObjectAtDirectionFrom(fo.cell.greenCodeContext.nextInject(), past, objects, width, height)).toList();
+			if (l.length > 0) {
+				if (l.first.getEnergyCount() == 0) {
+					sum -= pastNei.where((lw) => lw.state != fo.state && lw.state == State.Void && lw.cell == null).where((lw) => lw == Neighbourhood.getObjectAtDirectionFrom(fo.cell.greenCodeContext.nextInject(), fo, objects, width, height)).fold(0, (i, lw) => (past.getEnergyCount() / 2).floor());
 				}
+			}
+		} else if(past.cell == null && past.state == State.Void){
+			var l = pastNei.where((lw) => lw.cell != null).where((lw) => past == Neighbourhood.getObjectAtDirectionFrom(lw.cell.greenCodeContext.nextInject(), lw, objects, width, height)).toList();
+			if (l.length > 0) {
+      		if (fo.getEnergyCount() == 0) {
+      					sum -= l.fold(0, (i, lw) => (lw.getEnergyCount() / 2).floor());
+      		}
 			}
 		}
 
-		fo.energy.energyCount += sum;
+		if(sum != 0)
+			fo.setEnergyCount(fo.getEnergyCount() + sum);
 
 		return fo;
 	}

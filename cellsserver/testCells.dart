@@ -82,17 +82,17 @@ main() {
 
 
 		o = new WorldObject(1, 1, State.Green);
-		o.energy.energyCount = 30;
+		o.setEnergyCount(30);
 
 		World.putObjectAt(1, 1, world.objects, world.width, world.height, o);
 
 		o = World.getObjectAt(1, 1, world.objects, world.width, world.height);
 
-		expect(o.energy.energyCount, 30);
+		expect(o.getEnergyCount(), 30);
 		expect(o.getStateIntern(), State.Green);
 
 		o = World.getObjectAt(1, 1, world.objects, world.width, world.height);
-		expect(o.energy.energyCount, 30);
+		expect(o.getEnergyCount(), 30);
 
 		int counter = 30;
 		while (counter > 0) {
@@ -116,7 +116,7 @@ main() {
 
 		o.cell = theCell;
 		int energyCount = 30;
-		o.energy.energyCount = energyCount;
+		o.setEnergyCount(energyCount);
 
 		World.putObjectAt(1, 1, world.objects, world.width, world.height, o);
 
@@ -150,7 +150,7 @@ main() {
 		Cell theCell = new Cell.withCode("LOAD #1; STORE #8;");
 		o.cell = theCell;
 
-		o.energy.energyCount = 30;
+		o.setEnergyCount(30);
 
 		World.putObjectAt(o.x, o.y, world.objects, world.width, world.height, o);
 
@@ -195,13 +195,13 @@ main() {
 
 
 		WorldObject o = new WorldObject(0, 4, State.Green);
-		o.energy.energyCount = 100;
+		o.setEnergyCount(100);
 		o.cell = new Cell.withCode("LOAD #1; STORE #8;");
 
 		World.putObjectAt(o.x, o.y, world.objects, world.width, world.height, o);
 
 		WorldObject energy = new WorldObject(0, 2, State.Green);
-		energy.energy.energyCount = 1771;
+		energy.setEnergyCount(1771);
 
 		World.putObjectAt(energy.x, energy.y, world.objects, world.width, world.height, energy);
 
@@ -218,7 +218,7 @@ main() {
 		expect(9, world.objects.length);
 
 		WorldObject o = new WorldObject(1, 1, State.Green);
-		o.energy.energyCount = 100;
+		o.setEnergyCount(100);
 		o.cell = new Cell.withCode("LOAD #3; STORE #3; LOAD #1; STORE #7;");
 
 		World.putObjectAt(o.x, o.y, world.objects, world.width, world.height, o);
@@ -246,7 +246,7 @@ main() {
 
 
 		WorldObject energy = new WorldObject(1, 0, State.Green);
-		energy.energy.energyCount = 200;
+		energy.setEnergyCount(200);
 
 		World.putObjectAt(energy.x, energy.y, world.objects, world.width, world.height, energy);
 
@@ -255,7 +255,7 @@ main() {
 		expect(energy.getStateIntern(), State.Green);
 
 		WorldObject o = new WorldObject(1, 1, State.Green);
-		o.energy.energyCount = 100;
+		o.setEnergyCount(100);
 		o.cell = new Cell.withCode("LOAD #3; STORE #3; LOAD #1; STORE #7; ADD #1; ADD #2;");
 
 		World.putObjectAt(o.x, o.y, world.objects, world.width, world.height, o);
@@ -290,7 +290,7 @@ main() {
 		expect(9, world.objects.length);
 
 		WorldObject cellO = new WorldObject(1, 0, State.Green);
-		cellO.energy.energyCount = 150;
+		cellO.setEnergyCount(150);
 		cellO.cell = new Cell.withCode("ADD #1; ADD #2; ADD #3;");
 
 		World.putObjectAt(cellO.x, cellO.y, world.objects, world.width, world.height, cellO);
@@ -300,7 +300,7 @@ main() {
 		expect(cellO.getStateIntern(), State.Green);
 
 		WorldObject o = new WorldObject(1, 1, State.Green);
-		o.energy.energyCount = 100;
+		o.setEnergyCount(100);
 		o.cell = new Cell.withCode("LOAD #3; STORE #3; LOAD #1; STORE #7; ADD #1; ADD #2;");
 
 		World.putObjectAt(o.x, o.y, world.objects, world.width, world.height, o);
@@ -325,7 +325,7 @@ main() {
   	expect(9, world.objects.length);
 
   	WorldObject cellO = new WorldObject(1, 0, State.Green);
-  		cellO.energy.energyCount = 150;
+  		cellO.setEnergyCount(150);
   		cellO.cell = new Cell.withCode("LOAD #1; STOR3E #2; LOAD #1; ADD #2; STORE #8;");
 
   		expect(cellO.cell.greenCodeContext.code.length, 0);
@@ -338,7 +338,7 @@ main() {
 	});
 
 
-	/* test("TotalEnergyConstant", (){
+	test("TotalEnergyConstant", (){
 		World world = new World(500, 500);
 		int i = 0;
 		while(i < 500)
@@ -358,9 +358,9 @@ main() {
 			var diff = totalEnergy - world.totalEnergy;
 
 			 _logger.info("Step: $i , diffy: ${world.diffrenziator} diff: $diff $totalEnergy, ${world.totalEnergy} Cells:${world.totalCellCount}");
-			// assert( 2000 > diff && diff > -2000);
+			 assert(diff == 0.0);
 			i++;
 		}
 
-	});*/
+	});
 }
