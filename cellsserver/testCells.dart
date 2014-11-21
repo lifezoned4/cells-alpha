@@ -189,6 +189,30 @@ main() {
 		expect(upO.getEnergyCount(), 30);
 	});
 
+	test("CelLMoveIntoEnergy", () {
+		World world = new World(1, 5);
+		expect(5, world.objects.length);
+
+
+		WorldObject o = new WorldObject(0, 4, State.Green);
+    		o.energy.energyCount = 100;
+    		o.cell = new Cell.withCode("LOAD #1; STORE #8;");
+
+   	World.putObjectAt(o.x, o.y, world.objects, world.width, world.height, o);
+
+   	WorldObject energy = new WorldObject(0, 2, State.Green);
+   	energy.energy.energyCount = 1771;
+
+    World.putObjectAt(energy.x, energy.y, world.objects, world.width, world.height, energy);
+
+  	int i = 0;
+  		while (i < 20) {
+  			i++;
+  			world.tick();
+  			expect(world.totalCellCount, 1);
+  		}
+	});
+
 	test("CellInjectIntoVoid", () {
 		World world = new World(3, 3);
 		expect(9, world.objects.length);

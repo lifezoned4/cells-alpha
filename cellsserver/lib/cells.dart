@@ -383,7 +383,6 @@ class World {
 					}
 		  		futureObject.energy.energyCount = w.getEnergyCount();
 				}
-
 		}
 
 		{
@@ -428,6 +427,7 @@ class World {
 		if(futureObject._state == State.Unknown)
 		{
 			futureObject._state = w._state;
+			futureObject.cell = w.cell;
 			futureObject.energy.energyCount = w.energy.energyCount;
 		}
 

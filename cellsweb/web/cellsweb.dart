@@ -114,6 +114,7 @@ InitClient(String url, String user, String password) {
 	bool viewingCode = false;
 	commEngine.onSelectionInfo = (data) {
 		if (data.length > 0) {
+			 try {
 			infoarea.text = "(${data["x"]},${data["y"]}): State: ${data["state"]} Energy ${data["energy"]} ${data["id"] == null ? "" : "ID: ${data["id"]}"}";
 			viewer.selectedX = data["x"];
 			viewer.selectedY = data["y"];
@@ -131,6 +132,12 @@ InitClient(String url, String user, String password) {
 			String registers = "";
 			if (data.containsKey("registers")) (JSON.decode(data["registers"]) as Map).forEach((key, value) => registers += "$key: $value\n");
 			textareaRegisters.value = registers;
+			 }
+			 on Exception
+			 {
+				infoarea.text = "";
+				textareaRegisters.value = "";
+			 }
 		}
 	};
 
