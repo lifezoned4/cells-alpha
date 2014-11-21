@@ -334,4 +334,28 @@ main() {
   		expect(cellO.cell.greenCodeContext.registers[GreenCodeContext.RegEnergyOWN], 150);
   		expect(cellO.cell.greenCodeContext.registers[GreenCodeContext.RegIP], 0);
 	});
+
+
+	test("TotalEnergyConstant", (){
+		World world = new World(500, 500);
+		int i = 0;
+		while(i < 500)
+		{world.randomStateAdd();
+			i++;
+		}
+
+		world.tick();
+
+		int totalEnergy = world.totalEnergy;
+
+		i = 0;
+		while(i < 500)
+		{
+			world.tick();
+			expect(totalEnergy, world.totalEnergy);
+			_logger.info("Step: $i");
+			i++;
+		}
+
+	});
 }

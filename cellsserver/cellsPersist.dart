@@ -27,7 +27,8 @@ class FilePersistContext {
       WorldObject o = new WorldObject(jsonMap["x"], jsonMap["y"], new State(jsonMap["state"]));
       if(jsonMap.containsKey("greenCode"))
       {
-      	o.cell = new Cell.withCode(jsonMap["greenCode"]);
+      	if(jsonMap["greenCode"] is List)
+      		o.cell = new Cell.withList(jsonMap["greenCode"]);
       }
       o.energy.energyCount = jsonMap["energy"];
       assert(i == o.y*ServerCommEngine.width + o.x);

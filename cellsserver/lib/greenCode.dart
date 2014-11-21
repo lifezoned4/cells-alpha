@@ -186,15 +186,22 @@ class GreenCodeContext {
 		_removeCodeRange(registers[RegReadHead], registers[RegWriteHead]);
 	}
 
-	GreenCodeContext.byMap(Map map){
-		map.forEach((String key, String s) {
+	GreenCodeContext.byList(List map){
+		createEmptyRegisters();
+		map.forEach((String s) {
 					RegExp regExp = new RegExp("(.+?) ([@#*]?)([0-9]+?);");
       		regExp.allMatches(s).forEach((e) {
+      			try {
       			String name = e.group(1).trim();
       			String flag = e.group(2).trim();
       			int operand = int.parse(e.group(3).trim());
-				code.add(GreenCode.byName(name, flag, operand));
-			});
+						code.add(GreenCode.byName(name, flag, operand));
+      			}
+      			on GreenCodeInvalidOperation catch (ex) {
+      				_logger.warning("Assemlber Error on ${e.group(0)}: ${ex}, ${ex.cause}");
+      				assemblerError = true;
+      			}
+      	});
 		});
 	}
 
