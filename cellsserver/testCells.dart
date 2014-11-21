@@ -24,8 +24,8 @@ main() {
 		int startY = 1;
 
 		Neighbourhood nei = Neighbourhood.getNeightbourhood(startX, startY, world.objects, 3, 3);
-		expect(startX , nei.n.x);
-		expect(startY -1, nei.n.y);
+		expect(startX, nei.n.x);
+		expect(startY - 1, nei.n.y);
 
 		expect(startX + 1, nei.e.x);
 		expect(startY, nei.e.y);
@@ -42,19 +42,21 @@ main() {
 		l.forEach((Direction ld) {
 			expect(nei.getObjectAtDirection(ld).x, ld.x + startX);
 			expect(nei.getObjectAtDirection(ld).y, ld.y + startY);
-			});
+		});
 
-		Map<WorldObject, Direction> mapld = {nei.n:Direction.N, nei.w: Direction.W, nei.s: Direction.S, nei.e: Direction.E};
+		Map<WorldObject, Direction> mapld = {
+			nei.n: Direction.N,
+			nei.w: Direction.W,
+			nei.s: Direction.S,
+			nei.e: Direction.E
+		};
 
-		mapld.forEach((w,d) => expect(Neighbourhood.getObjectAtDirectionFrom(d, o, world.objects, world.width, world.height), w));
+		mapld.forEach((w, d) => expect(Neighbourhood.getObjectAtDirectionFrom(d, o, world.objects, world.width, world.height), w));
 
 
 		mapld.keys.forEach((k) => mapld[k] = Direction.invertDirection(mapld[k]));
 
-		mapld.forEach(
-		 			(w,d) =>
-		 					expect(Neighbourhood.getObjectAtDirectionFrom(d, w, world.objects, world.width, world.height), o)
-		 			);
+		mapld.forEach((w, d) => expect(Neighbourhood.getObjectAtDirectionFrom(d, w, world.objects, world.width, world.height), o));
 
 	});
 
@@ -72,33 +74,33 @@ main() {
 
 
 	test("EnergyStay", () {
-				World world = new World(3, 3);
-    		expect(9, world.objects.length);
+		World world = new World(3, 3);
+		expect(9, world.objects.length);
 
-    		WorldObject o = World.getObjectAt(1, 1, world.objects, world.width, world.height);
-    		expect(o.cell, null);
+		WorldObject o = World.getObjectAt(1, 1, world.objects, world.width, world.height);
+		expect(o.cell, null);
 
 
-    		o = new WorldObject(1, 1, State.Green);
-    		o.energy.energyCount = 30;
+		o = new WorldObject(1, 1, State.Green);
+		o.energy.energyCount = 30;
 
-     		World.putObjectAt(1, 1, world.objects, world.width, world.height, o);
+		World.putObjectAt(1, 1, world.objects, world.width, world.height, o);
 
-    		o = World.getObjectAt(1, 1, world.objects, world.width, world.height);
+		o = World.getObjectAt(1, 1, world.objects, world.width, world.height);
 
-    		expect(o.energy.energyCount, 30);
-    		expect(o.getStateIntern(), State.Green);
+		expect(o.energy.energyCount, 30);
+		expect(o.getStateIntern(), State.Green);
 
-    		o = World.getObjectAt(1, 1, world.objects, world.width, world.height);
-    		expect(o.energy.energyCount, 30);
+		o = World.getObjectAt(1, 1, world.objects, world.width, world.height);
+		expect(o.energy.energyCount, 30);
 
-    		int counter = 30;
-    		while (counter > 0) {
-        			world.tick();
-        			o = World.getObjectAt(1, 1, world.objects, world.width, world.height);
-        			expect(o.getEnergyCount(), 30);
-        			counter--;
-        		}
+		int counter = 30;
+		while (counter > 0) {
+			world.tick();
+			o = World.getObjectAt(1, 1, world.objects, world.width, world.height);
+			expect(o.getEnergyCount(), 30);
+			counter--;
+		}
 	});
 
 	test("CellStayEnergyCounter", () {
@@ -108,13 +110,13 @@ main() {
 		WorldObject o = World.getObjectAt(1, 1, world.objects, world.width, world.height);
 		expect(o.cell, null);
 
-		Cell theCell = new Cell.withCode(1, "");
+		Cell theCell = new Cell.withCode("");
 
 		o = new WorldObject(1, 1, State.Green);
 
 		o.cell = theCell;
 		int energyCount = 30;
-  	o.energy.energyCount = energyCount;
+		o.energy.energyCount = energyCount;
 
 		World.putObjectAt(1, 1, world.objects, world.width, world.height, o);
 
@@ -145,7 +147,7 @@ main() {
 
 		o = new WorldObject(o.x, o.y, State.Green);
 
-		Cell theCell = new Cell.withCode(1, "LOAD #1; STORE #8;");
+		Cell theCell = new Cell.withCode("LOAD #1; STORE #8;");
 		o.cell = theCell;
 
 		o.energy.energyCount = 30;
@@ -153,7 +155,6 @@ main() {
 		World.putObjectAt(o.x, o.y, world.objects, world.width, world.height, o);
 
 		world.tick();
-		_logger.info(world.toString());
 
 		expect(theCell.greenCodeContext.registers[GreenCodeContext.RegALU], 1);
 		expect(theCell.greenCodeContext.registers[GreenCodeContext.RegMove], 0);
@@ -161,7 +162,6 @@ main() {
 		expect(o.cell, theCell);
 
 		world.tick();
-		_logger.info(world.toString());
 
 		expect(theCell.greenCodeContext.nextMove(), Direction.N);
 
@@ -179,7 +179,6 @@ main() {
 		expect(upO.getEnergyCount(), 30);
 
 		world.tick();
-		_logger.info(world.toString());
 
 		expect(theCell.greenCodeContext.registers[GreenCodeContext.RegALU], 1);
 		expect(theCell.greenCodeContext.registers[GreenCodeContext.RegMove], 0);
@@ -188,6 +187,110 @@ main() {
 
 		expect(upO.cell, theCell);
 		expect(upO.getEnergyCount(), 30);
+	});
 
+	test("CellInjectIntoVoid", () {
+		World world = new World(3, 3);
+		expect(9, world.objects.length);
+
+		WorldObject o = new WorldObject(1, 1, State.Green);
+		o.energy.energyCount = 100;
+		o.cell = new Cell.withCode("LOAD #3; STORE #3; LOAD #1; STORE #7;");
+
+		World.putObjectAt(o.x, o.y, world.objects, world.width, world.height, o);
+
+		world.tick();
+
+		int i = 0;
+		while (i < 3) {
+			i++;
+			expect(world.totalCellCount, 1);
+			world.tick();
+		}
+
+		WorldObject upO = World.getObjectAt(1, 0, world.objects, world.width, world.height);
+		expect(upO.cell != null, true);
+		expect(upO.getEnergyCount(), 50);
+		expect(world.totalCellCount, 2);
+		expect(upO.cell.greenCodeContext.code.length, 4);
+		expect(o.cell.greenCodeContext.code.length, 0);
+	});
+
+	test("CellInjectIntoEnergy", () {
+		World world = new World(3, 3);
+		expect(9, world.objects.length);
+
+
+		WorldObject energy = new WorldObject(1, 0, State.Green);
+		energy.energy.energyCount = 200;
+
+		World.putObjectAt(energy.x, energy.y, world.objects, world.width, world.height, energy);
+
+		energy = World.getObjectAt(1, 0, world.objects, world.width, world.height);
+
+		expect(energy.getStateIntern(), State.Green);
+
+		WorldObject o = new WorldObject(1, 1, State.Green);
+		o.energy.energyCount = 100;
+		o.cell = new Cell.withCode("LOAD #3; STORE #3; LOAD #1; STORE #7; ADD #1; ADD #2;");
+
+		World.putObjectAt(o.x, o.y, world.objects, world.width, world.height, o);
+
+		world.tick();
+
+		int i = 0;
+		while (i < 3) {
+			i++;
+			expect(world.totalCellCount, 1);
+			world.tick();
+		}
+
+		o = World.getObjectAt(1, 1, world.objects, world.width, world.height);
+
+		expect(o.getEnergyCount(), 100);
+		expect(o.cell != null, true);
+		expect(o.cell.greenCodeContext.code.length, 2);
+
+		WorldObject upO = World.getObjectAt(1, 0, world.objects, world.width, world.height);
+		expect(upO.cell != null, true);
+		expect(upO.getEnergyCount(), 200);
+		expect(upO.cell.greenCodeContext.code.length, 4);
+		expect(o.cell.greenCodeContext.code.length, 2);
+	});
+
+
+	test("CellInjectIntoCell", () {
+		World world = new World(3, 3);
+		expect(9, world.objects.length);
+
+		WorldObject cellO = new WorldObject(1, 0, State.Green);
+		cellO.energy.energyCount = 150;
+		cellO.cell = new Cell.withCode("ADD #1; ADD #2; ADD #3;");
+
+		World.putObjectAt(cellO.x, cellO.y, world.objects, world.width, world.height, cellO);
+
+		cellO = World.getObjectAt(1, 0, world.objects, world.width, world.height);
+
+		expect(cellO.getStateIntern(), State.Green);
+
+		WorldObject o = new WorldObject(1, 1, State.Green);
+		o.energy.energyCount = 100;
+		o.cell = new Cell.withCode("LOAD #3; STORE #3; LOAD #1; STORE #7; ADD #1; ADD #2;");
+
+		World.putObjectAt(o.x, o.y, world.objects, world.width, world.height, o);
+
+		world.tick();
+
+		int i = 0;
+		while (i < 3) {
+			i++;
+			expect(world.totalCellCount, 2);
+			world.tick();
+		}
+
+		o = World.getObjectAt(1, 1, world.objects, world.width, world.height);
+		expect(o.cell.greenCodeContext.code.length, 2);
+		WorldObject upO = World.getObjectAt(1, 0, world.objects, world.width, world.height);
+		expect(upO.cell.greenCodeContext.code.length, 7);
 	});
 }

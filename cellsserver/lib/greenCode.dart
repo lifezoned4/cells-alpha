@@ -105,8 +105,11 @@ class GreenCodeContext {
 	Direction nextInject() => Direction.byValue(registers[RegInject]);
 
 	operation() {
-		code.elementAt(registers[RegIP] % (code.length)).onContextCall(this);
-		registers[RegIP] = (registers[RegIP] + 1) % code.length;
+		if(code.length > 0)
+		{
+			code.elementAt(registers[RegIP] % (code.length)).onContextCall(this);
+			registers[RegIP] = (registers[RegIP] + 1) % code.length;
+		}
 	}
 
 	preTick(World world, WorldObject w, int x, int y) {
@@ -159,18 +162,23 @@ class GreenCodeContext {
 		if (code.length == 0) return [] as List<GreenCode>;
 		int _from = min(from % code.length, to % code.length);
 		int _to = max(from % code.length, to % code.length);
-		if (_to > 0) return code.getRange(_from, _to).toList(); else return [] as List<GreenCode>;
+		if (_to > 0) return code.getRange(_from, _to + 1).toList(); else return [] as List<GreenCode>;
 	}
 
 	_removeCodeRange(int from, int to) {
 		if (code.length == 0) return;
 		int _from = min(from % code.length, to % code.length);
 		int _to = max(from % code.length, to % code.length);
-		if (_to > 0) code.removeRange(_from, _to); else return;
+		if (_to > 0) code.removeRange(_from, _to + 1); else return;
 	}
 
-	insertCode(List<GreenCode> newCode) => code.insertAll(registers[GreenCodeContext.RegWriteHead % code.length], newCode);
-
+	insertCode(List<GreenCode> newCode)
+	{
+		if(code.length > 0)
+			code.insertAll(registers[GreenCodeContext.RegWriteHead]  % code.length, newCode);
+		else
+			code = newCode;
+	}
 	List<GreenCode> codeRangeBetweenHeads() {
 		return _codeRange(registers[RegReadHead], registers[RegWriteHead]);
 	}

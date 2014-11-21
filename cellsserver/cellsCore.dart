@@ -20,6 +20,7 @@ class User {
   int ticksLeft = 0;
   MovingAreaViewSubscription userSubcription;
 
+  int selectedCellId = 0;
   WorldObject selected;
 
   User(this.username, this.pubKey, this.lastSendToken);
@@ -32,7 +33,10 @@ class User {
           int x = jsonMap["data"]["x"];
           int y = jsonMap["data"]["y"];
           selected = World.getObjectAt(x, y, subscriptions.first.world.objects, subscriptions.first.world.width, subscriptions.first.world.height);
-
+					if(selected.cell != null)
+						selectedCellId = selected.cell.id;
+					else
+						selectedCellId = 0;
           break;
         case "SelectionId":
           int id = jsonMap["data"]["id"];
@@ -61,7 +65,8 @@ class User {
 
         case "liveSelection":
 					if(selected != null){
-						selected.cell = new Cell.withCode(1771, jsonMap["data"]);
+						selected.cell = new Cell.withCode(jsonMap["data"]);
+						selectedCellId = selected.cell.id;
 					}
         break;
         case "pushSelectionEnergyToUser":
@@ -79,6 +84,8 @@ class User {
     jsonMap["username"] = username;
     Map jsonMapData = new Map();
     subscriptions.forEach((sub) => jsonMapData.addAll(sub.getStateAsMap()));
+    if(selectedCellId != 0)
+    	selected = subscriptions.first.world.getWorldObjectWhereCellId(selectedCellId);
     if(selected != null){
       jsonMapData["Selection"] = {};
       jsonMapData["Selection"].addAll({"x":selected.x, "y": selected.y, "state": selected.getStateIntern().toValue(), "energy": selected.getEnergyCount()});
