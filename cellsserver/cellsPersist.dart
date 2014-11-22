@@ -19,6 +19,10 @@ class FilePersistContext {
   	_logger.info("START LOADING....");
     World newWorld = new World(ServerCommEngine.width, ServerCommEngine.height);
     File persistedWorld = new File("saves/world");
+ 
+    if(!persistedWorld.existsSync())
+      persistedWorld.createSync();
+    
     persistedWorld.openRead();
     int i = 0;
     persistedWorld.readAsLinesSync().forEach((line) {

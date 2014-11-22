@@ -6,6 +6,7 @@ import 'package:unittest/unittest.dart';
 
 import 'lib/cells.dart';
 import 'lib/greenCode.dart';
+import 'dart:math';
 
 var _logger = new Logger("testCells");
 
@@ -229,6 +230,7 @@ main() {
 		while (i < 3) {
 			i++;
 			expect(world.totalCellCount, 1);
+			expect(world.totalEnergy, 100);
 			world.tick();
 		}
 
@@ -238,6 +240,7 @@ main() {
 		expect(world.totalCellCount, 2);
 		expect(upO.cell.greenCodeContext.code.length, 4);
 		expect(o.cell.greenCodeContext.code.length, 0);
+    expect(world.totalEnergy, 100);    
 	});
 
 	test("CellInjectIntoEnergy", () {
@@ -337,11 +340,49 @@ main() {
   		expect(cellO.cell.greenCodeContext.registers[GreenCodeContext.RegIP], 0);
 	});
 
+	test("EnergyMerge", (){
+	  World world = new World(3, 3);
+	  expect(world.totalEnergy, 0);
+	  
+    int energyToThere = 100;
+	  int energyFromHere = 50;
 
+	  
+	  WorldObject energy1 = new WorldObject(0,1, State.Blue);
+	  energy1.setEnergyCount(energyToThere);
+	  
+	  World.putObjectAt(energy1.x, energy1.y, world.objects, world.width, world.height, energy1);
+
+	  WorldObject energy2 = new WorldObject(1,1, State.Blue);
+    energy2 .setEnergyCount(energyFromHere);
+     
+     World.putObjectAt(energy2.x, energy2.y, world.objects, world.width, world.height, energy2);
+     
+     int i = 0;
+     while(i < 100){
+       world.tick();
+       expect(world.totalEnergy, 150);
+       
+       energy1 = World.getObjectAt(energy1.x, energy1.y, world.objects, world.width, world.height);
+       energy2 = World.getObjectAt(energy2.x, energy2.y, world.objects, world.width, world.height);
+     
+       energyFromHere = max(0,  energyFromHere - CellsConfiguration.Smelting);
+       energyToThere += min(CellsConfiguration.Smelting, CellsConfiguration.Smelting);
+       energyFromHere = energyFromHere > 0 ? energyFromHere : 0;
+       energyToThere = energyToThere < 150 ? energyToThere : 150;
+       
+       expect(energy1.getEnergyCount(), energyToThere);
+       expect(energy2.getEnergyCount(), energyFromHere);
+       i++;
+     }
+     world.tick();
+     expect(world.totalEnergy, 150);        
+	});
+	
 	test("TotalEnergyConstant", (){
-		World world = new World(500, 500);
+		World world = new World(100, 100);
 		int i = 0;
-		while(i < 500)
+		while(i < 200)
 		{world.randomStateAdd();
 			i++;
 		}
@@ -351,13 +392,15 @@ main() {
 		int totalEnergy = world.totalEnergy;
 
 		i = 0;
-		while(i < 500)
+		while(i < 20)
 		{
 			world.tick();
 
 			var diff = totalEnergy - world.totalEnergy;
 
-			 _logger.info("Step: $i , diffy: ${world.diffrenziator} diff: $diff $totalEnergy, ${world.totalEnergy} Cells:${world.totalCellCount}");
+			if(diff != 0)
+  		  expect(diff, 0);
+			 _logger.info("Step: $i , diff: $diff");
 			i++;
 		}
 

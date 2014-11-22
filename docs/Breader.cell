@@ -1,12 +1,11 @@
 GET #1771;
 LOAD @2;
 STORE #3;
-DIV #2;
 LOAD #0;
 STORE #2;
 LOAD #1;
 LOAD @30;
-ADD #2;
+ADD #3;
 MULT #2;
 STORE #8;
 STORE #30;

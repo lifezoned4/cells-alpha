@@ -16,7 +16,9 @@ class CellsConfiguration {
 	static const int baseEnergy = Smelting * 100;
 	static const int Smelting = 5;
 	static const int baseConsume = 2;
-	static const int probMutation = 10000; // p = 1 / probMuation
+	static const double damp = 7.0;
+	static const int probMutation = 100; // p = 1 / probMuation
+	static const int probStateMutation = 5;
 }
 
 
@@ -35,6 +37,12 @@ class State {
 
 	int _value;
 
+	State.random(){
+	  Random rnd = new Random();
+	  List<State> randomStateFrom = allStates.where((s) =>  s != VoidEnd  && s != Void).toList();
+	   _value = randomStateFrom.elementAt(rnd.nextInt(randomStateFrom.length)).toValue();
+	}
+	
 	String toString() {
 		return _value.toString();
 	}
@@ -235,6 +243,8 @@ class World {
 	int ticksSinceStart = 0;
 
 	int totalEnergy = 0;
+	int totalWarming = 0;
+	int cellEnergy = 0;
 	int totalCellCount = 0;
 
 	Map<User, int> users = new Map<User, int>();
@@ -257,10 +267,30 @@ class World {
 			int y = rnd.nextInt(height);
 			List<State> selectFrom = State.allStates.where((s) => s != State.Void && s != State.VoidEnd).toList();
 			State state = selectFrom.elementAt(rnd.nextInt(selectFrom.length));
-			WorldObject newObject = new WorldObject(x, y, state);
-			newObject.setEnergyCount(rnd.nextInt(CellsConfiguration.baseEnergy));
-			newObject.cell = new Cell.withCode("");
-			newObject.cell.greenCodeContext = new GreenCodeContext.byRandom(30);
+			WorldObject newObject = new WorldObject(x, y, State.Green);
+			newObject.setEnergyCount(rnd.nextInt(CellsConfiguration.baseEnergy * 4));
+		  newObject.cell = new Cell.withCode(
+		      '''  
+GET #1771;
+LOAD @2;
+STORE #3;
+LOAD #0;
+STORE #2;
+LOAD #1;
+LOAD @30;
+ADD #3;
+MULT #2;
+STORE #8;
+STORE #30;
+COPY #0;
+LOAD #2;
+ADD #1;
+STORE #7;
+LABEL #1771;
+
+
+''');
+			// newObject.cell.greenCodeContext = new GreenCodeContext.byRandom(30);
 			objects.replaceRange(x + y * width, (x + y * width) + 1, [newObject]);
 			i++;
 		}
@@ -309,9 +339,8 @@ class World {
 				context.preTick(this, w, w.x, w.y);
 				context.tick();
 
-				w.cell.consumed += (CellsConfiguration.baseConsume + (log(w.cell.greenCodeContext.code.length + CellsConfiguration.baseConsume) / log(10)).floor());
+				w.cell.consumed += (CellsConfiguration.baseConsume + log(w.cell.greenCodeContext.code.length + 1)/log(CellsConfiguration.damp)).floor();
 			}
-
 		});
 
 
@@ -328,23 +357,30 @@ class World {
 												.cellularNext(this, _w, cellularEnergyManagment)
 												.cellularNext(this, _w, cellularCellInjection);
 
-			putObjectAt(fo.x, fo.y, future, width, height, fo);
+			if(fo.getStateIntern() == State.Void && fo.getEnergyCount() != 0)
+  			assert(fo.getEnergyCount() == 0);
+  		putObjectAt(fo.x, fo.y, future, width, height, fo);
 		});
 
 		objects = future;
 
 		totalEnergy = 0;
+		cellEnergy = 0;
+		totalWarming = 0;
 		objects.forEach((w) {
-			totalEnergy += w.getEnergyCount();
+			if(w.cell != null){
+			  totalWarming += w.cell.greenCodeContext.code.length;
+			  cellEnergy += w.getEnergyCount();        
+			}
+			totalEnergy += w.getEnergyCount(); 
 		});
-
-
 
 		objects.forEach(
 				(w){
-				if(w.state == State.Void)
-						assert(w.getEnergyCount() == 0);});
-
+				if(w.getEnergyCount() < 0){
+						assert(w.getEnergyCount() >= 0);
+				}
+		    });
 		totalCellCount = 0;
 		listOfCells = objects.where((w) => w.cell != null).map((w) => w.cell).toList();
 		totalCellCount = listOfCells.length;
@@ -361,7 +397,15 @@ class World {
 		users.keys.forEach((user) => user.tick());
 
 		timer = new Timer(new Duration(milliseconds: delay), tick);
-	}
+	
+    if(totalCellCount == 0){
+    int i = 0;
+    while(i < 10){
+      randomStateAdd();
+      i++; 
+      }
+    }
+ }
 
 	static void putObjectAt(int x, int y, List<WorldObject> objects, int width, int height, WorldObject o) {
 		if ((x < 0) || (y < 0) || (x >= width) || (y >= height)) throw new Exception("putting object outside of space (width: $width, height: $height) with (x:$x, y:$y)");
@@ -405,7 +449,8 @@ class World {
 
 
 	WorldObject cellularMoveCellToField(WorldObject fo, WorldObject past, List<WorldObject> pastNei) {
-		List<WorldObject> l = pastNei.where((lw) => lw.cell != null).where((lw) => past == Neighbourhood.getObjectAtDirectionFrom(lw.cell.greenCodeContext.nextMove(), lw, objects, width, height)).toList();
+ 
+	  List<WorldObject> l = pastNei.where((lw) => lw.cell != null).where((lw) => past == Neighbourhood.getObjectAtDirectionFrom(lw.cell.greenCodeContext.nextMove(), lw, objects, width, height)).toList();
 
 		if ((fo.cell == null && fo.getEnergyCount() == 0) && l.length == 1) {
 			WorldObject wo = l.first;
@@ -413,13 +458,15 @@ class World {
 		} else if (l.length > 1) {
 			;
 			//
-		} else if(fo.cell != null && fo.cell.greenCodeContext.nextMove() != Direction.NONE)
+		} 
+	 
+		if(past.cell != null && past.cell.greenCodeContext.nextMove() != Direction.NONE)
 		{
 			var l = pastNei.where((lw) => lw == Neighbourhood.getObjectAtDirectionFrom(past.cell.greenCodeContext.nextMove(), past, objects, width, height)).toList();
 			l = l.where((lw) => lw.cell == null && lw.getEnergyCount() == 0).toList();
 			if(l.length == 1){
 				fo.cell = null;
-				fo..setEnergyCount(0);
+				fo.setEnergyCount(0);
 				fo.state = State.Void;
 			}
 		}
@@ -427,37 +474,32 @@ class World {
 	}
 
 	cellularKillCells(WorldObject fo, WorldObject past, List<WorldObject> pastNei) {
-		if (fo.cell != null && fo.cell.consumed > past.getEnergyCount())
+
+	  if (fo.cell != null && fo.cell.consumed > past.getEnergyCount())
 			if(fo.cell.greenCodeContext.nextMove() == Direction.NONE){
 				fo.state = fo.getStateOut();
-				fo..cell = null;
-				fo.setEnergyCount(fo.getEnergyCount());
+				fo.cell = null;
 		}
-
 		return fo;
 	}
 
 	cellularCellInjection(WorldObject fo, WorldObject past, List<WorldObject> pastNei) {
-		var it = pastNei.where((lw) => lw.cell != null).toList().where((lw) => lw.cell.greenCodeContext.nextInject() != Direction.NONE).toList().where((lw) => Neighbourhood.getObjectAtDirectionFrom(lw.cell.greenCodeContext.nextInject(), lw, objects, width, height) == past).toList();
+    Random rnd = new Random();
+	  var it = pastNei.where((lw) => lw.cell != null).toList().where((lw) => lw.cell.greenCodeContext.nextInject() != Direction.NONE).toList().where((lw) => Neighbourhood.getObjectAtDirectionFrom(lw.cell.greenCodeContext.nextInject(), lw, objects, width, height) == past).toList();
 		var l = it.toList();
 		if (l.length == 1) {
 			if(fo.cell != null && fo.cell.greenCodeContext.nextMove() == Direction.NONE){
-				fo.state = fo.state == State.Void && fo.cell == null ? l.first.state : fo.state;
-				fo.setEnergyCount(fo.cell == null ? (l.first.getEnergyCount() / 2).floor() : fo.getEnergyCount());
-				fo.cell.greenCodeContext.insertCode(l.first.cell.greenCodeContext.codeRangeBetweenHeads());
+        fo.cell.greenCodeContext.insertCode(l.first.cell.greenCodeContext.codeRangeBetweenHeads());
 				l.first.cell.greenCodeContext.removeCodeRangeBetweenHeads();
-		}  else if(fo.cell == null && fo.state == State.Void){
+		}  else if(fo.cell == null && past.state == State.Void){
 					fo.cell = new Cell.withCode("");
-					fo.setStateFrom(l.first);
-					if(fo.getEnergyCount() != 0)
-						fo.setEnergyCount(fo.getEnergyCount() + l.first.getEnergyCount());
-					else
-						fo.setEnergyFrom(l.first);
+					if(rnd.nextInt(CellsConfiguration.probStateMutation) == 1)
+					 fo.state = new State.random();
 					l.forEach((lw){
           							fo.cell.greenCodeContext.insertCode(lw.cell.greenCodeContext.codeRangeBetweenHeads());
                       								lw.cell.greenCodeContext.removeCodeRangeBetweenHeads();
                       						});
-			} if(fo.cell == null && fo.getEnergyCount() > 0){
+			} if(fo.cell == null && fo.getEnergyCount() > 0 && fo.getStateIntern() == l.first.state){
 				fo.cell = new Cell.withCode("");
 				l.forEach((lw){
 					fo.cell.greenCodeContext.insertCode(lw.cell.greenCodeContext.codeRangeBetweenHeads());
@@ -470,28 +512,53 @@ class World {
 
 
 	cellularEnergyManagment(WorldObject fo, WorldObject past, List<WorldObject> pastNei) {
-		int sum = 0;
-		sum += pastNei.fold(0, (i, lw) => lw.getEnergyCount() < fo.getEnergyCount() && lw.getStateOut() == past.getStateIn() ? (lw.getEnergyCount() < CellsConfiguration.Smelting ? i + lw.getEnergyCount() : i + CellsConfiguration.Smelting) : i);
-		sum += pastNei.fold(0, (i, lw) => lw.getEnergyCount() > fo.getEnergyCount() && lw.getStateIn() == past.getStateOut() ? (0 >= (i - CellsConfiguration.Smelting) ? 0 : i - CellsConfiguration.Smelting) : i);
+     fo.setEnergyCount(fo.getEnergyCount() - pastNei.fold(0, (i, lw){
+  	    if(lw.getEnergyCount() > past.getEnergyCount() && lw.getStateIn() == past.getStateOut())
+  	    {
+  	      if(lw.getEnergyCount() < CellsConfiguration.Smelting)
+  	        return i + lw.getEnergyCount();
+  	      return i + CellsConfiguration.Smelting;
+  	    }
+  	    return i;
+    	}));
+ 	    	  
+  	  fo.setEnergyCount(fo.getEnergyCount() + pastNei.fold(0, (i, lw) {  	     
+  	    if(lw.getEnergyCount() < past.getEnergyCount() && lw.getStateOut() == past.getStateIn() && past.getEnergyCount() >  CellsConfiguration.Smelting){
+  	      if((lw.getEnergyCount() - CellsConfiguration.Smelting) <= 0) 
+  	       return  i + lw.getEnergyCount();
+  	      return i + CellsConfiguration.Smelting ;
+  	     }
+  	     return i;
+  	     }));
+  	  
+      if(fo.state == State.Void && fo.getEnergyCount() != 0)
+        fo.setStateFrom(past);
+      
+      // TODO: fix this LEAK!
+      if(fo.getEnergyCount() <= 0){
+        fo.setEnergyCount(0);
+        fo.state = State.Void;     
+      }
+	  
+	  if(past.cell != null && past.cell.greenCodeContext.nextInject() != Direction.NONE){
+	    var l = pastNei.where((lw) => lw == Neighbourhood.getObjectAtDirectionFrom(past.cell.greenCodeContext.nextInject(), past, objects, width, height)).toList();            
+	    if(l.length > 0){
+	      WorldObject to = l.first;
+  	    if(to.state == State.Void)
+  	    {
+  	      fo.setEnergyCount(fo.getEnergyCount() - (fo.getEnergyCount()/2).floor());
+       }	     
+      }
+	  }  
 
-		if(fo.cell != null){
-			var l = pastNei.where((lw) => lw == Neighbourhood.getObjectAtDirectionFrom(fo.cell.greenCodeContext.nextInject(), past, objects, width, height)).toList();
-			if (l.length > 0) {
-				if (l.first.getEnergyCount() == 0) {
-					sum -= pastNei.where((lw) => lw.state != fo.state && lw.state == State.Void && lw.cell == null).where((lw) => lw == Neighbourhood.getObjectAtDirectionFrom(fo.cell.greenCodeContext.nextInject(), fo, objects, width, height)).fold(0, (i, lw) => (past.getEnergyCount() / 2).floor());
-				}
-			}
-		} else if(past.cell == null && past.state == State.Void){
-			var l = pastNei.where((lw) => lw.cell != null).where((lw) => past == Neighbourhood.getObjectAtDirectionFrom(lw.cell.greenCodeContext.nextInject(), lw, objects, width, height)).toList();
-			if (l.length > 0) {
-      		if (fo.getEnergyCount() == 0) {
-      					sum -= l.fold(0, (i, lw) => (lw.getEnergyCount() / 2).floor());
-      		}
+	  List<WorldObject> move = pastNei.where((lw) => lw.cell != null).where((lw) => past == Neighbourhood.getObjectAtDirectionFrom(lw.cell.greenCodeContext.nextMove(), lw, objects, width, height)).toList();	     
+	  if(past.cell == null && past.state == State.Void && move.length == 0){
+	    List<WorldObject> inject = pastNei.where((lw) => lw.cell != null).where((lw) => past == Neighbourhood.getObjectAtDirectionFrom(lw.cell.greenCodeContext.nextInject(), lw, objects, width, height)).toList();
+         	if (inject.length > 0) {
+      		  fo.setStateFrom(inject.first);
+      		  fo.setEnergyCount(fo.getEnergyCount() + inject.fold(0, (i, lw) => (lw.getEnergyCount() / 2).ceil()));
 			}
 		}
-
-		if(sum != 0)
-			fo.setEnergyCount(fo.getEnergyCount() + sum);
 
 		return fo;
 	}
