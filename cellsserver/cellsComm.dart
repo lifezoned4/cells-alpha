@@ -11,7 +11,7 @@ import 'cellsProtocolServer.dart';
 final _logger = new Logger("cellsComm");
 
 final String _ip = "127.0.0.1";
-final int _port = 8080;
+final int _port = 8086;
 
 
 ServerCommEngine _serverCommEngine;

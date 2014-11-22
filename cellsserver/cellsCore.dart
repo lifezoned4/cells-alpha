@@ -69,7 +69,7 @@ class User {
         break;
 
         case "demo":
-          subscriptions.first.world.randomStateAdd();
+          subscriptions.first.world.isDemo = !subscriptions.first.world.isDemo;
         break;
       }
   }
@@ -92,7 +92,7 @@ class User {
     }
     else
       jsonMapData["Selection"] = {"code": "", "registers": ""};
-    jsonMapData["TotalEnergy"] = {"Energy" : subscriptions.first.world.totalEnergy, "Warming": subscriptions.first.world.totalWarming};
+    jsonMapData["TotalEnergy"] = {"Demo": subscriptions.first.world.isDemo, "Energy" : subscriptions.first.world.totalEnergy, "Warming": subscriptions.first.world.totalWarming};
     jsonMap.putIfAbsent("data", () => jsonMapData);
     return JSON.encode(jsonMap);
   }

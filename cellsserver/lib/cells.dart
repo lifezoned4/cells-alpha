@@ -242,6 +242,7 @@ class World {
 	Timer timer;
 	int ticksSinceStart = 0;
 
+  bool isDemo = false;
 	int totalEnergy = 0;
 	int totalWarming = 0;
 	int cellEnergy = 0;
@@ -367,6 +368,7 @@ LABEL #1771;
 		totalEnergy = 0;
 		cellEnergy = 0;
 		totalWarming = 0;
+		
 		objects.forEach((w) {
 			if(w.cell != null){
 			  totalWarming += w.cell.greenCodeContext.code.length;
@@ -398,7 +400,7 @@ LABEL #1771;
 
 		timer = new Timer(new Duration(milliseconds: delay), tick);
 	
-    if(totalCellCount == 0){
+    if(totalCellCount == 0 && isDemo){
     int i = 0;
     while(i < 10){
       randomStateAdd();
