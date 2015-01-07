@@ -82,6 +82,8 @@ InitClient(String url, String user, String password) {
 
 	DivElement displayArea = querySelector("#displayarea");
 
+	DivElement userActivity = querySelector("#useractivity");
+
 	DivElement errorbar = querySelector('#errorbar');
 	errorbar.text = "Logging in progress...";
 
@@ -112,6 +114,11 @@ InitClient(String url, String user, String password) {
 
 
 	bool viewingCode = false;
+
+	commEngine.onUserActivity = (data) {
+		userActivity.text = data;
+	};
+
 	commEngine.onSelectionInfo = (data) {
 		if (data.length > 0) {
 			 try {
@@ -156,6 +163,21 @@ void main() {
 	InputElement url = querySelector("#url");
 	InputElement user = querySelector("#user");
 	InputElement password = querySelector("#password");
+	InputElement createToken = querySelector("#createtoken");
+	InputElement confirmepassword = querySelector("#cofirmepassword");
+
+	DivElement errorbar = querySelector('#errorbar');
+
+	ButtonElement create = querySelector("#create")..onClick.listen((e)
+			{
+				if(password.value != confirmepassword.value) errorbar.text = "Creating User failed: Password does not match confirm";
+				else
+				{
+					commEngine = new ClientCommEngine.fromUser(url.value, user.value, password.value);
+					commEngine.commandCreateUser((msg) => errorbar.text = msg, createToken.value);
+				}
+			}
+	);
 
 	ButtonElement connect = querySelector("#connect")..onClick.listen((e) => InitClient(url.value, user.value, password.value));
 }

@@ -54,6 +54,7 @@ class ClientCommEngine {
   Function onUpdatedCache;
   Function onSelectionInfo;
   Function onTotalEnergy;
+  Function onUserActivity;
 
   DsaKeyPair keyPair;
   String serverURL;
@@ -191,6 +192,9 @@ class ClientCommEngine {
           case "error":
             onErrorChange(value);
             break;
+          case "UserActivity":
+          	onUserActivity(value);
+          	break;
         }
       });
     } catch (ex) {
@@ -244,6 +248,22 @@ class ClientCommEngine {
   static const String UserMode = "User";
 
   String mode;
+
+  commandCreateUser(Function callback, String createToken){
+  	try {
+  	String command = "CreateUser";
+  	 Map jsonMap = new Map();
+
+  	 jsonMap.putIfAbsent("command", () => command);
+     jsonMap.putIfAbsent("utc", () => new DateTime.now().toUtc().millisecondsSinceEpoch);
+     jsonMap.putIfAbsent("createtoken", () => createToken);
+     String msg = JSON.encode(jsonMap);
+		 msg = _sign(msg);
+	   _send(msg, callback);
+      } catch (ex) {
+        onErrorChange("Creation failed");
+      }
+  }
 
   commandWebSocketAuth(Function callback, String mode) {
     try {

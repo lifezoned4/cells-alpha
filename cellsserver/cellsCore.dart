@@ -7,10 +7,12 @@ import "dart:io";
 import 'dart:convert' show JSON;
 
 import "lib/cells.dart";
+import "cellsAuth.dart";
 
 final _logger = new Logger("cellsCore");
 
 class User {
+	AuthContext context;
   Energy energy;
   bool isAdmin = false;
   WebSocket socketAct;
@@ -23,7 +25,7 @@ class User {
   int selectedCellId = 0;
   WorldObject selected;
 
-  User(this.username, this.pubKey, this.lastSendToken);
+  User(this.username, this.pubKey, this.lastSendToken, this.context);
 
   dealWithWebSocket(String message, WebSocket conn){
       print(message);
@@ -93,6 +95,10 @@ class User {
     else
       jsonMapData["Selection"] = {"code": "", "registers": ""};
     jsonMapData["TotalEnergy"] = {"Demo": subscriptions.first.world.isDemo, "Energy" : subscriptions.first.world.totalEnergy, "Warming": subscriptions.first.world.totalWarming};
+    jsonMapData["UserActivity"] = context.engine.auths.where((a) {
+    	if(a is AuthUser)
+    		return ((a as AuthUser).activeContext != null);
+    }).fold("", (v, a) => v + "${(a as AuthUser).name}[${(a as AuthUser).energyPocket}]; ");
     jsonMap.putIfAbsent("data", () => jsonMapData);
     return JSON.encode(jsonMap);
   }
@@ -105,12 +111,18 @@ class User {
       if(socketAct != null && socketAct.readyState == WebSocket.OPEN)
       socketAct.close();
       socketAct = null;
+    	context.deActive();
       return;
     }
-    if(socketAct != null && socketAct.readyState == WebSocket.OPEN)
-     socketAct.add(getSendData());
-    else
-      socketAct = null;
+
+    if(socketAct != null && socketAct.readyState == WebSocket.OPEN){
+    	context.doActive();
+    	socketAct.add(getSendData());
+    }
+    else {
+    	context.deActive();
+    	socketAct = null;
+    }
   }
 
   List<WorldSubscription> subscriptions = new List<WorldSubscription>();

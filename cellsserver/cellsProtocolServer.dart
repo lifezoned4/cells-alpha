@@ -27,7 +27,7 @@ class ServerCommEngine {
 
   Map<String, RestfulCommand> restfulCommands = new Map<String, RestfulCommand>();
 
-  AuthEngine authEngine = new AuthEngine();
+  AuthEngine authEngine = null;
 
 
   World world;
@@ -46,6 +46,8 @@ class ServerCommEngine {
       return;
     }
 
+    authEngine = new AuthEngine();
+
     World.persitActive = true;
     world.start();
   }
@@ -54,7 +56,7 @@ class ServerCommEngine {
     restfulCommands.putIfAbsent(command.commandName, () => command);
   }
 
-  Map<int, User> dealWithWebSocket(String message, WebSocket conn){
+  dealWithWebSocket(String message, WebSocket conn){
     _logger.info(message);
     Map jsonMap = JSON.decode(message);
     switch(jsonMap["command"]){
@@ -85,7 +87,21 @@ class ServerCommEngine {
     try {
       Map<String, dynamic> msg = JSON.decode(json);
       Map<String, dynamic> command = JSON.decode(msg["msg"]);
-      AuthContext context = new AuthContext(msg["username"], new BigInteger(msg["pubKey"], 16));
+      AuthContext context = new AuthContext(msg["username"], new BigInteger(msg["pubKey"], 16), authEngine);
+      if(command.containsKey("createtoken") && command["command"] == "CreateUser")
+      {
+      	try {
+      		BigInteger biToken = new BigInteger(command["createtoken"], 16);
+      		authEngine.createUser(msg["username"],new BigInteger(msg["pubKey"], 16), biToken);
+      	}
+      	on Exception catch(ex){
+      		_logger.warning("User Creation Exception", ex);
+      		return ex.toString();
+      	}
+      	return "User created!";
+      }
+      if(!context.isValid())
+      	return "Context-Pair userName, PubKey unknown!";
       if(valideSigning(msg) && restfulCommands.containsKey(command["command"]))
         return restfulCommands[command["command"]].dealWithCommand(command, context);
       else
@@ -212,7 +228,7 @@ class RestfulWebSocketAuthUser extends  RestfulCommand {
 
  String dealWithCommand(Map<String, dynamic> jsonMap, AuthContext context){
    super.dealWithCommand(jsonMap, context);
-   int tokken = new Random().nextInt(1<<32 -1);
+   int token = new Random().nextInt(1<<32 -1);
 
    User foundUser = null;
    Iterable iterFoundUser = engine.world.users.keys.where((u) => u.isAdmin && u.username == context.username);
@@ -220,7 +236,7 @@ class RestfulWebSocketAuthUser extends  RestfulCommand {
     foundUser = iterFoundUser.first;
 
    if(foundUser == null){
-    User newUser = new User(context.username, context.pubKey, tokken);
+    User newUser = new User(context.username, context.pubKey, token, context);
     newUser.isAdmin = true;
     newUser.ticksLeft = ticksInTokken;
     engine.world.users[newUser] = 0;
@@ -232,9 +248,9 @@ class RestfulWebSocketAuthUser extends  RestfulCommand {
    }
    else
    {
-     foundUser.lastSendToken = tokken;
+     foundUser.lastSendToken = token;
      foundUser.ticksLeft = ticksInTokken;
    }
-   return tokken.toString();
+   return token.toString();
  }
 }

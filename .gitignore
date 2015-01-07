@@ -6,3 +6,4 @@ cellsweb/packages
 cellsweb/.settings/
 docs/Thesis/papers
 docs/Thesis/*.pdf
+cellsweb/build
