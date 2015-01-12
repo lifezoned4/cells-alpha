@@ -19,11 +19,10 @@ class FilePersistContext {
   	_logger.info("START LOADING....");
     World newWorld = new World(ServerCommEngine.width, ServerCommEngine.height);
     File persistedWorld = new File("saves/world");
- 
+
     if(!persistedWorld.existsSync())
       persistedWorld.createSync();
-    
-    persistedWorld.openRead();
+
     int i = 0;
     persistedWorld.readAsLinesSync().forEach((line) {
     	// _logger.info("decoding: $line");
@@ -47,7 +46,6 @@ class FilePersistContext {
 
   static void wirteSave(World world){
     File persistedWorld = new File("saves/world");
-    persistedWorld.openWrite();
     String totalFile = "";
     world.objects.forEach((o){
        Map<String, dynamic> jsonMap = {"x": o.x, "y": o.y,
