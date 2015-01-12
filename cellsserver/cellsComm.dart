@@ -10,7 +10,7 @@ import 'cellsProtocolServer.dart';
 
 final _logger = new Logger("cellsComm");
 
-final String _ip = "127.0.0.1";
+final String _ip = "192.168.17.134";
 final int _port = 8086;
 
 

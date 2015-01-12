@@ -1,7 +1,5 @@
 library auth;
 
-
-
 import 'cellsProtocolServer.dart';
 import 'package:bignum/bignum.dart';
 import 'dart:io';
