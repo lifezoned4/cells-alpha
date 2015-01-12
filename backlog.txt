@@ -1,0 +1,38 @@
+Backlog to Alpha 3.0
+--------------------
+
+
+Alpha 2.1:
+- Users should have a login on the server and a start energy for use.
+	[X] Different logins not only test/test
+		[X] login should be definied by user password and creates a unique identifier (private key) which is used to sign 
+	    	   	logins. 
+		[X] Username -> public key is saved on the server.
+	[ ] Every login has a energy pocket which is counted upwords every minute
+	[ ] Cells are assigned to a userid which is assigned to a public key
+
+// {userid: <integer>, username: <name>, pubkey: <BigInteger>, energypocket: <int>, lastlogin: <timestamp>}
+
+[X] Users logged in in the server should be display
+
+- World should show list of owned Cells by a user
+
+
+Alpha: 2.4:
+- Interface for dealing with the assembler code should be reinvented
+- Create Cell interface should be created
+- Pause button in cells to Edit there code on runtime
+- Kill for energy button on cells to put energy back in the own pocket
+
+Alpha: 2.3:
+- Graph for activity should be displayed on the side. 
+
+
+Alpha 2.2:
+- Server should log state every minute.
+	[ ] Actions should be logged when they happen
+	[ ] Timestamped log of graph on cell count energy count should be logged
+
+Alpha 2.X:
+- JavaScript Version should not fail on websockets problems
+	[ ] Test the WebSocket communication on JavaScript version of the client
