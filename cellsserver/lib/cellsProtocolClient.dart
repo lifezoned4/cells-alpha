@@ -66,6 +66,7 @@ class ClientCommEngine {
   ClientCommEngine.fromUser(this.serverURL, this.username, String password) {
     keyPair = dsa.fromSecretUserPassword(username, password);
     initCache(width, height);
+    _doTokeneExchange();
   }
 
   ClientCommEngine.fromKeyPair(this.serverURL, DsaKeyPair this.keyPair) {
@@ -73,16 +74,34 @@ class ClientCommEngine {
   }
 
   initWebSocket(int token) {
-    var webSocket = new WebSocket("ws://" + serverURL + webSocketNode);
-    webSocket.onOpen.listen((e) {
+  	if(ws != null)
+  		ws.close();
+  	ws = new WebSocket("ws://" + serverURL + webSocketNode);
+
+    ws.onOpen.listen((e) {
       Map jsonMap = new Map();
       jsonMap.putIfAbsent("command", () => "token");
       jsonMap.putIfAbsent("data", () => token);
-      webSocket.send(JSON.encode(jsonMap));
-
-      ws = webSocket;
+      ws.send(JSON.encode(jsonMap));
       ws.onMessage.listen(_dealWithWebSocketMsg);
     });
+
+    ws.onClose.listen((e) {
+    	_doTokeneExchange();
+    });
+
+    ws.onError.listen((e) {
+    	_doTokeneExchange();
+    });
+  }
+
+  void _doTokeneExchange() {
+    this.commandWebSocketAuth((String response) {
+          		int parsedTokken = int.parse(response, onError: (wrongInt) => 0);
+          		if (parsedTokken != 0) this.initWebSocket(parsedTokken);
+          		else
+          			_doTokeneExchange();
+          	}, ClientCommEngine.AdminMode);
   }
 
   int width = 10;
@@ -157,12 +176,8 @@ class ClientCommEngine {
         switch (command) {
           case "ticksLeft":
             if (onDelayStatusChange != null) onDelayStatusChange(value);
-            if (value == 0) {
-              commandWebSocketAuth((tokken) {
-                this.token = int.parse(tokken);
-                onErrorChange("New tokken: $tokken");
-                initWebSocket(int.parse(tokken));
-              }, mode);
+            if (value <= 0) {
+           		ws.close();
             }
             break;
           case "Selection":

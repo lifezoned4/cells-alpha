@@ -99,11 +99,6 @@ InitClient(String url, String user, String password) {
 
 	commEngine.retrieveWorldSize();
 
-	commEngine.commandWebSocketAuth((String response) {
-		int parsedTokken = int.parse(response, onError: (wrongInt) => 0);
-		if (parsedTokken != 0) commEngine.initWebSocket(parsedTokken);
-	}, ClientCommEngine.AdminMode);
-
 	TextAreaElement textareaGreenCode = querySelector("#greenCodeContext");
 	TextAreaElement infoarea = querySelector("#infoareaText");
 	TextAreaElement textareaRegisters = querySelector("#greenCodeContextRegisters");
