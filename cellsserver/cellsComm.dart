@@ -1,6 +1,7 @@
 library comm;
 import 'package:logging/logging.dart';
-import 'package:logging_handlers/logging_handlers_shared.dart';
+import 'package:logging_handlers/server_logging_handlers.dart';
+import 'package:logging_handlers/logging_handlers_shared.dart'; 
 
 import 'dart:convert';
 import 'dart:io';
@@ -17,8 +18,11 @@ final int _port = 8086;
 ServerCommEngine _serverCommEngine;
 
 main(){
-    Logger.root.onRecord.listen(new LogPrintHandler());
-   _logger.info("Starting up Cells Communication Layer");
+    Logger.root.level = Level.INFO;
+    var loggerStream = Logger.root.onRecord.asBroadcastStream();
+    loggerStream.listen(new SyncFileLoggingHandler("saves/logging"));
+    loggerStream.listen(new LogPrintHandler());
+    _logger.info("Starting up Cells Communication Layer");
    _logger.info("WebServer will be listening on ${_ip}:${_port}");
 
    runZoned((){
@@ -41,7 +45,7 @@ main(){
         }
        } else if (request.uri.path == "/commands" && request.method == 'POST'){
           Encoding.getByName("ASCII").decodeStream(request).then(
-                                                              (t){_logger.info("Request POST: " + t);
+                                                              (t){_logger.fine("Request POST: " + t);
                                                                   String reponse =_serverCommEngine.dealWithRestful(t);
                                                                   request.response.headers.set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
                                                                   request.response.headers.set("Access-Control-Allow-Origin","*");
@@ -81,22 +85,14 @@ main(){
   }
   , onError: (dynamic err) {
     try {
-    _logger.warning("Zoned Error: $err");
-    _logger.warning(err.stackTrace.toString());
-    }
+      _logger.shout("Zoned Error: $err");    }
     catch(ex){
-      try {
-      _logger.warning("Yaw Dog, Zoned Zoned Error");
-      }
-      catch(exkill){
-        _logger.warning("SILENCE, I KILL YOU!");
-      }
+      _logger.shout("Yaw Dog, Zoned Zoned Error");
     }
    });
 }
 
 onWebSocketConn(WebSocket conn) {
-  _logger.info("Something Connected");
   conn.listen(new CellsWebSocketConnection(conn).onWebSocketMsg);
 }
 

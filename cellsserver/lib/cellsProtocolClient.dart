@@ -99,8 +99,10 @@ class ClientCommEngine {
     this.commandWebSocketAuth((String response) {
           		int parsedTokken = int.parse(response, onError: (wrongInt) => 0);
           		if (parsedTokken != 0) this.initWebSocket(parsedTokken);
-          		else
-          			_doTokeneExchange();
+          		else {
+          		   print(response);
+          		  _doTokeneExchange();          		
+          		}
           	}, ClientCommEngine.AdminMode);
   }
 
