@@ -7,3 +7,4 @@ cellsweb/.settings/
 docs/Thesis/papers
 docs/Thesis/*.pdf
 cellsweb/build
+cellsserver/saves/
