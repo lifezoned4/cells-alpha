@@ -231,7 +231,7 @@ class Neighbourhood {
 }
 
 class World {
-  int delay = 20;
+  int delay = 100;
 
   static List<World> worlds = new List<World>();
 
@@ -259,7 +259,7 @@ class World {
 
   World(this.width, this.height) {
     objects = newState(width, height, State.Void);
-    measurement = new MeasurementEngine(new DateTime.now(), this);
+    measurement = new MeasurementEngine(this);
     worlds.add(this);
   }
 
@@ -565,41 +565,78 @@ LABEL #1771;
 class MeasurementEngine {
 
   String pathTo = 'saves/measurements/';
-  DateTime startOf;
+  DateTime lastFileDt;
   World modell;
   File fileTo;
   IOSink _sink;
 
-  List<Measurement> measurements =
-      [MeasurmentRelevator.isGreen, MeasurmentRelevator.isBlue, MeasurmentRelevator.isRed]
-         .fold([], (List<Measurement>l, r) 
-         {
-            l.addAll([MeasurmentRelevator.isCell, MeasurmentRelevator.isPureEnergy]
-            .fold([], (List<Measurement> ll, rr) {
-              ll.add(new Measurement([r, rr], MeasurementSelector.EnergyCount));
-              return ll;
-            }));
-            return l;
-         });
-  
+  static int TicksPerFile = 60 * 10 * 2; /* 10 ticks/s * 60s  * 2 */
+  int ticksHandled = 0;
+
+  List<Measurement> measurements;
+
   static String dtToStamp(DateTime dt) => "${dt.year.toString().padLeft(4, "0")}${dt.month.toString().padLeft(2, "0")}${dt.day.toString().padLeft(2, "0")}${dt.hour.toString().padLeft(2, "0")}${dt.minute.toString().toString().padLeft(2, "0")}${dt.second.toString().padLeft(2, "0")}";
-  
-  MeasurementEngine(this.startOf, this.modell) {
-    fileTo = new File(pathTo + 'measurement-${dtToStamp(startOf)}');
-    if (!fileTo.existsSync()) {
-      fileTo.createSync();
-    }
-    _sink = fileTo.openWrite(mode: FileMode.APPEND);
-    _sink.writeln("Tick; ${measurements.fold("", (s, m) => "$s ${m.getName()};")}");
+
+  MeasurementEngine(this.modell) {
+
+  	measurements = new List<Measurement>();
+
+  	addVariantMeasurementsForSelector(MeasurementSelector.EnergyCount, [MeasurmentRelevator.isGreen, MeasurmentRelevator.isBlue, MeasurmentRelevator.isRed], [MeasurmentRelevator.isCell, MeasurmentRelevator.isPureEnergy]);
+  	addVariantMeasurementsForSelector(MeasurementSelector.UniqueCount, [MeasurmentRelevator.isGreen, MeasurmentRelevator.isBlue, MeasurmentRelevator.isRed], [MeasurmentRelevator.isCell, MeasurmentRelevator.isPureEnergy]);
+  	addVariantMeasurementsForSelector(MeasurementSelector.RegOPs, [MeasurmentRelevator.isGreen, MeasurmentRelevator.isBlue, MeasurmentRelevator.isRed], [MeasurmentRelevator.isCell]);
+
+  	createMeasurementFile();
+  }
+
+  void addVariantMeasurementsForSelector(MeasurementSelector p, List<MeasurmentRelevator> colors,  List<MeasurmentRelevator> types) {
+    measurements.addAll(
+        		colors
+               .fold([], (List<Measurement>l, r)
+               {
+                  l.addAll(types
+                  .fold([], (List<Measurement> ll, rr) {
+                    ll.add(new Measurement([r, rr], p));
+                    return ll;
+                  }));
+                  return l;
+               }));
+  }
+
+  void createMeasurementFile() {
+  	lastFileDt = new DateTime.now();
+    var d = new Directory(pathTo);
+    if(!d.existsSync())
+    	d.createSync(recursive: true);
+    fileTo = new File(pathTo + 'measurement');
+        if (fileTo.existsSync()) {
+          fileTo.renameSync(pathTo +'measurement-failure-${dtToStamp(new DateTime.now())}');
+        }
+      	fileTo.createSync();
+        if(_sink != null){
+
+        }
+        _sink = fileTo.openWrite(mode: FileMode.APPEND);
+        _sink.writeln("Tick, ${measurements.fold("", (s, m) => "$s ${m.getName()},")}");
   }
 
   void DoMeasure() {
     measurements.forEach((m) => m.reset());
-    
+
     modell.objects.forEach((o) => measurements.forEach((m) => m.pushObject(o)));
 
-    _sink.writeln("${modell.ticksSinceStart};${measurements.fold("", (s, m) =>  "$s ${m.getValue()};")}");
-  }
+    _sink.writeln("${modell.ticksSinceStart}, ${measurements.fold("", (s, m) =>  "$s ${m.getValue()},")}");
+
+    ticksHandled++;
+    if(ticksHandled > TicksPerFile)
+    {
+    	ticksHandled = 0;
+    	Future.wait([_sink.close().whenComplete(() {
+      	fileTo.renameSync(pathTo + "measurement-${dtToStamp(lastFileDt)}-${dtToStamp(new DateTime.now())}.csv");
+      	createMeasurementFile();
+    	})]
+    	);
+    }
+   }
 }
 
 class Measurement {
@@ -611,11 +648,11 @@ class Measurement {
 
   List<MeasurmentRelevator> rels;
   MeasurementSelector sel;
-  
+
   Measurement(this.rels, this.sel);
-  
+
   void pushObject(WorldObject o) {
-    _value += getMeasureValue(o);
+  		_value += getMeasureValue(o);
   }
 
   int getMeasureValue(WorldObject o) {
@@ -625,18 +662,18 @@ class Measurement {
 
   getName() => "${rels.fold("", (s, r) => "$s${r.name}")}${sel.name}";
 
-  
+
   int getValue() {
     return _value;
   }
 }
 
-class MeasurmentRelevator 
+class MeasurmentRelevator
 {
-  static MeasurmentRelevator isGreen = new MeasurementRelavatorState(State.Green);
-  static MeasurmentRelevator isBlue = new MeasurementRelavatorState(State.Blue);
-  static MeasurmentRelevator isRed = new MeasurementRelavatorState(State.Red);
-  
+  static MeasurmentRelevator isGreen = new HelperMeasurementRelavatorState(State.Green);
+  static MeasurmentRelevator isBlue = new HelperMeasurementRelavatorState(State.Blue);
+  static MeasurmentRelevator isRed = new HelperMeasurementRelavatorState(State.Red);
+
   static MeasurmentRelevator isCell = new MeasurmentRelevator()..isRelevant = ((WorldObject o) => o.cell != null)..name =  "Cell";
   static MeasurmentRelevator isPureEnergy = new MeasurmentRelevator()..isRelevant = ((WorldObject o) => o.cell == null && o._energy != null)..name = "Energy";
 
@@ -644,9 +681,9 @@ class MeasurmentRelevator
   String name;
 }
 
-class MeasurementRelavatorState extends MeasurmentRelevator 
+class HelperMeasurementRelavatorState extends MeasurmentRelevator
 {
-  MeasurementRelavatorState (State color){
+	HelperMeasurementRelavatorState (State color){
     name = "${color.name}";
     isRelevant = (WorldObject o) => o.getStateIntern() == color;
   }
@@ -657,7 +694,15 @@ class MeasurementSelector
   static MeasurementSelector EnergyCount = new MeasurementSelector()
   ..select = ((WorldObject o) => o.getEnergyCount())
   ..name = "TotalEnergyCount";
-  
+
+  static MeasurementSelector UniqueCount = new MeasurementSelector()
+  ..select = ((WorldObject o) => 1)
+  ..name = "UniqueCount";
+
+  static MeasurementSelector RegOPs = new MeasurementSelector()
+  ..select = ((WorldObject o) => o.cell.greenCodeContext.code.length)
+  ..name = "RegOPs";
+
   Function select;
   String name;
 }
