@@ -27,7 +27,7 @@ class FilePersistContext {
     persistedWorld.readAsLinesSync().forEach((line) {
     	// _logger.info("decoding: $line");
       Map jsonMap = JSON.decode(line);
-      WorldObject o = new WorldObject(jsonMap["x"], jsonMap["y"], new State(jsonMap["state"]));
+      WorldObject o = new WorldObject(jsonMap["x"], jsonMap["y"], State.allStates.firstWhere((s) => s.toValue() == jsonMap["state"]));
       if(jsonMap.containsKey("greenCode"))
       {
       	if(jsonMap["greenCode"] is List)
