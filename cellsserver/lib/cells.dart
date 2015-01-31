@@ -598,6 +598,8 @@ class MeasurementEngine {
   	addVariantMeasurementsForSelector(MeasurementSelector.UniqueCount, [MeasurmentRelevator.isGreen, MeasurmentRelevator.isBlue, MeasurmentRelevator.isRed], [MeasurmentRelevator.isCell, MeasurmentRelevator.isPureEnergy]);
   	addVariantMeasurementsForSelector(MeasurementSelector.RegOPs, [MeasurmentRelevator.isGreen, MeasurmentRelevator.isBlue, MeasurmentRelevator.isRed], [MeasurmentRelevator.isCell]);
 
+
+
   	createMeasurementFile();
   }
 

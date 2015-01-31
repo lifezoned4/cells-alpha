@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:logging/logging.dart';
 import 'cells.dart';
 import 'dart:convert';
+import 'dart:mirrors';
 
 Logger _logger = new Logger("greenCode");
 
@@ -290,48 +291,34 @@ abstract class GreenCode {
 	}
 
 	static GreenCode getRandomCode(int operand) {
-		int codesLength = 10;
 		var rnd = new Random();
 		String operandFlag = possibleFlags.elementAt(rnd.nextInt(possibleFlags.length));
-		switch (rnd.nextInt(codesLength)) {
-			case 0:
-				return new GreenCodeLoad(operandFlag, operand);
-			case 1:
-				return new GreenCodeStore(operandFlag, operand);
-			case 2:
-				return new GreenCodeAdd(operandFlag, operand);
-			case 3:
-				return new GreenCodeSub(operandFlag, operand);
-			case 4:
-				return new GreenCodeDiv(operandFlag, operand);
-			case 5:
-				return new GreenCodeMult(operandFlag, operand);
-			case 6:
-				return new GreenCodeGet(operandFlag, operand);
-			case 7:
-				return new GreenCodeJzero(operandFlag, operand);
-			case 8:
-				return new GreenCodeCopy(operandFlag, operand);
-			case 9:
-				return new GreenCodeLabel(operandFlag, operand);
-		}
-		throw new GreenCodeInvalidOperation("Random Error: SHOULD NEVER HAPPEN!");
+		GreenCode i = possibleGreenCodes[rnd.nextInt(possibleGreenCodes.length)];
+		ClassMirror cm = reflectClass(i.runtimeType);
+    return cm.newInstance(new Symbol(""),[operandFlag, operand]).reflectee;
 	}
 
+
+	static List<GreenCode> possibleGreenCodes = [GreenCodeLoad.me,
+	                                             GreenCodeStore.me,
+	                                             GreenCodeAdd.me,
+	                                             GreenCodeSub.me,
+	                                             GreenCodeDiv.me,
+	                                             GreenCodeMult.me,
+	                                             GreenCodeGet.me,
+	                                             GreenCodeJzero.me,
+	                                             GreenCodeCopy.me,
+	                                             GreenCodeLabel.me
+	                                             ];
 	static GreenCode byName(String name, String operandFlag, int operand) {
-		GreenCode r = null;
-		if (GreenCodeLoad.me.getName() == name) r = new GreenCodeLoad(operandFlag, operand);
-		if (GreenCodeStore.me.getName() == name) r = new GreenCodeStore(operandFlag, operand);
-		if (GreenCodeAdd.me.getName() == name) r = new GreenCodeAdd(operandFlag, operand);
-		if (GreenCodeSub.me.getName() == name) r = new GreenCodeSub(operandFlag, operand);
-		if (GreenCodeDiv.me.getName() == name) r = new GreenCodeDiv(operandFlag, operand);
-		if (GreenCodeMult.me.getName() == name) r = new GreenCodeMult(operandFlag, operand);
-		if (GreenCodeGet.me.getName() == name) r = new GreenCodeGet(operandFlag, operand);
-		if (GreenCodeJzero.me.getName() == name) r = new GreenCodeJzero(operandFlag, operand);
-		if (GreenCodeCopy.me.getName() == name) r = new GreenCodeCopy(operandFlag, operand);
-		if (GreenCodeLabel.me.getName() == name) r = new GreenCodeLabel(operandFlag, operand);
-		if (r == null) throw new GreenCodeInvalidOperation("Illiagel OperandName");
-		return r;
+		var i = possibleGreenCodes.firstWhere((gc) => gc.getName() == name, orElse: () => null);
+		if(i != null)
+		{
+			ClassMirror cm = reflectClass(i.runtimeType);
+			return cm.newInstance(new Symbol(""),[operandFlag, operand]).reflectee;
+		}
+		else
+			throw new GreenCodeInvalidOperation("Illiagel OperandName");
 	}
 }
 
