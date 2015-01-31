@@ -1,7 +1,7 @@
 Backlog to Alpha 3.0
 --------------------
 Alpha 2.1.2:
-[ ] Login failure should be displayed
+[X] Login failure should be displayed
 [ ] Success and Failure of Creating a user should be displayed
 
 Alpha 2.1.3:

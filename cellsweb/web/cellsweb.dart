@@ -167,13 +167,24 @@ void main() {
 
 	DivElement errorbar = querySelector('#errorbar');
 
+	errorbar.text = "Starting...";
+
 	ButtonElement create = querySelector("#create")..onClick.listen((e)
 			{
 				if(password.value != confirmepassword.value) errorbar.text = "Creating User failed: Password does not match confirm";
+				else if(password.value.length < 4) errorbar.text = "Password to short";
+				else if(user.value.length < 4) errorbar.text = "Username to short";
+
 				else
 				{
+					try {
 					commEngine = new ClientCommEngine.fromUser(url.value, user.value, password.value, (data){});
 					commEngine.commandCreateUser((msg) => errorbar.text = msg, createToken.value);
+					}
+					on Exception catch(ex)
+					{
+						errorbar.text = ex.toString();
+					}
 				}
 			}
 	);
