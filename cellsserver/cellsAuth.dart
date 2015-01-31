@@ -46,18 +46,16 @@ class AuthEngine {
 		File usersFile = new File("saves/users");
 		 if(usersFile.existsSync())
  		 {
- 			 usersFile.openRead();
  			 usersFile.readAsLinesSync().forEach((line) =>  readUser(line));
  		 }
 	}
 
 	writeUsers(){
 		File usersFile = new File("saves/users");
-     		if(usersFile.existsSync())
+     		if(!usersFile.existsSync())
      		{
-     			usersFile.deleteSync();
+     			usersFile.createSync();
      		}
-   			usersFile.createSync();
 				var totalString = "";
   			auths.where((a) => a is AuthUser).forEach((user) => totalString += user.toString() + "\n");
   			usersFile.writeAsStringSync(totalString);
@@ -67,7 +65,6 @@ class AuthEngine {
 		 File tokenFile = new File("saves/createTokens");
 		 if(tokenFile.existsSync())
 		 {
-			 tokenFile.openRead();
 			 tokenFile.readAsLinesSync().forEach((line) {
 				 if(line != "") createTokens.add(new BigInteger(line, 16));
 			 });
@@ -76,14 +73,13 @@ class AuthEngine {
 
 	writeTokenList(){
 			File tokenFile = new File("saves/createTokens");
-   		if(tokenFile.existsSync())
+   		if(!tokenFile.existsSync())
    		{
-   			tokenFile.deleteSync();
 				tokenFile.createSync();
+   		}
 				var totalString = "";
 				createTokens.forEach((t) => totalString += t.toRadix(16) + "\n");
 				tokenFile.writeAsStringSync(totalString);
-   		}
 	}
 
 	readUser(String jsonLine){
