@@ -432,17 +432,20 @@ class GreenCodeGet extends GreenCode {
 	onContextDo(GreenCodeContext context) {
 		int start = context.registers[GreenCodeContext.RegIP] % context.code.length;
 		int i = start;
+		bool found = false;
 		do {
 			GreenCode code = context.code[i];
 			if (code is GreenCodeLabel) {
 				if (code.valueOnContext(context) == valueOnContext(context)) {
+					found = true;
 					break;
 				}
 			}
 			i++;
 			i %= context.code.length;
 		} while (i != start);
-		context.registers[GreenCodeContext.RegReadHead] = i;
+		if(found)
+			context.registers[GreenCodeContext.RegReadHead] = i;
 	}
 }
 
@@ -469,7 +472,7 @@ class GreenCodeJzero extends GreenCode {
 	}
 
 	onContextDo(GreenCodeContext context) {
-		if (context.registers[GreenCodeContext.RegALU] == 0) context.registers[GreenCodeContext.RegIP] = context.registers[GreenCodeContext.RegIP] + valueOnContext(context) % context.code.length;
+		if (context.registers[GreenCodeContext.RegALU] == 0) context.registers[GreenCodeContext.RegIP] = valueOnContext(context) % context.code.length;
 	}
 }
 
