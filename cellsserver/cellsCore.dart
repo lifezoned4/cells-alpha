@@ -61,6 +61,7 @@ class User {
 					if(selected != null){
 						if(selected.getStateIntern() != State.Void)
 						{
+							subscriptions.first.world.measurement.putInput(jsonMap["data"], username, selected.x, selected.y);
 							selected.cell = new Cell.withCode(jsonMap["data"]);
 							selectedCellId = selected.cell.id;
 						}

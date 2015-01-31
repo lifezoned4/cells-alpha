@@ -627,11 +627,20 @@ class MeasurementEngine {
           fileTo.renameSync(pathTo +'measurement-failure-${dtToStamp(new DateTime.now())}');
         }
       	fileTo.createSync();
-        if(_sink != null){
-
-        }
         _sink = fileTo.openWrite(mode: FileMode.APPEND);
-        _sink.writeln("Tick, ${measurements.fold("", (s, m) => "$s ${m.getName()},")}");
+        _sink.writeln("Tick, ActiveUser, ${measurements.fold("", (s, m) => "$s ${m.getName()},")}");
+  }
+
+  void putInput(String input, String user, int x, int y ){
+  	var worldFile = new File(pathTo + "measurement-input-${dtToStamp(new DateTime.now())}");
+		if(!worldFile.existsSync()){
+	  	worldFile.createSync();
+			worldFile.writeAsStringSync("$user($x,$y) on ${modell.ticksSinceStart}: $input");
+		}
+		else
+		{
+			worldFile.writeAsStringSync(input, mode: FileMode.APPEND);
+		}
   }
 
   void DoMeasure() {
@@ -639,12 +648,14 @@ class MeasurementEngine {
 
     modell.objects.forEach((o) => measurements.forEach((m) => m.pushObject(o)));
 
-    _sink.writeln("${modell.ticksSinceStart}, ${measurements.fold("", (s, m) =>  "$s ${m.getValue()},")}");
+    _sink.writeln("${modell.ticksSinceStart}, ${modell.users.keys.where((u) => u.context.isActive).fold(0, (i, u) => i + 1)}, ${measurements.fold("", (s, m) =>  "$s ${m.getValue()},")}");
 
     ticksHandled++;
     if(ticksHandled > TicksPerFile)
     {
     	ticksHandled = 0;
+    	var worldFile = new File("saves/world");
+    	worldFile.copy(pathTo + "measurement-worldsnapshot-${dtToStamp(new DateTime.now())}");
     	Future.wait([_sink.close().whenComplete(() {
       	fileTo.renameSync(pathTo + "measurement-${dtToStamp(lastFileDt)}-${dtToStamp(new DateTime.now())}.csv");
       	createMeasurementFile();
