@@ -72,7 +72,7 @@ class User {
         break;
 
         case "demo":
-          subscriptions.first.world.isDemo = !subscriptions.first.world.isDemo;
+          subscriptions.first.world.randomStateAdd();
         break;
       }
   }

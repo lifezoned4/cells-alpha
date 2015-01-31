@@ -114,6 +114,11 @@ class Cell {
     return o.getEnergyCount() - consumed;
   }
 
+  Cell.withRandom(int count){
+  	id = Cell.getNextCellId(this);
+  	greenCodeContext= new GreenCodeContext.byRandom(count);
+  }
+
   Cell.withList(List codes) {
     id = Cell.getNextCellId(this);
     greenCodeContext = new GreenCodeContext.byList(codes);
@@ -266,47 +271,17 @@ class World {
   randomStateAdd() {
     int i = 0;
     Random rnd = new Random();
-    while (i < 20) {
+    while (i < 5) {
       int x = rnd.nextInt(width);
       int y = rnd.nextInt(height);
       List<State> selectFrom = State.allStates.where((s) => s != State.Void && s != State.VoidEnd).toList();
       State state = selectFrom.elementAt(rnd.nextInt(selectFrom.length));
       WorldObject newObject = new WorldObject(x, y, state);
       newObject.setEnergyCount(rnd.nextInt(CellsConfiguration.baseEnergy * 4));
-      newObject.cell = new Cell.withCode('''  
-LABEL #0;
-GET #317;
-LOAD @2;
-STORE #27;
-LABEL #327;
-LOAD #700;
-SUB @10;
-JZERO @27;
-LOAD @28;
-ADD #1;
-MULT #17;
-STORE #8;
-STORE #28;
-GET #327;
-LOAD @2;
-STORE #1;
-LABEL #317;
-GET #1;
-LOAD @2;
-STORE #3;
-GET #0;
-COPY #0;
-LOAD @10;
-ADD #1;
-MULT #2;
-STORE #7;
-STORE #10
-GET #327;
-LOAD @2;
-STORE #1;
-LABEL #1;
-''');
+      newObject.cell = new Cell.withRandom(50);
       // newObject.cell.greenCodeContext = new GreenCodeContext.byRandom(30);
+
+      if(objects[x + y * width].getStateIntern() == State.Void)
       objects.replaceRange(x + y * width, (x + y * width) + 1, [newObject]);
       i++;
     }
