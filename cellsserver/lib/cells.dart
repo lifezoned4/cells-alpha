@@ -271,27 +271,40 @@ class World {
       int y = rnd.nextInt(height);
       List<State> selectFrom = State.allStates.where((s) => s != State.Void && s != State.VoidEnd).toList();
       State state = selectFrom.elementAt(rnd.nextInt(selectFrom.length));
-      WorldObject newObject = new WorldObject(x, y, State.Green);
+      WorldObject newObject = new WorldObject(x, y, state);
       newObject.setEnergyCount(rnd.nextInt(CellsConfiguration.baseEnergy * 4));
       newObject.cell = new Cell.withCode('''  
-GET #1771;
+LABEL #0;
+GET #317;
+LOAD @2;
+STORE #27;
+LABEL #327;
+LOAD #700;
+SUB @10;
+JZERO @27;
+LOAD @28;
+ADD #1;
+MULT #17;
+STORE #8;
+STORE #28;
+GET #327;
+LOAD @2;
+STORE #1;
+LABEL #317;
+GET #1;
 LOAD @2;
 STORE #3;
-LOAD #0;
-STORE #2;
-LOAD #1;
-LOAD @30;
-ADD #3;
-MULT #2;
-STORE #8;
-STORE #30;
+GET #0;
 COPY #0;
-LOAD #2;
+LOAD @10;
 ADD #1;
+MULT #2;
 STORE #7;
-LABEL #1771;
-
-
+STORE #10
+GET #327;
+LOAD @2;
+STORE #1;
+LABEL #1;
 ''');
       // newObject.cell.greenCodeContext = new GreenCodeContext.byRandom(30);
       objects.replaceRange(x + y * width, (x + y * width) + 1, [newObject]);
