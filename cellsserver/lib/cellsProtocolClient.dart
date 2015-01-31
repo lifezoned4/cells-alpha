@@ -1,6 +1,7 @@
 library protocolClient;
 
 import 'dart:html';
+import 'dart:async';
 import 'dart:convert' show UTF8;
 import 'dart:convert' show JSON;
 import 'package:crypto/crypto.dart';
@@ -50,7 +51,7 @@ class ClientCommEngine {
 
   WebSocket ws;
   Function onDelayStatusChange;
-  Function onErrorChange;
+  Function onInfoStatus;
   Function onUpdatedCache;
   Function onSelectionInfo;
   Function onTotalEnergy;
@@ -63,7 +64,12 @@ class ClientCommEngine {
   int token;
 
 
-  ClientCommEngine.fromUser(this.serverURL, this.username, String password) {
+  ClientCommEngine.fromUser(this.serverURL, this.username, String password, this.onInfoStatus) {
+  	if(password == null || password.length == 0)
+  	{
+  		onInfoStatus("Password not set");
+  		throw new Exception("Init failed: Password not set");
+  	}
     keyPair = dsa.fromSecretUserPassword(username, password);
     initCache(width, height);
     _doTokeneExchange();
@@ -73,9 +79,12 @@ class ClientCommEngine {
     throw new Exception("Not implemented!");
   }
 
+  getCurrentWS() => ws;
+
   initWebSocket(int token) {
-  	if(ws != null)
+  	if(ws != null){
   		ws.close();
+  	}
   	ws = new WebSocket("ws://" + serverURL + webSocketNode);
 
     ws.onOpen.listen((e) {
@@ -101,7 +110,8 @@ class ClientCommEngine {
           		if (parsedTokken != 0) this.initWebSocket(parsedTokken);
           		else {
           		   print(response);
-          		  _doTokeneExchange();          		
+          		   onInfoStatus(response);
+          		  new Future((){new Timer(new Duration(seconds: 1),() => _doTokeneExchange);});
           		}
           	}, ClientCommEngine.AdminMode);
   }
@@ -131,7 +141,12 @@ class ClientCommEngine {
     jsonMap.putIfAbsent("data", () => {
       "x": x, "y": y
     });
-    ws.send(JSON.encode(jsonMap));
+    sendOnWsSafe(jsonMap);
+  }
+
+  void sendOnWsSafe(Map jsonMap) {
+  	int retryCounter = 0;
+    Future.doWhile(() {retryCounter++; if(retryCounter > 100) throw new Exception("WS Communication Error"); print("Wating on WS OPEN is ${getCurrentWS().readyState}"); return getCurrentWS().readyState != WebSocket.OPEN;}).then((_) =>  getCurrentWS().send(JSON.encode(jsonMap)));
   }
 
   spawnMassWebSocket(int state) {
@@ -140,14 +155,14 @@ class ClientCommEngine {
     jsonMap.putIfAbsent("data", () => {
       "state": state
     });
-    ws.send(JSON.encode(jsonMap));
+    sendOnWsSafe(jsonMap);
   }
 
   liveSelectedWebSocket(String greenCode) {
     Map jsonMap = new Map();
     jsonMap.putIfAbsent("command", () => "liveSelection");
     jsonMap.putIfAbsent("data", () => greenCode);
-    ws.send(JSON.encode(jsonMap));
+    sendOnWsSafe(jsonMap);
   }
 
   getEnergyFromSelectedWebSocket(int count) {
@@ -156,7 +171,7 @@ class ClientCommEngine {
     jsonMap.putIfAbsent("data", () => {
       "count": count
     });
-    ws.send(JSON.encode(jsonMap));
+    sendOnWsSafe(jsonMap);
   }
 
   sendDemo(){
@@ -164,7 +179,7 @@ class ClientCommEngine {
         jsonMap.putIfAbsent("command", () => "demo");
         jsonMap.putIfAbsent("data", () => {
         });
-        ws.send(JSON.encode(jsonMap));
+        sendOnWsSafe(jsonMap);
   }
 
   List<WorldObjectFacade> clientcache = new List<WorldObjectFacade>();
@@ -207,7 +222,7 @@ class ClientCommEngine {
           	onTotalEnergy(value);
           	break;
           case "error":
-            onErrorChange(value);
+            onInfoStatus(value);
             break;
           case "UserActivity":
           	onUserActivity(value);
@@ -238,7 +253,7 @@ class ClientCommEngine {
       msg = _sign(msg);
       _send(msg, callback);
       } catch (ex) {
-        onErrorChange("Getting World Size failed");
+        onInfoStatus("Getting World Size failed");
       }
   }
 
@@ -257,7 +272,7 @@ class ClientCommEngine {
       msg = _sign(msg);
       _send(msg, callback);
     } catch (ex) {
-      onErrorChange("Getting Info for $id failed");
+      onInfoStatus("Getting Info for $id failed");
     }
   }
 
@@ -278,7 +293,7 @@ class ClientCommEngine {
 		 msg = _sign(msg);
 	   _send(msg, callback);
       } catch (ex) {
-        onErrorChange("Creation failed");
+        onInfoStatus("Creation failed");
       }
   }
 
@@ -295,7 +310,7 @@ class ClientCommEngine {
       msg = _sign(msg);
       _send(msg, callback);
     } catch (ex) {
-      onErrorChange("Connection failed");
+      onInfoStatus("Connection failed");
     }
   }
 
