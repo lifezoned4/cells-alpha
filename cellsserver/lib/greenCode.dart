@@ -58,7 +58,7 @@ class Direction {
 }
 
 class GreenCodeContext {
-	static const int MaxNumber = 4092;
+	static const int MaxNumber = 4092*16;
 	static const int OperationsPerCycle = 1;
 
 	static const RegALU = 0;
@@ -480,7 +480,10 @@ class GreenCodeCopy extends GreenCode {
 			int pos = rnd.nextInt(list.length);
 			list.replaceRange(pos, pos, [GreenCode.getRandomCode(rnd.nextInt(GreenCodeContext.MaxNumber))]);
 		}
-		context.code.insertAll(valueOnContext(context) % context.code.length, list);
-		context.copyCost = list.length;
+		if(context.code.length < GreenCodeContext.MaxNumber)
+		{
+			context.code.insertAll(valueOnContext(context) % context.code.length, list);
+			context.copyCost = list.length;
+		}
 	}
 }
