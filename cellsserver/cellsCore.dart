@@ -72,8 +72,13 @@ class User {
         break;
 
         case "demo":
-          subscriptions.first.world.randomStateAdd();
-        break;
+        	subscriptions.first.world.clearWorld();
+        	int i = 0;
+        	while(i < 20){
+	          subscriptions.first.world.randomStateAdd();
+	        	i++;
+        	}
+				break;
       }
   }
 

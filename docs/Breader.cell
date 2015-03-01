@@ -14,4 +14,3 @@ LOAD #2;
 ADD #1;
 STORE #7;
 LABEL #1771;
-

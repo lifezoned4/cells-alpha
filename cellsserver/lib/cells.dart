@@ -236,7 +236,7 @@ class Neighbourhood {
 }
 
 class World {
-  int delay = 100;
+  int delay = 10;
 
   static List<World> worlds = new List<World>();
 
@@ -263,7 +263,7 @@ class World {
   int height;
 
   World(this.width, this.height) {
-    objects = newState(width, height, State.Void);
+    clearWorld();
     measurement = new MeasurementEngine(this);
     worlds.add(this);
   }
@@ -278,13 +278,36 @@ class World {
       State state = selectFrom.elementAt(rnd.nextInt(selectFrom.length));
       WorldObject newObject = new WorldObject(x, y, state);
       newObject.setEnergyCount(rnd.nextInt(CellsConfiguration.baseEnergy * 4));
-      newObject.cell = new Cell.withRandom(50);
-      // newObject.cell.greenCodeContext = new GreenCodeContext.byRandom(30);
+      newObject.cell = new Cell.withCode(
+""""
+      		GET #1771;
+          LOAD @2;
+          STORE #3;
+          LOAD #0;
+          STORE #2;
+          LOAD #1;
+          LOAD @30;
+          ADD #3;
+          MULT #2;
+          STORE #8;
+          STORE #30;
+          COPY #0;
+          LOAD #2;
+          ADD #1;
+          STORE #7;
+          LABEL #1771;
+"""
+      		);
 
       if(objects[x + y * width].getStateIntern() == State.Void)
       objects.replaceRange(x + y * width, (x + y * width) + 1, [newObject]);
       i++;
     }
+  }
+
+
+  clearWorld(){
+  	 objects = newState(width, height, State.Void);
   }
 
   WorldObject getWorldObjectWhereCellId(int id) {
@@ -558,7 +581,7 @@ class MeasurementEngine {
   File fileTo;
   IOSink _sink;
 
-  static int TicksPerFile = 60 * 10 * 2; /* 10 ticks/s * 60s  * 2 */
+  static int TicksPerFile = 60 * 10 * 10; /* 10 ticks/s * 60s  * 10 min */
   int ticksHandled = 0;
 
   List<Measurement> measurements;
