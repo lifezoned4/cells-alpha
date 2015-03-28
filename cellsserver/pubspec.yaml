@@ -1,6 +1,7 @@
 name: cellsserver
 description: Cells Server
 dependencies:
+  http_server: any
   bignum: any
   crypto: any
   logging: any
