@@ -234,7 +234,7 @@ class GreenCodeContext {
 	}
 
 	GreenCodeContext.byRandom(int count) {
-		Random rnd = new Random();
+		Random rnd = World.rnd;
 		while (count > 0) {
 			code.add(GreenCode.getRandomCode(rnd.nextInt(128)));
 			count--;
@@ -291,7 +291,7 @@ abstract class GreenCode {
 	}
 
 	static GreenCode getRandomCode(int operand) {
-		var rnd = new Random();
+		var rnd = World.rnd;
 		String operandFlag = possibleFlags.elementAt(rnd.nextInt(possibleFlags.length));
 		GreenCode i = possibleGreenCodes[rnd.nextInt(possibleGreenCodes.length)];
 		ClassMirror cm = reflectClass(i.runtimeType);
@@ -475,7 +475,7 @@ class GreenCodeCopy extends GreenCode {
 	onContextDo(GreenCodeContext context) {
 		List<GreenCode> list = context.codeRangeBetweenHeads();
 		if (list.length == 0) return;
-		var rnd = new Random();
+		var rnd = World.rnd;
 		if (rnd.nextInt(CellsConfiguration.probMutation) < 1) {
 			int pos = rnd.nextInt(list.length);
 			list.replaceRange(pos, pos, [GreenCode.getRandomCode(rnd.nextInt(GreenCodeContext.MaxNumber))]);

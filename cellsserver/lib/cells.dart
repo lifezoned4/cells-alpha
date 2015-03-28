@@ -4,8 +4,8 @@ import "dart:math";
 import "dart:io";
 
 
-import '../cellsPersist.dart';
-import '../cellsCore.dart';
+import "../cellsPersist.dart";
+import "../cellsCore.dart";
 
 import "greenCode.dart";
 
@@ -38,7 +38,7 @@ class State {
   int _value;
 
   State.random() {
-    Random rnd = new Random();
+    Random rnd = World.rnd;
     List<State> randomStateFrom = allStates.where((s) => s != VoidEnd && s != Void).toList();
     _value = randomStateFrom.elementAt(rnd.nextInt(randomStateFrom.length)).toValue();
   }
@@ -238,11 +238,13 @@ class Neighbourhood {
 class World {
   int delay = 10;
 
+  static Random rnd  = new Random(177777);
+
   static List<World> worlds = new List<World>();
 
   List<Cell> listOfCells = new List<Cell>();
 
-  static bool persitActive = false;
+  static bool persitActive = true;
   static int persistAfterTicks = 100;
   Timer timer;
   int ticksSinceStart = 0;
@@ -265,7 +267,7 @@ class World {
   World(this.width, this.height) {
     clearWorld();
     measurement = new MeasurementEngine(this);
-    worlds.add(this);
+    // worlds.add(this);
   }
 
   randomStateAdd() {
@@ -279,30 +281,31 @@ class World {
       WorldObject newObject = new WorldObject(x, y, state);
       newObject.setEnergyCount(rnd.nextInt(CellsConfiguration.baseEnergy * 4));
       newObject.cell = new Cell.withCode(
-""""
-      		GET #1771;
-          LOAD @2;
-          STORE #3;
-          LOAD #0;
-          STORE #2;
-          LOAD #1;
-          LOAD @30;
-          ADD #3;
-          MULT #2;
-          STORE #8;
-          STORE #30;
-          COPY #0;
-          LOAD #2;
-          ADD #1;
-          STORE #7;
-          LABEL #1771;
 """
-      		);
+GET #1771;
+LOAD @2;
+STORE #3;
+LOAD #0;
+STORE #2;
+LOAD #1;
+LOAD @30;
+ADD #3;
+MULT #2;
+STORE #8;
+STORE #30;
+COPY #0;
+LOAD #2;
+ADD #1;
+STORE #7;
+LABEL #1771;
+""");
 
       if(objects[x + y * width].getStateIntern() == State.Void)
       objects.replaceRange(x + y * width, (x + y * width) + 1, [newObject]);
       i++;
     }
+    doPersiting();
+    measurement.saveWorld();
   }
 
 
@@ -322,8 +325,7 @@ class World {
   }
 
   newUser(User user) {
-    Random rnd = new Random();
-    users.putIfAbsent(user, () => rnd.nextInt(objects.length));
+     users.putIfAbsent(user, () => rnd.nextInt(objects.length));
   }
 
   start() {
@@ -338,12 +340,16 @@ class World {
     }
   }
 
+  doPersiting(){
+    if (persitActive) FilePersistContext.wirteSave(this);
+  }
+
+
   tick() {
     ticksSinceStart++;
 
-    if (ticksSinceStart % persistAfterTicks == 0) if (persitActive) FilePersistContext.wirteSave(this);
+    if (ticksSinceStart % persistAfterTicks == 0) doPersiting();
 
-    int i = 0;
     // randomStateAdd();
     List<WorldObject> future = newState(width, height, State.Unknown);
 
@@ -493,7 +499,6 @@ class World {
   }
 
   cellularCellInjection(WorldObject fo, WorldObject past, List<WorldObject> pastNei) {
-    Random rnd = new Random();
     var it = pastNei.where((lw) => lw.cell != null).toList().where((lw) => lw.cell.greenCodeContext.nextInject() != Direction.NONE).toList().where((lw) => Neighbourhood.getObjectAtDirectionFrom(lw.cell.greenCodeContext.nextInject(), lw, objects, width, height) == past).toList();
     var l = it.toList();
     if (l.length == 1) {
@@ -641,6 +646,11 @@ class MeasurementEngine {
 		}
   }
 
+  void saveWorld(){
+        var worldFile = new File("saves/world");
+    	worldFile.copy(pathTo + "measurement-worldsnapshot-${dtToStamp(new DateTime.now())}");
+      }
+
   void DoMeasure() {
     measurements.forEach((m) => m.reset());
 
@@ -652,12 +662,11 @@ class MeasurementEngine {
     if(ticksHandled > TicksPerFile)
     {
     	ticksHandled = 0;
-    	var worldFile = new File("saves/world");
-    	worldFile.copy(pathTo + "measurement-worldsnapshot-${dtToStamp(new DateTime.now())}");
-    	Future.wait([_sink.close().whenComplete(() {
-      	fileTo.renameSync(pathTo + "measurement-${dtToStamp(lastFileDt)}-${dtToStamp(new DateTime.now())}.csv");
       	createMeasurementFile();
-    	})]
+    	saveWorld();
+        Future.wait([_sink.close().whenComplete(() {
+      	fileTo.renameSync(pathTo + "measurement-${dtToStamp(lastFileDt)}-${dtToStamp(new DateTime.now())}.csv");
+      })]
     	);
     }
    }

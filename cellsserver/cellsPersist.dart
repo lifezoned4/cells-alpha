@@ -14,11 +14,11 @@ class FilePersistContext {
 
   String path;
 
-  static World loadWorld(){
+  static World loadWorld(path){
 
   	_logger.info("START LOADING....");
     World newWorld = new World(ServerCommEngine.width, ServerCommEngine.height);
-    File persistedWorld = new File("saves/world");
+    File persistedWorld = new File(path);
 
     if(!persistedWorld.existsSync())
       persistedWorld.createSync();

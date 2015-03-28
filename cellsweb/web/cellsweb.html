@@ -9,69 +9,93 @@
   <body>
 
     <div style="background: rgb(0,33,0); width:1500px; height:625px">
-     <div  id="loginarea">
-       <label>cells:// </label><input type="url" value="127.0.0.1:8086" id="url">
-       <label>User: </label><input id="user">
-       <label>Password</label><input type="password" id="password">
-       <button id="connect">Connect</button>
-       <br>
-       <br>
-       <label>Fill out this additional data if you want to create a new user with the credantials used in the login above</label>
-       <br>
-       <label>Your given Alpha-Key:</label><input id="createtoken">
-       <label>Confirm above Password:</label><input type="password" id="cofirmepassword">
-       <button id="create">Create</button>
-     </div>
+      <div  id="loginarea">
+	<label>cells:// </label><input type="url" value="127.0.0.1:8086" id="url">
+	<label>User: </label><input id="user">
+	<label>Password</label><input type="password" id="password">
+	<button id="connect">Connect</button>
+	<br>
+	<br>
+	<label>Fill out this additional data if you want to create a new user with the credantials used in the login above</label>
+	<br>
+	<label>Your given Alpha-Key:</label><input id="createtoken">
+	<label>Confirm above Password:</label><input type="password" id="cofirmepassword">
+	<button id="create">Create</button>
+      </div>
 
-     <br>
-     <br>
+      <br>
+      <br>
 
-     <div id="clientarea" hidden=true>
-     <table>
-     <tr>
-      <td>
-        <table>
-        <tr>
-          <div id="infoarea"><textarea id="infoareaText" rows="1" cols="100"></textarea><Button id="demo">Seed</Button></div>
-          </tr>
-          <tr>
-          <div id="displayarea"> </div>
-          </tr>
-          <tr>
-          <div id="useractivity"> </div>
-          </tr>
-          <tr>
-
-          </tr>
-        </table>
-      </td>
-      <td>
-     <table>
-		    <tr>
-		    <td>
-		    	<table>
+      <div id="clientarea" hidden=true>
+	<table>
+	  <tr>
+	    <td>
+              <table>
+		<tr>
+		  <td>
+		    <div id="infoarea"><textarea id="infoareaText" rows="1" cols="100"></textarea>
+		  </td>
+		  <td>
+		    <table>
+		      <tr>	   
+			<td>
+			  <Button id="demo0">DemoSeed</Button>
+			</td>
+		      </tr>
 		      <tr>
-		      	<td>
-		    		  <textarea rows="28" id="greenCodeContext"> </textarea>
-		    		</td>
-		    	</tr>
-		    	<tr>
-		    		<td>
-		    			<button id="startcell" style="width: 100%;"> Start </button>
-		    		</td>
-		    	</tr>
-		    	</table>
-		    </td>
-		    <td>
-		      <textarea rows="31" id="greenCodeContextRegisters"></textarea>
-		    </td>
-		    </tr>
-		 </table>
-		 </table>
-     </div>
-     <div id="errorbar"> </div>
+			<td>
+			  <Button id="demo1">DemoRND</Button>
+			</td>
+		      </tr>
+		      <tr>
+			<td>	   
+			  <Button id="demo2">DemoUR</Button>
+			</td>
+		      </tr>
+		    </table>
+		  </div>		 
+	    </td>
+          </tr>
+          <tr><td>
+	      <div id="displayarea"> </div>
+	    </td>
+	    <td>
+	      <table>
+		<tr>
+		  <td>
+		    <table>
+		      <tr>
+			<td>
+		    	  <textarea rows="28" id="greenCodeContext"> </textarea>
+			</td>
+		      </tr>
+		      <tr>
+			<td>
+		    	  <button id="startcell" style="width: 100%;"> Start </button>
+			</td>
+		      </tr>
+		    </table>
+		  </td>
+		  <td>
+		    <textarea rows="31" id="greenCodeContextRegisters"></textarea>
+		  </td>
+		</tr>
+	      </table>
+	    </td>    
+          </tr>
+          <tr>
+	    <td colspan="3">
+	      <div id="useractivity"> </div>
+            </td>
+	  </tr>
+	  </table>
+</td>
+</tr>
+</table>
+</div>
+<div id="errorbar"> </div>
 
-    <script type="application/dart" src="cellsweb.dart"></script>
-    <script src="packages/browser/dart.js"></script>
-  </body>
+<script type="application/dart" src="cellsweb.dart"></script>
+<script src="packages/browser/dart.js"></script>
+</body>
 </html>

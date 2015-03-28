@@ -21,11 +21,6 @@ VirtualDirectory virDir;
 
 ServerCommEngine _serverCommEngine;
 
-_sendNotFound(HttpResponse response) {
-  response.statusCode = HttpStatus.NOT_FOUND;
-  response.close();
-}
-
 startServerHTTP() async {
   HttpServer server = await HttpServer.bind(_ip, _portHTTP);
   _logger.info("HTTP WebServer Listening on ${_ip}:${_portHTTP}");

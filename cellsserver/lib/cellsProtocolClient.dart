@@ -174,10 +174,11 @@ class ClientCommEngine {
     sendOnWsSafe(jsonMap);
   }
 
-  sendDemo(){
+  sendDemo(int exmpNr){
     Map jsonMap = new Map();
         jsonMap.putIfAbsent("command", () => "demo");
         jsonMap.putIfAbsent("data", () => {
+          "exmpNr": exmpNr
         });
         sendOnWsSafe(jsonMap);
   }

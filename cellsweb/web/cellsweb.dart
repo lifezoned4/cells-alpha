@@ -78,7 +78,9 @@ HideConnectionBar() {
 InitClient(String url, String user, String password) {
 	HideConnectionBar();
 
-	ButtonElement demo = querySelector("#demo");
+	ButtonElement demo0 = querySelector("#demo0");
+	ButtonElement demo1 = querySelector("#demo1");
+	ButtonElement demo2 = querySelector("#demo2");
 
 	DivElement displayArea = querySelector("#displayarea");
 
@@ -98,7 +100,9 @@ InitClient(String url, String user, String password) {
 		return;
 	}
 
-	demo.onClick.listen((e) => commEngine.sendDemo());
+	demo0.onClick.listen((e) => commEngine.sendDemo(0));
+	demo1.onClick.listen((e) => commEngine.sendDemo(1));
+	demo2.onClick.listen((e) => commEngine.sendDemo(2));
 
 
 

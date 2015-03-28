@@ -4,15 +4,18 @@ import 'package:logging/logging.dart';
 
 import "package:bignum/bignum.dart";
 import "dart:io";
+import "dart:math" show Random;
 import 'dart:convert' show JSON;
 
 import "lib/cells.dart";
 import "cellsAuth.dart";
+import "cellsPersist.dart";
+import "cellsProtocolServer.dart";
 
 final _logger = new Logger("cellsCore");
 
 class User {
-	AuthContext context;
+  AuthContext context;
   Energy energy;
   bool isAdmin = false;
   WebSocket socketAct;
@@ -72,14 +75,34 @@ class User {
         break;
 
         case "demo":
-        	subscriptions.first.world.clearWorld();
+          switch(jsonMap["data"]["exmpNr"]){
+                case 0:
+                  subscriptions.first.world.clearWorld();
         	int i = 0;
         	while(i < 20){
 	          subscriptions.first.world.randomStateAdd();
-	        	i++;
+                  i++;
         	}
-				break;
+                break;
+                case 1:
+                  SwitchWorld("worldRNDExperiment");
+                  break;
+                case 2:
+                  SwitchWorld("worldBreadExperiment");
+                  break;
+          }
+              break;
       }
+  }
+
+  void SwitchWorld(String name){
+    World.rnd = new Random(123456789);
+    var users = subscriptions.first.world.users;
+    var world = FilePersistContext.loadWorld("saves/${name}");
+    ServerCommEngine.world = world;
+    world.users = users;
+    subscriptions.forEach((sub) => sub.world = world);
+    world.start();
   }
 
   String getSendData(){

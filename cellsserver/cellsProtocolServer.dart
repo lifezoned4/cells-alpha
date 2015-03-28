@@ -30,7 +30,7 @@ class ServerCommEngine {
   AuthEngine authEngine = null;
 
 
-  World world;
+  static World world;
   ServerCommEngine(){
     RegRestfulCommand(new RestfulWebSocketAuthUser(this));
     RegRestfulCommand(new RestfulMoveSpectation(this));
@@ -38,7 +38,7 @@ class ServerCommEngine {
     RegRestfulCommand(new RestfulGetWorldSize(this));
 
     try {
-      world = FilePersistContext.loadWorld();
+      ServerCommEngine.world = FilePersistContext.loadWorld("saves/world");
     }
     catch(ex, stacktrace){
        _logger.warning("File Loading Failed");
@@ -49,7 +49,7 @@ class ServerCommEngine {
     authEngine = new AuthEngine();
 
     World.persitActive = true;
-    world.start();
+    ServerCommEngine.world.start();
   }
 
   RegRestfulCommand(RestfulCommand command){
@@ -73,7 +73,7 @@ class ServerCommEngine {
          }
         break;
       default:
-        var it = world.users.keys.where((user) => user.socketAct == conn);
+        var it = ServerCommEngine.world.users.keys.where((user) => user.socketAct == conn);
         if(it.length > 0 )
         {
           User foundUser = it.first;
@@ -143,6 +143,7 @@ abstract class RestfulCommand {
   String dealWithCommand(Map<String, dynamic> jsonMap, AuthContext context){
     if(jsonMap["command"] != commandName)
       throw new InternalCommException("CommandName Fatal missmatch");
+    return "FATAL ABSTRACT CALL";
   }
 }
 
@@ -157,10 +158,10 @@ class RestfulMoveSpectation extends RestfulCommand  {
     super.dealWithCommand(jsonMap, context);
     if (jsonMap["data"]["dx"].abs() + jsonMap["data"]["dy"].abs() > 1)
       return "Invalid";
-    if(engine.world.users.keys.where((user) => user.username == context.username).isNotEmpty) {
-      User foundUser = engine.world.users.keys.where((user) => (user.pubKey == user.pubKey) && (user.username == context.username)).first;
-      foundUser.userSubcription.x += jsonMap["data"]["dx"] + engine.world.width % engine.world.width;
-      foundUser.userSubcription.y += jsonMap["data"]["dy"] + engine.world.height % engine.world.height;
+    if(ServerCommEngine.world.users.keys.where((user) => user.username == context.username).isNotEmpty) {
+      User foundUser = ServerCommEngine.world.users.keys.where((user) => (user.pubKey == user.pubKey) && (user.username == context.username)).first;
+      foundUser.userSubcription.x += jsonMap["data"]["dx"] + ServerCommEngine.world.width % ServerCommEngine.world.width;
+      foundUser.userSubcription.y += jsonMap["data"]["dy"] + ServerCommEngine.world.height % ServerCommEngine.world.height;
 
       return "Okay";
     }
@@ -180,7 +181,7 @@ class RestfulSelectInfoAbout extends RestfulCommand {
     int id = jsonMap["data"]["id"];
     int token = jsonMap["data"]["token"];
 
-    var iterator =  engine.world.objects.where((o) => o.cell != null && o.cell.id == id);
+    var iterator =  ServerCommEngine.world.objects.where((o) => o.cell != null && o.cell.id == id);
     if(iterator.length != 1)
     {
       _logger.warning("Error on this id: $id! Count $iterator.legnth");
@@ -194,9 +195,9 @@ class RestfulSelectInfoAbout extends RestfulCommand {
 
       returner.putIfAbsent("code", () => object.cell.greenCodeContext.codeToStringNames());
 
-     if(engine.world.users.keys.where((user) => (user.lastSendToken == token) && user.userSubcription == null).isNotEmpty){
+     if(ServerCommEngine.world.users.keys.where((user) => (user.lastSendToken == token) && user.userSubcription == null).isNotEmpty){
         _logger.info("Selecting object ${id}");
-        engine.world.users.keys.where((user) => user.lastSendToken == token && user.userSubcription == null).first.selected = object;
+        ServerCommEngine.world.users.keys.where((user) => user.lastSendToken == token && user.userSubcription == null).first.selected = object;
         }
 
       return JSON.encode(returner);
@@ -213,7 +214,7 @@ class RestfulGetWorldSize extends  RestfulCommand {
     }
   String dealWithCommand(Map<String, dynamic> jsonMap, AuthContext context){
     super.dealWithCommand(jsonMap, context);
-    return JSON.encode({"width": engine.world.width, "height":  engine.world.height});
+    return JSON.encode({"width": ServerCommEngine.world.width, "height":  ServerCommEngine.world.height});
   }
 }
 
@@ -231,7 +232,7 @@ class RestfulWebSocketAuthUser extends  RestfulCommand {
    int token = new Random().nextInt(1<<32 -1);
 
    User foundUser = null;
-   Iterable iterFoundUser = engine.world.users.keys.where((u) => u.isAdmin && u.username == context.username);
+   Iterable iterFoundUser = ServerCommEngine.world.users.keys.where((u) => u.isAdmin && u.username == context.username);
    if(iterFoundUser.length > 0)
     foundUser = iterFoundUser.first;
 
@@ -239,10 +240,10 @@ class RestfulWebSocketAuthUser extends  RestfulCommand {
     User newUser = new User(context.username, context.pubKey, token, context);
     newUser.isAdmin = true;
     newUser.ticksLeft = ticksInTokken;
-    engine.world.users[newUser] = 0;
-    newUser.subscriptions.add(new WorldTicksSubscription(engine.world, newUser));
+    ServerCommEngine.world.users[newUser] = 0;
+    newUser.subscriptions.add(new WorldTicksSubscription(ServerCommEngine.world, newUser));
     newUser.userSubcription = null;
-    newUser.subscriptions.add(new WorldAreaViewSubscription(engine.world, newUser,
+    newUser.subscriptions.add(new WorldAreaViewSubscription(ServerCommEngine.world, newUser,
              ServerCommEngine.width,
              ServerCommEngine.height));
    }
