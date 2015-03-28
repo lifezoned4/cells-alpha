@@ -1,0 +1,170 @@
+{"x":0,"y":0,"energy":0,"state":4,"greenCode":""}
+{"x":1,"y":0,"energy":0,"state":4,"greenCode":""}
+{"x":2,"y":0,"energy":0,"state":4,"greenCode":""}
+{"x":3,"y":0,"energy":61,"state":3,"greenCode":["DIV *70;","GET @108;","SUB #69;","LABEL @54;","COPY @126;","ADD *73;","LOAD @45;","MULT @71;","COPY #15;","GET #56;","LABEL @71;","LOAD #126;","GET #6;","GET #109;","SUB *29;"]}
+{"x":4,"y":0,"energy":0,"state":4,"greenCode":""}
+{"x":5,"y":0,"energy":347,"state":2,"greenCode":["LABEL *91;","LABEL @17;","LABEL @103;","STORE *91;","DIV *122;","JZERO *1;","LABEL @110;","LOAD *74;","SUB #86;","SUB @79;","STORE @18;","GET *15;","ADD *122;","JZERO *36;","STORE *72;"]}
+{"x":6,"y":0,"energy":116,"state":3,"greenCode":["COPY *89;","LABEL @40;","LABEL #95;","DIV #46;","JZERO #75;","LABEL #62;","DIV #96;","LOAD @52;","GET *39;","LOAD #30;","LOAD *34;","DIV *58;","SUB *69;","ADD #0;","GET #90;"]}
+{"x":7,"y":0,"energy":1896,"state":3,"greenCode":["MULT *100;","LABEL *101;","STORE @67;","COPY @34;","LABEL @83;","LABEL @51;","GET #102;","DIV @5;","JZERO #96;","DIV *99;","GET *117;","GET *94;","STORE *48;","DIV #86;","MULT @115;"]}
+{"x":8,"y":0,"energy":0,"state":4,"greenCode":""}
+{"x":9,"y":0,"energy":1348,"state":1,"greenCode":["GET *55;","COPY #87;","MULT *92;","LABEL #26;","DIV #86;","SUB *62;","SUB @104;","DIV @26;","DIV @37;","LOAD #116;","STORE @123;","COPY #105;","ADD #97;","COPY *103;","DIV #57;"]}
+{"x":10,"y":0,"energy":0,"state":4,"greenCode":""}
+{"x":11,"y":0,"energy":552,"state":1,"greenCode":["LABEL *72;","ADD @56;","LOAD @89;","JZERO *30;","GET #102;","COPY #21;","MULT *75;","JZERO *7;","DIV *39;","GET *73;","ADD #15;","ADD @106;","DIV @30;","SUB *16;","ADD @38;"]}
+{"x":12,"y":0,"energy":0,"state":4,"greenCode":""}
+{"x":13,"y":0,"energy":509,"state":2,"greenCode":["LABEL #79;","ADD *77;","COPY @28;","LABEL *47;","LABEL @1;","JZERO @106;","JZERO *104;","JZERO *125;","ADD *51;","STORE *109;","LABEL @9;","MULT #125;","ADD *114;","SUB @121;","LABEL *48;"]}
+{"x":14,"y":0,"energy":671,"state":1,"greenCode":["LOAD *119;","GET @54;","LOAD @80;","COPY @43;","LABEL *77;","LABEL @52;","LOAD @122;","LOAD @60;","JZERO *112;","ADD @7;","MULT *104;","STORE #103;","ADD #30;","ADD *35;","LOAD *109;"]}
+{"x":15,"y":0,"energy":0,"state":4,"greenCode":""}
+{"x":16,"y":0,"energy":0,"state":4,"greenCode":""}
+{"x":0,"y":1,"energy":924,"state":2,"greenCode":["STORE #43;","DIV @100;","SUB #54;","ADD @59;","ADD *30;","SUB *15;","COPY *117;","DIV *61;","ADD *32;","MULT #50;","ADD #78;","COPY @24;","STORE @39;","ADD #87;","GET *34;"]}
+{"x":1,"y":1,"energy":0,"state":4,"greenCode":""}
+{"x":2,"y":1,"energy":0,"state":4,"greenCode":""}
+{"x":3,"y":1,"energy":0,"state":4,"greenCode":""}
+{"x":4,"y":1,"energy":0,"state":4,"greenCode":""}
+{"x":5,"y":1,"energy":356,"state":3,"greenCode":["STORE *88;","LOAD @41;","SUB #113;","JZERO *31;","COPY #84;","LOAD #79;","MULT #28;","LOAD @90;","LABEL @27;","SUB #78;","LABEL *110;","ADD #71;","COPY #8;","LOAD *72;","DIV *17;"]}
+{"x":6,"y":1,"energy":0,"state":4,"greenCode":""}
+{"x":7,"y":1,"energy":0,"state":4,"greenCode":""}
+{"x":8,"y":1,"energy":942,"state":2,"greenCode":["STORE @7;","DIV #34;","LOAD @19;","JZERO #49;","LABEL #70;","SUB *98;","LABEL *54;","STORE *125;","COPY @89;","STORE #21;","GET *89;","MULT *9;","LABEL #46;","DIV @13;","COPY *63;"]}
+{"x":9,"y":1,"energy":0,"state":4,"greenCode":""}
+{"x":10,"y":1,"energy":33,"state":3,"greenCode":["SUB #22;","MULT @75;","MULT @68;","DIV *79;","SUB @70;","STORE *82;","DIV #125;","LABEL *52;","LABEL @55;","GET #7;","GET #23;","JZERO #109;","STORE #53;","LABEL @46;","GET #51;"]}
+{"x":11,"y":1,"energy":133,"state":3,"greenCode":["LOAD *37;","DIV #33;","SUB *24;","COPY @34;","GET *123;","LABEL @120;","ADD *118;","STORE *102;","MULT *77;","COPY *119;","MULT #114;","LABEL @101;","DIV #41;","GET #20;","DIV #81;"]}
+{"x":12,"y":1,"energy":0,"state":4,"greenCode":""}
+{"x":13,"y":1,"energy":1212,"state":1,"greenCode":["MULT #81;","JZERO #93;","MULT *101;","DIV *40;","MULT *7;","LABEL @87;","JZERO #40;","SUB @56;","COPY #15;","MULT *74;","GET @45;","COPY @107;","ADD @2;","MULT #76;","LOAD #91;"]}
+{"x":14,"y":1,"energy":915,"state":3,"greenCode":["COPY #66;","SUB *24;","COPY #96;","COPY #24;","JZERO *0;","ADD *11;","ADD @61;","LOAD *108;","SUB *125;","COPY #41;","LABEL #33;","GET @81;","COPY #102;","COPY *33;","LABEL #123;"]}
+{"x":15,"y":1,"energy":0,"state":4,"greenCode":""}
+{"x":16,"y":1,"energy":1108,"state":1,"greenCode":["DIV #55;","GET *97;","DIV @17;","LABEL *16;","SUB #104;","JZERO *100;","SUB @80;","DIV *48;","LABEL *64;","STORE #46;","GET *54;","LABEL @102;","STORE #101;","LOAD #98;","LOAD @62;"]}
+{"x":0,"y":2,"energy":0,"state":4,"greenCode":""}
+{"x":1,"y":2,"energy":0,"state":4,"greenCode":""}
+{"x":2,"y":2,"energy":0,"state":4,"greenCode":""}
+{"x":3,"y":2,"energy":0,"state":4,"greenCode":""}
+{"x":4,"y":2,"energy":0,"state":4,"greenCode":""}
+{"x":5,"y":2,"energy":0,"state":4,"greenCode":""}
+{"x":6,"y":2,"energy":0,"state":4,"greenCode":""}
+{"x":7,"y":2,"energy":0,"state":4,"greenCode":""}
+{"x":8,"y":2,"energy":0,"state":4,"greenCode":""}
+{"x":9,"y":2,"energy":29,"state":3,"greenCode":["LOAD @58;","STORE @38;","LABEL @110;","JZERO *43;","COPY #125;","STORE @84;","LABEL @92;","STORE @78;","SUB @72;","DIV *54;","DIV @17;","JZERO #74;","STORE *69;","COPY *91;","GET *9;"]}
+{"x":10,"y":2,"energy":0,"state":4,"greenCode":""}
+{"x":11,"y":2,"energy":0,"state":4,"greenCode":""}
+{"x":12,"y":2,"energy":0,"state":4,"greenCode":""}
+{"x":13,"y":2,"energy":0,"state":4,"greenCode":""}
+{"x":14,"y":2,"energy":1222,"state":2,"greenCode":["ADD *4;","ADD *90;","STORE @38;","SUB #117;","STORE @108;","GET #101;","ADD #15;","MULT *11;","JZERO *5;","JZERO *1;","STORE @71;","DIV #52;","MULT *31;","GET *104;","GET @66;"]}
+{"x":15,"y":2,"energy":0,"state":4,"greenCode":""}
+{"x":16,"y":2,"energy":0,"state":4,"greenCode":""}
+{"x":0,"y":3,"energy":0,"state":4,"greenCode":""}
+{"x":1,"y":3,"energy":1796,"state":2,"greenCode":["GET *83;","DIV @86;","GET @82;","LOAD #91;","LABEL @82;","SUB @89;","MULT *101;","ADD @6;","STORE @104;","JZERO *97;","DIV @3;","SUB #80;","STORE @92;","LOAD #49;","LABEL *106;"]}
+{"x":2,"y":3,"energy":0,"state":4,"greenCode":""}
+{"x":3,"y":3,"energy":1369,"state":3,"greenCode":["DIV #63;","SUB *2;","DIV @88;","SUB *12;","DIV @90;","JZERO @3;","LOAD @86;","DIV @15;","DIV #40;","JZERO *12;","SUB *39;","MULT #34;","ADD @16;","JZERO @37;","STORE *111;"]}
+{"x":4,"y":3,"energy":0,"state":4,"greenCode":""}
+{"x":5,"y":3,"energy":0,"state":4,"greenCode":""}
+{"x":6,"y":3,"energy":398,"state":1,"greenCode":["GET *79;","SUB #122;","JZERO *75;","SUB *97;","SUB *47;","SUB *14;","MULT *27;","MULT #18;","GET *121;","LOAD #81;","COPY @109;","JZERO *94;","LOAD *94;","DIV *125;","COPY *54;"]}
+{"x":7,"y":3,"energy":0,"state":4,"greenCode":""}
+{"x":8,"y":3,"energy":0,"state":4,"greenCode":""}
+{"x":9,"y":3,"energy":16,"state":1,"greenCode":["LOAD #65;","STORE *34;","DIV #116;","GET #43;","DIV *101;","DIV *93;","MULT @127;","ADD #104;","SUB *43;","DIV #119;","LABEL *47;","ADD @21;","COPY @121;","LABEL @78;","ADD *71;"]}
+{"x":10,"y":3,"energy":0,"state":4,"greenCode":""}
+{"x":11,"y":3,"energy":1900,"state":2,"greenCode":["COPY @33;","STORE #121;","ADD @56;","ADD @126;","MULT @45;","SUB @69;","GET #115;","GET @86;","STORE *57;","MULT *90;","DIV #83;","DIV *90;","LOAD @89;","LOAD @74;","SUB @112;"]}
+{"x":12,"y":3,"energy":0,"state":4,"greenCode":""}
+{"x":13,"y":3,"energy":328,"state":2,"greenCode":["LABEL @56;","SUB *19;","LABEL @30;","DIV *115;","GET *18;","SUB *28;","COPY @22;","COPY @56;","LOAD #7;","JZERO *47;","DIV @8;","GET @76;","ADD @6;","DIV *83;","SUB *117;"]}
+{"x":14,"y":3,"energy":0,"state":4,"greenCode":""}
+{"x":15,"y":3,"energy":0,"state":4,"greenCode":""}
+{"x":16,"y":3,"energy":1869,"state":3,"greenCode":["LOAD *52;","STORE *48;","ADD *87;","COPY *16;","COPY @12;","JZERO @35;","JZERO #70;","JZERO *19;","GET @111;","LOAD *85;","SUB @74;","DIV @13;","ADD @104;","COPY @123;","GET @75;"]}
+{"x":0,"y":4,"energy":873,"state":3,"greenCode":["MULT #24;","LABEL #45;","COPY *7;","MULT #20;","GET @98;","LOAD *124;","STORE @124;","SUB @76;","LABEL #97;","LABEL @4;","SUB @121;","JZERO *20;","JZERO *71;","DIV @57;","LABEL @109;"]}
+{"x":1,"y":4,"energy":182,"state":3,"greenCode":["DIV #124;","ADD #85;","STORE @112;","DIV @57;","MULT *44;","JZERO @100;","LABEL @100;","LOAD *91;","LABEL *92;","JZERO *112;","ADD *41;","STORE @96;","LOAD @4;","LABEL @79;","JZERO *86;"]}
+{"x":2,"y":4,"energy":0,"state":4,"greenCode":""}
+{"x":3,"y":4,"energy":1810,"state":3,"greenCode":["LOAD @20;","LOAD #38;","GET #55;","MULT @93;","LABEL #54;","JZERO *5;","COPY @115;","DIV #35;","MULT *58;","COPY *71;","LOAD #121;","JZERO *76;","JZERO #90;","STORE *52;","DIV #45;"]}
+{"x":4,"y":4,"energy":1973,"state":3,"greenCode":["GET *65;","MULT #45;","SUB #14;","ADD *68;","GET *105;","STORE *113;","STORE *8;","LABEL @62;","SUB *126;","STORE *64;","LABEL #32;","SUB #117;","SUB @106;","JZERO *103;","MULT #54;"]}
+{"x":5,"y":4,"energy":1583,"state":2,"greenCode":["LABEL #41;","JZERO @0;","COPY #25;","LABEL *71;","LOAD @16;","STORE *82;","GET #59;","LOAD #77;","GET #116;","JZERO #121;","LOAD @15;","STORE @120;","SUB *60;","SUB #99;","LABEL #63;"]}
+{"x":6,"y":4,"energy":0,"state":4,"greenCode":""}
+{"x":7,"y":4,"energy":0,"state":4,"greenCode":""}
+{"x":8,"y":4,"energy":1241,"state":3,"greenCode":["MULT @21;","LABEL #72;","SUB *7;","LABEL #33;","DIV *104;","LOAD *35;","STORE #56;","LABEL *46;","JZERO @53;","GET #80;","ADD @21;","LABEL *121;","LOAD #14;","JZERO #50;","ADD #20;"]}
+{"x":9,"y":4,"energy":0,"state":4,"greenCode":""}
+{"x":10,"y":4,"energy":0,"state":4,"greenCode":""}
+{"x":11,"y":4,"energy":321,"state":2,"greenCode":["GET *116;","ADD @79;","ADD @106;","GET #53;","COPY *23;","MULT @2;","LOAD #78;","SUB @30;","LABEL #39;","ADD @34;","GET #53;","MULT *55;","ADD *118;","ADD *19;","JZERO #30;"]}
+{"x":12,"y":4,"energy":0,"state":4,"greenCode":""}
+{"x":13,"y":4,"energy":0,"state":4,"greenCode":""}
+{"x":14,"y":4,"energy":29,"state":3,"greenCode":["STORE *29;","GET @51;","JZERO *103;","JZERO #89;","COPY #95;","DIV @17;","JZERO *51;","COPY *58;","JZERO *31;","STORE @24;","STORE *83;","LOAD #8;","STORE #1;","JZERO *114;","LOAD @45;"]}
+{"x":15,"y":4,"energy":0,"state":4,"greenCode":""}
+{"x":16,"y":4,"energy":0,"state":4,"greenCode":""}
+{"x":0,"y":5,"energy":1232,"state":3,"greenCode":["LABEL #22;","JZERO #127;","LABEL #16;","DIV #80;","SUB #60;","DIV *101;","MULT *111;","COPY @67;","MULT #65;","MULT @23;","STORE @24;","JZERO *49;","STORE @30;","STORE *11;","GET #7;"]}
+{"x":1,"y":5,"energy":1764,"state":3,"greenCode":["SUB @54;","STORE *67;","STORE @15;","STORE @91;","MULT @5;","LOAD #28;","GET *30;","GET *112;","GET #59;","MULT @26;","JZERO *9;","LOAD *118;","STORE @35;","COPY *21;","GET *12;"]}
+{"x":2,"y":5,"energy":0,"state":4,"greenCode":""}
+{"x":3,"y":5,"energy":1832,"state":1,"greenCode":["LOAD #10;","LABEL @123;","GET *73;","LOAD *127;","ADD *30;","JZERO #30;","DIV @9;","JZERO *68;","LOAD #86;","LOAD @28;","SUB #12;","MULT #25;","LOAD *38;","DIV #25;","LABEL #67;"]}
+{"x":4,"y":5,"energy":143,"state":1,"greenCode":["COPY #5;","COPY @104;","ADD *100;","LOAD *27;","LABEL @53;","ADD @88;","MULT #94;","JZERO #72;","GET #76;","STORE @117;","GET @105;","DIV *93;","GET #32;","STORE #87;","COPY #31;"]}
+{"x":5,"y":5,"energy":0,"state":4,"greenCode":""}
+{"x":6,"y":5,"energy":0,"state":4,"greenCode":""}
+{"x":7,"y":5,"energy":0,"state":4,"greenCode":""}
+{"x":8,"y":5,"energy":0,"state":4,"greenCode":""}
+{"x":9,"y":5,"energy":1833,"state":2,"greenCode":["STORE *10;","ADD @38;","ADD @22;","SUB @37;","ADD #65;","COPY @92;","LOAD *43;","COPY #39;","JZERO #108;","DIV #97;","ADD *107;","STORE @10;","SUB *20;","STORE @0;","DIV #104;"]}
+{"x":10,"y":5,"energy":1552,"state":2,"greenCode":["SUB #107;","DIV *124;","MULT @9;","MULT *39;","COPY *45;","JZERO #126;","DIV #5;","DIV @7;","LOAD @23;","SUB #56;","DIV *86;","MULT @104;","STORE @100;","MULT *107;","SUB @37;"]}
+{"x":11,"y":5,"energy":46,"state":2,"greenCode":["ADD #73;","GET @5;","COPY *17;","JZERO *81;","MULT *113;","JZERO *0;","LOAD *109;","ADD #62;","LOAD #58;","COPY #121;","LABEL #9;","STORE *49;","JZERO #105;","GET @28;","STORE @52;"]}
+{"x":12,"y":5,"energy":0,"state":4,"greenCode":""}
+{"x":13,"y":5,"energy":789,"state":2,"greenCode":["SUB *120;","LABEL *42;","LABEL #20;","SUB @25;","DIV #32;","COPY #106;","LOAD #0;","COPY @124;","SUB @35;","MULT *19;","JZERO #19;","MULT *75;","COPY #38;","STORE *125;","LOAD #111;"]}
+{"x":14,"y":5,"energy":0,"state":4,"greenCode":""}
+{"x":15,"y":5,"energy":0,"state":4,"greenCode":""}
+{"x":16,"y":5,"energy":511,"state":1,"greenCode":["DIV #85;","MULT #84;","JZERO #60;","GET *127;","GET @43;","STORE @42;","DIV @0;","LABEL @69;","LOAD @62;","GET @88;","STORE @108;","STORE *31;","SUB @39;","LOAD *31;","STORE #73;"]}
+{"x":0,"y":6,"energy":108,"state":1,"greenCode":["DIV #56;","SUB @99;","SUB @16;","JZERO #23;","SUB *90;","COPY @52;","GET #87;","ADD #71;","MULT *29;","STORE @111;","SUB @11;","DIV #25;","STORE @63;","DIV #75;","STORE *38;"]}
+{"x":1,"y":6,"energy":223,"state":2,"greenCode":["LOAD #0;","GET #85;","LABEL *13;","JZERO @91;","JZERO @127;","DIV @48;","MULT @100;","MULT #10;","GET *100;","ADD @12;","JZERO #43;","JZERO *102;","GET @56;","ADD #98;","JZERO #57;"]}
+{"x":2,"y":6,"energy":1136,"state":1,"greenCode":["GET @47;","SUB *48;","LABEL *31;","ADD @113;","SUB @34;","LABEL @33;","LABEL #112;","SUB @114;","LOAD *59;","DIV @26;","ADD @22;","DIV @34;","LABEL *84;","MULT *24;","LABEL *66;"]}
+{"x":3,"y":6,"energy":1237,"state":1,"greenCode":["MULT *45;","GET @100;","GET #5;","GET *97;","DIV #101;","LOAD #123;","DIV *40;","DIV @8;","STORE @1;","ADD #44;","SUB #67;","LABEL #122;","STORE #4;","STORE @99;","MULT @72;"]}
+{"x":4,"y":6,"energy":0,"state":4,"greenCode":""}
+{"x":5,"y":6,"energy":0,"state":4,"greenCode":""}
+{"x":6,"y":6,"energy":794,"state":1,"greenCode":["SUB *49;","MULT #101;","JZERO *106;","LOAD *49;","LOAD #34;","SUB #106;","ADD *79;","ADD @59;","MULT #0;","COPY #22;","DIV @51;","ADD #14;","DIV *71;","MULT @1;","DIV @0;"]}
+{"x":7,"y":6,"energy":0,"state":4,"greenCode":""}
+{"x":8,"y":6,"energy":1611,"state":1,"greenCode":["LABEL #2;","MULT @87;","ADD #75;","JZERO #114;","COPY *94;","JZERO @19;","STORE #124;","COPY @42;","DIV #114;","DIV *70;","MULT @36;","LOAD *3;","SUB #114;","STORE @114;","GET #4;"]}
+{"x":9,"y":6,"energy":0,"state":4,"greenCode":""}
+{"x":10,"y":6,"energy":344,"state":1,"greenCode":["ADD @115;","GET @4;","GET *101;","GET *116;","SUB @90;","STORE #36;","ADD *19;","LABEL @76;","SUB #19;","JZERO #3;","ADD @70;","JZERO #115;","GET #71;","SUB #94;","LOAD *40;"]}
+{"x":11,"y":6,"energy":0,"state":4,"greenCode":""}
+{"x":12,"y":6,"energy":1131,"state":2,"greenCode":["COPY @1;","COPY *49;","JZERO #50;","GET *70;","LABEL #110;","STORE @53;","STORE @12;","GET #73;","DIV #10;","SUB *40;","JZERO #26;","MULT #31;","STORE @118;","COPY @93;","STORE *42;"]}
+{"x":13,"y":6,"energy":569,"state":2,"greenCode":["GET *87;","MULT *25;","LOAD *18;","STORE *47;","LOAD #105;","SUB @50;","ADD @65;","DIV #26;","MULT @23;","JZERO @85;","SUB #119;","SUB #24;","LABEL *24;","MULT #40;","MULT @75;"]}
+{"x":14,"y":6,"energy":0,"state":4,"greenCode":""}
+{"x":15,"y":6,"energy":797,"state":2,"greenCode":["COPY #69;","ADD @15;","LOAD #41;","DIV *88;","JZERO @108;","ADD #98;","MULT *75;","SUB #38;","LABEL @103;","LOAD *37;","STORE #17;","MULT *67;","ADD *77;","GET #64;","GET *13;"]}
+{"x":16,"y":6,"energy":1116,"state":1,"greenCode":["LABEL #82;","SUB #60;","LABEL *51;","LOAD @85;","JZERO @17;","MULT @43;","MULT *29;","DIV @46;","LOAD #100;","STORE #109;","JZERO @27;","JZERO @72;","MULT *42;","STORE @43;","JZERO *49;"]}
+{"x":0,"y":7,"energy":1021,"state":1,"greenCode":["ADD *52;","LABEL *77;","GET @62;","COPY #45;","LABEL #28;","LOAD #70;","COPY *49;","JZERO *102;","LABEL #59;","LABEL #122;","JZERO @18;","GET *22;","COPY @23;","LABEL #64;","COPY *31;"]}
+{"x":1,"y":7,"energy":1252,"state":1,"greenCode":["MULT @2;","MULT @54;","SUB #12;","GET *46;","COPY *101;","JZERO @104;","DIV #122;","STORE #105;","MULT #96;","MULT *93;","COPY #75;","MULT @27;","SUB *118;","COPY #26;","ADD @37;"]}
+{"x":2,"y":7,"energy":841,"state":3,"greenCode":["MULT #56;","ADD *125;","COPY *127;","DIV @22;","GET *109;","SUB @50;","COPY @117;","JZERO *16;","COPY #28;","MULT *76;","ADD @100;","DIV @123;","DIV *9;","GET @41;","JZERO @51;"]}
+{"x":3,"y":7,"energy":0,"state":4,"greenCode":""}
+{"x":4,"y":7,"energy":607,"state":2,"greenCode":["DIV #91;","DIV @18;","LOAD @45;","STORE #19;","GET @6;","GET @80;","LABEL @10;","SUB #58;","ADD @85;","DIV *77;","GET @24;","LOAD @88;","SUB *106;","JZERO #42;","STORE #40;"]}
+{"x":5,"y":7,"energy":1775,"state":3,"greenCode":["ADD @76;","SUB @107;","DIV *69;","COPY #26;","COPY @14;","LABEL *31;","STORE *33;","MULT @60;","SUB @90;","ADD @62;","COPY @74;","JZERO *62;","JZERO #40;","COPY #57;","LABEL #25;"]}
+{"x":6,"y":7,"energy":1181,"state":2,"greenCode":["JZERO @3;","MULT #46;","ADD *125;","DIV @63;","DIV @120;","JZERO *1;","COPY @81;","DIV #58;","COPY *3;","JZERO #60;","COPY #48;","MULT *11;","GET @94;","SUB @18;","JZERO #70;"]}
+{"x":7,"y":7,"energy":1046,"state":3,"greenCode":["ADD *105;","LABEL #63;","MULT #63;","GET @28;","DIV #42;","JZERO @118;","LABEL @26;","DIV *26;","STORE *78;","STORE *95;","MULT #116;","GET @38;","GET *12;","ADD #48;","GET #38;"]}
+{"x":8,"y":7,"energy":0,"state":4,"greenCode":""}
+{"x":9,"y":7,"energy":0,"state":4,"greenCode":""}
+{"x":10,"y":7,"energy":1447,"state":1,"greenCode":["DIV @4;","ADD #66;","SUB *89;","MULT *86;","JZERO @82;","LOAD @1;","JZERO @73;","SUB *53;","LOAD @47;","LABEL *83;","COPY *118;","LOAD @61;","JZERO @91;","MULT *88;","GET *35;"]}
+{"x":11,"y":7,"energy":1395,"state":3,"greenCode":["GET @34;","GET #66;","ADD *95;","DIV @49;","SUB *95;","STORE #33;","GET @33;","LABEL #120;","JZERO @32;","LABEL *57;","ADD *28;","DIV @2;","DIV @126;","DIV @66;","MULT @96;"]}
+{"x":12,"y":7,"energy":338,"state":2,"greenCode":["LOAD @101;","GET @62;","MULT *99;","SUB *116;","LOAD #112;","LOAD @83;","COPY @26;","DIV #73;","ADD #13;","ADD #30;","STORE *89;","COPY *101;","GET *38;","COPY *97;","JZERO *28;"]}
+{"x":13,"y":7,"energy":0,"state":4,"greenCode":""}
+{"x":14,"y":7,"energy":0,"state":4,"greenCode":""}
+{"x":15,"y":7,"energy":0,"state":4,"greenCode":""}
+{"x":16,"y":7,"energy":0,"state":4,"greenCode":""}
+{"x":0,"y":8,"energy":779,"state":1,"greenCode":["LABEL *28;","ADD @43;","JZERO #108;","LOAD *83;","ADD *38;","ADD @93;","COPY @40;","LOAD #57;","LABEL #33;","JZERO *76;","GET *32;","DIV #99;","STORE @98;","STORE #53;","LOAD #83;"]}
+{"x":1,"y":8,"energy":0,"state":4,"greenCode":""}
+{"x":2,"y":8,"energy":0,"state":4,"greenCode":""}
+{"x":3,"y":8,"energy":0,"state":4,"greenCode":""}
+{"x":4,"y":8,"energy":1406,"state":1,"greenCode":["DIV @109;","LABEL *27;","ADD *96;","ADD *16;","JZERO #34;","COPY *100;","MULT *4;","MULT #102;","JZERO @41;","GET #110;","LABEL #113;","JZERO @84;","LABEL #28;","COPY *40;","SUB #48;"]}
+{"x":5,"y":8,"energy":625,"state":3,"greenCode":["GET #33;","LOAD @41;","MULT @18;","SUB *114;","COPY *67;","LABEL #38;","DIV *46;","ADD @78;","SUB *29;","ADD #19;","GET *1;","LABEL *69;","MULT @0;","GET #52;","LABEL *33;"]}
+{"x":6,"y":8,"energy":926,"state":2,"greenCode":["STORE *121;","DIV #34;","GET @42;","JZERO @116;","DIV *81;","STORE @6;","SUB *1;","LABEL #64;","JZERO #95;","GET @106;","SUB *65;","STORE #30;","GET *66;","COPY @92;","LOAD @53;"]}
+{"x":7,"y":8,"energy":1241,"state":3,"greenCode":["DIV *3;","STORE @61;","STORE #10;","GET #6;","JZERO @118;","ADD #100;","MULT #81;","GET *36;","MULT @85;","DIV *9;","DIV #19;","JZERO #19;","ADD #92;","STORE *5;","JZERO *53;"]}
+{"x":8,"y":8,"energy":0,"state":4,"greenCode":""}
+{"x":9,"y":8,"energy":0,"state":4,"greenCode":""}
+{"x":10,"y":8,"energy":0,"state":4,"greenCode":""}
+{"x":11,"y":8,"energy":0,"state":4,"greenCode":""}
+{"x":12,"y":8,"energy":1369,"state":2,"greenCode":["LABEL @76;","MULT @102;","SUB @93;","STORE #16;","JZERO @19;","DIV #7;","ADD #41;","JZERO *124;","JZERO @92;","LOAD *72;","STORE #27;","LABEL *16;","GET *93;","SUB #109;","JZERO #107;"]}
+{"x":13,"y":8,"energy":0,"state":4,"greenCode":""}
+{"x":14,"y":8,"energy":1291,"state":2,"greenCode":["GET @105;","LABEL @126;","LABEL @23;","JZERO *101;","DIV @106;","STORE *89;","LABEL *120;","SUB *126;","COPY *109;","STORE @74;","LOAD @33;","JZERO *58;","COPY *26;","COPY #39;","STORE @42;"]}
+{"x":15,"y":8,"energy":0,"state":4,"greenCode":""}
+{"x":16,"y":8,"energy":47,"state":2,"greenCode":["GET #36;","LOAD *81;","LOAD @5;","COPY #117;","SUB #56;","LOAD *126;","MULT #102;","LOAD #89;","COPY #104;","STORE #73;","LOAD @106;","COPY *104;","JZERO @93;","COPY #65;","ADD *102;"]}
+{"x":0,"y":9,"energy":1066,"state":1,"greenCode":["LOAD #65;","JZERO @63;","DIV @45;","DIV @12;","JZERO @127;","COPY @108;","JZERO *57;","GET *55;","DIV *7;","JZERO @13;","DIV #95;","STORE @110;","DIV #57;","LABEL *2;","JZERO @108;"]}
+{"x":1,"y":9,"energy":1795,"state":3,"greenCode":["LOAD *26;","COPY @89;","MULT #35;","LOAD #13;","LOAD #8;","DIV @19;","GET *29;","STORE #99;","STORE #20;","STORE #111;","ADD *40;","MULT @40;","MULT #85;","MULT *2;","ADD #70;"]}
+{"x":2,"y":9,"energy":0,"state":4,"greenCode":""}
+{"x":3,"y":9,"energy":15,"state":1,"greenCode":["GET #63;","GET *40;","SUB *44;","JZERO *21;","MULT @89;","LABEL @109;","ADD *16;","LABEL *87;","GET @92;","MULT *46;","MULT *29;","LABEL *64;","STORE @120;","DIV @100;","GET *120;"]}
+{"x":4,"y":9,"energy":1653,"state":3,"greenCode":["MULT @3;","GET *47;","DIV #106;","SUB #10;","GET *93;","LABEL *125;","COPY #105;","DIV @122;","SUB @6;","GET #45;","STORE #102;","ADD #13;","LABEL *100;","GET #74;","COPY *56;"]}
+{"x":5,"y":9,"energy":0,"state":4,"greenCode":""}
+{"x":6,"y":9,"energy":455,"state":1,"greenCode":["COPY @54;","GET #91;","JZERO #122;","STORE #2;","LABEL #75;","SUB @21;","COPY @41;","ADD @34;","MULT #80;","SUB @123;","SUB *95;","DIV *18;","LABEL #120;","SUB @127;","LOAD *27;"]}
+{"x":7,"y":9,"energy":0,"state":4,"greenCode":""}
+{"x":8,"y":9,"energy":1043,"state":1,"greenCode":["ADD @37;","LABEL @35;","JZERO #33;","LOAD @85;","JZERO *120;","STORE *99;","STORE *63;","GET *10;","JZERO *125;","SUB *56;","GET @77;","STORE #84;","LOAD *20;","COPY *104;","LOAD @90;"]}
+{"x":9,"y":9,"energy":1328,"state":2,"greenCode":["COPY #8;","LOAD *100;","STORE #24;","GET *62;","MULT *46;","GET @80;","SUB @52;","COPY *111;","GET @110;","JZERO *40;","JZERO @107;","JZERO @121;","GET *101;","GET @46;","MULT #50;"]}
+{"x":10,"y":9,"energy":0,"state":4,"greenCode":""}
+{"x":11,"y":9,"energy":413,"state":2,"greenCode":["LOAD @3;","JZERO *124;","STORE @67;","JZERO @85;","MULT *2;","MULT #121;","COPY #99;","JZERO *103;","STORE #38;","SUB @76;","SUB @65;","MULT *64;","MULT #18;","GET *115;","GET #17;"]}
+{"x":12,"y":9,"energy":1943,"state":2,"greenCode":["LOAD #9;","LABEL @84;","JZERO @35;","LOAD *61;","COPY #126;","COPY #70;","JZERO @112;","LOAD #50;","DIV *72;","STORE @26;","JZERO *1;","DIV *127;","SUB @122;","MULT #90;","COPY @31;"]}
+{"x":13,"y":9,"energy":0,"state":4,"greenCode":""}
+{"x":14,"y":9,"energy":1731,"state":2,"greenCode":["SUB *76;","MULT #73;","MULT #62;","LOAD *4;","LOAD #30;","LABEL #19;","STORE *94;","LABEL @75;","LOAD *107;","SUB @93;","LOAD @27;","JZERO #5;","DIV *114;","SUB #54;","COPY *127;"]}
+{"x":15,"y":9,"energy":0,"state":4,"greenCode":""}
+{"x":16,"y":9,"energy":0,"state":4,"greenCode":""}
