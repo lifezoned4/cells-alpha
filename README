@@ -7,7 +7,7 @@ Cells Prototype Startup
 2. Run specific script for your system (For Example: ./linux64_start.sh)
 3. dartvm should now have launched cellserver/cellsComm.dart and opened
 the ports 8086 (for WebSocket communication) and 8087 (for static Webserver hosting)
-3.1 Navigate to http://localhost:8087/cellsweb.html
+3.1 Navigate to http://localhost:8087/cellsweb.html with a HTML5 compatible browser
 4. You can use the user:test password:test to login by default.
 
 Manual
