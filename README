@@ -1,0 +1,70 @@
+Cells Prototype Startup
+-----------------------
+1. Check for dart-sdk
+1.1 If ./sdks/<your-system-folder>/ is emptry Download
+ dart-sdk 1.9.1 from https://www.dartlang.org/tools/download.html.
+1.2 Place the content of the zip in the ./sdks/<your-system-folder>/
+2. Run specific script for your system (For Example: ./linux64_start.sh)
+3. dartvm should now have launched cellserver/cellsComm.dart and opened
+the ports 8086 (for WebSocket communication) and 8087 (for static Webserver hosting)
+3.1 Navigate to http://localhost:8087/cellsweb.html
+4. You can use the user:test password:test to login by default.
+
+Manual
+------
+Single User Mode:
+-----------------
+The Modell is configured by default for a single user mode.
+The Buttons DemoSeed DemoRND and DemoUR are used to demonstrate Experiments.
+DemoRND and DemoUR are the two examples used in the thesis.
+They should give allways the same result and finish in the same state.
+DemoSeed rendomly seeds the system with Ur-Cells.
+
+
+Saves file folder
+----------------
+Under ./cellsserver/saves/ there are some configuration files:
+createTokens is a newline divided file which can have hex numbers to be
+distributed to the users. This numbers are AlphaKeys to create a user in the 
+System. 
+
+Example createTokens:
+ABCDE123456789
+123456789ABCDE
+A1B3D3
+
+The world file is the persitent state of the System.
+It can be altered before the System comes up and those it is a input path
+to the system. It is possible to generate world files by other progems
+if someone would like too. The semnatics of the json structe are descirbed
+in cellsserver/cellsPersist.dart
+
+worldBreadExperiment and worldRNDExperiment are the worlds loaded by the
+buttons in Single user mode.
+
+users is a autogenerted file. Every user who used a alphaKey to register is
+put here. Only the public key is stored. Some additional data like last login
+are also stored here.
+
+logging is the log file hanc the name
+
+the folder measurments holds cyclic statistic date over time
+the structur should be self explaining.
+After injecting new greencode a world-snapshot is also created here.
+
+
+Multiuser Mode
+----------------
+BEAWARE THAT FOR A MULTI USER MODE SCRIPTS HAVE TO BE CHANGED!
+
+Configure the IP your hosting on in cellsComm.dart. It is a static field
+easy to find. Ports can be ajusted here too.
+
+Remove the demo Buttons from cellsweb/build/web/cellsweb.html.
+
+Setup some AlphaKeys and distribute them to users. AlphaKeys are only used once
+by a usere to create a password. Tell the users the CANNOT change there password
+afterwords.
+
+Reference the user to the help.hmtl file under http://<yourip>:8087/help.html
+
