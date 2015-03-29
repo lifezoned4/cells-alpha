@@ -14,7 +14,74 @@
   </head>
  
   <body>   
-  <h1>Cells Help-File: Alpha v2.1</h1>
-  <p> Under Construction </p>
-  </body>
+  <h1>Cells Help-File: Alpha v2.3</h1>
+  <h2>Overview</h2>
+  <p>There are two kinds of States: Energy (rectangular) and Cell (round).</p>
+  <p> Fields which are gray are empty fields </p>
+  <p> A cell can move from one field only into a empty field </p>
+<p> A Registermaschine is used to dertmin which direction if any will be choosen </p>
+<p> Your task will be to move the cell in some directions and after it has collected Energy fields of there compliment color it should start to reproduce </p>
+<p> To do so you have to understand how the registermaschine works </p>
+<h2>GreenCode Registermachine</h2>
+<p> A Reigster maschine is a set of Operations combinded with a set of Registers. A Operation has the structure:
+<li>|OperandName| |OperandFlag||Operand:Number|;</li>
+</p>
+<p> A Example Operation would be LOAD #1; It loads the Constant number 1 into the ALU Register. ALU is the Register 0.</p>
+<p> STORE #8; stores the number which is in Register 0 into 
+the Register at the number 8. This is a special Register. It determins in which direction the cell will be moving in the next model step. </p>
+<br>
+<h3>Exercise 1</h3>
+Try to start a cell (by selecting energy, putting code into the GreenCode TextBox and press start. Selecting can be done by clicking a rectangle field which is not gray).
+After started a cell you do it again but this time type something into the greencode field which will make the cell move.
+
+<h3>Soloution 1</h3>
+LOAD #3;
+STORE #8;
+<br>
+<p>
+The Content of Register 8 will be interpreted as so:
+
+<li>0: dont move
+<li>1: move north
+<li>2: move east
+<li>3: move south
+<li>4: move west
+<li>5: dont move
+<li>6: move north
+</p>
+<p> As you can notice the field is moduleted by 5 and the a direction is choosen. </p>
+
+<p>After we learned how to move, we know shall undestand how eating works.</p>
+
+<p>When a green cells is near a blue cell or Energyfield it eats the other field. Same for blue near red. And red near green.</p>
+
+<h3>Exercise 2</h3>
+Try to move a cell in a color to a color it can eat.
+
+<p>To master Exercie 2 we learn know some operations to do more logic</p>
+
+<p> ADD #5; adds the number 5 to the ALU </p>
+
+<h3>Exercise 3</h3>
+Move your cell in circles
+<h3>Solution 3</h3>
+
+ADD #1;
+STORE #8;
+ADD #1;
+STORE #8;
+ADD #1;
+STORE #8;
+ADD #1;
+STORE #8;
+
+<h3>Solution 3 alternativ</h3>
+ADD #1;
+STORE #8;
+
+<p>The alternativ solution uses the registermachine behavior of roundrobbing the operations. When the end of the list is reached its starts at the top again </p>
+
+<p>After you learned the basic concept how the registermachine works dive into the specification. There are many other Operators to be used. Learn them and try them.</p> 
+
+</body>
 </html>
